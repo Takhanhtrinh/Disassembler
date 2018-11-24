@@ -15,84 +15,91 @@ START_ADDRESS EQU $010000
 END_ADDRESS EQU $7004
 * LOCATION TO STORE CURRENT 16 BITS OPCODE
 OPCODE_ADDRESS EQU $7006
+* LOCATION TO STORE CURRENT OFFSET FROM OPCODE OF A INSTRUCTION, FOR EXAMPLE:
+*       MOVE.L #$500, D3 and the instruction(MOVE.L known data register as d3 and immediate data) location at 10000.
+*       THIS OFFSET WILL HANDLE BY PRINT_REGISTER. IT WILL PRINT OUT #$500 AND ADD THE NEXT OFFSET FROM THE ORIGINAL OPCODE IN THIS LOCATION, 
+*       THE OFFSET SHOULD SET = 2 WHEN FETCH_OPCODE 
+OFFSET_OPC_ADDRES EQU $7008 
+* LOCATION TO STORE REGISTERS FOR MOVEM
+STORE_REGISTER_ADDRESS EQU $700A
 * LOCATiON TO STORE STACK ADDRESS VALUE
 STACK_ADDRESS EQU $8000
 START:                  ; first instruction of program
-    MOVE.L #$10AF241B, -(SP)
-    MOVE.L #HEX_TO_ASCII_LONG, -(SP)
-    JSR PRINT_HEX
-    ADDQ.L #$08, SP
+    * MOVE.L #$10AF241B, -(SP)
+    * MOVE.L #HEX_TO_ASCII_LONG, -(SP)
+    * JSR PRINT_HEX
+    * ADDQ.L #$08, SP
 
-    JSR PRINT_NEW_LINE
+    * JSR PRINT_NEW_LINE
 
-    JSR PRINT_TAB
+    * JSR PRINT_TAB
     * A0
-    MOVE.L #%0000011100000100, D1
-    MOVE.L D1, -(SP)
-    JSR PRINT_REGISTER
-    ADDQ.L #4, SP
-    * A1
-    MOVE.W #%0100, D1
-    SWAP D1
-    MOVE.W #$1, D1
-    MOVE.L D1, -(SP)
-    JSR PRINT_REGISTER
-    ADDQ.L #4, SP
-* A2
-    MOVE.W #%0011, D1
-    SWAP D1
-    MOVE.W #$2, D1
-    MOVE.L D1, -(SP)
-    JSR PRINT_REGISTER
-    ADDQ.L #4, SP
-* A3
-    MOVE.W #%0011, D1
-    SWAP D1
-    MOVE.W #$3, D1
-    MOVE.L D1, -(SP)
-    JSR PRINT_REGISTER
-    ADDQ.L #4, SP
-* A4
-    MOVE.W #%0011, D1
-    SWAP D1
-    MOVE.W #$4, D1
-    MOVE.L D1, -(SP)
-    JSR PRINT_REGISTER
-    ADDQ.L #4, SP
-* A5
-    MOVE.W #%0011, D1
-    SWAP D1
-    MOVE.W #$5, D1
-    MOVE.L D1, -(SP)
-    JSR PRINT_REGISTER
-    ADDQ.L #4, SP
-* A6
-    MOVE.W #%0011, D1
-    SWAP D1
-    MOVE.W #$6, D1
-    MOVE.L D1, -(SP)
-    JSR PRINT_REGISTER
-    ADDQ.L #4, SP
-* A7
-    MOVE.W #%0011, D1
-    SWAP D1
-    MOVE.W #$7, D1
-    MOVE.L D1, -(SP)
-    JSR PRINT_REGISTER
-    ADDQ.L #4, SP
+*     MOVE.L #%0000011100000100, D1
+*     MOVE.L D1, -(SP)
+*     JSR PRINT_REGISTER
+*     ADDQ.L #4, SP
+*     * A1
+*     MOVE.W #%0100, D1
+*     SWAP D1
+*     MOVE.W #$1, D1
+*     MOVE.L D1, -(SP)
+*     JSR PRINT_REGISTER
+*     ADDQ.L #4, SP
+* * A2
+*     MOVE.W #%0011, D1
+*     SWAP D1
+*     MOVE.W #$2, D1
+*     MOVE.L D1, -(SP)
+*     JSR PRINT_REGISTER
+*     ADDQ.L #4, SP
+* * A3
+*     MOVE.W #%0011, D1
+*     SWAP D1
+*     MOVE.W #$3, D1
+*     MOVE.L D1, -(SP)
+*     JSR PRINT_REGISTER
+*     ADDQ.L #4, SP
+* * A4
+*     MOVE.W #%0011, D1
+*     SWAP D1
+*     MOVE.W #$4, D1
+*     MOVE.L D1, -(SP)
+*     JSR PRINT_REGISTER
+*     ADDQ.L #4, SP
+* * A5
+*     MOVE.W #%0011, D1
+*     SWAP D1
+*     MOVE.W #$5, D1
+*     MOVE.L D1, -(SP)
+*     JSR PRINT_REGISTER
+*     ADDQ.L #4, SP
+* * A6
+*     MOVE.W #%0011, D1
+*     SWAP D1
+*     MOVE.W #$6, D1
+*     MOVE.L D1, -(SP)
+*     JSR PRINT_REGISTER
+*     ADDQ.L #4, SP
+* * A7
+*     MOVE.W #%0011, D1
+*     SWAP D1
+*     MOVE.W #$7, D1
+*     MOVE.L D1, -(SP)
+*     JSR PRINT_REGISTER
+*     ADDQ.L #4, SP
 
-    JSR PRINT_COMMA
-    JSR PRINT_DOLLAR_SIGN
-    JSR PRINT_HASH_SIGN
-    MOVE.B #$01, -(SP)
-    JSR PRINT_DATA
-    ADDQ.L #$2,SP
-    MOVE.B #$02, -(SP)
-    JSR PRINT_DATA
-    ADDQ.L #$2, SP
-    MOVE.B #$03, -(SP)
-    JSR PRINT_DATA
-    ADDQ.L #$2,SP
+    * JSR PRINT_COMMA
+    * JSR PRINT_DOLLAR_SIGN
+    * JSR PRINT_HASH_SIGN
+    * MOVE.B #$01, -(SP)
+    * JSR PRINT_DATA
+    * ADDQ.L #$2,SP
+    * MOVE.B #$02, -(SP)
+    * JSR PRINT_DATA
+    * ADDQ.L #$2, SP
+    * MOVE.B #$03, -(SP)
+    * JSR PRINT_DATA
+    * ADDQ.L #$2,SP
     MOVE.L #START_ADDRESS, -(SP)
     MOVE.L #OPCODE_ADDRESS, -(SP)
     JSR FETCH_OPCODES
@@ -101,7 +108,8 @@ START:                  ; first instruction of program
     MOVE.L #OPCODE_ADDRESS, A0
     MOVE.W (A0), -(SP)
     JSR JUMP_TABLE
-    
+    ADDQ.L #$2, SP
+     
 * Put program code here
 MAIN:
 
@@ -217,61 +225,187 @@ PRINT_LONG:
 *--------------------------------------------------------------------
 * PRINT_REGISTER
 * PARAMETERS: what register 1 byte 4 msb indicate dn(0) or an(1), 4 lsb for number of that register
-* 1 - (4(sp)) 1 bytes msb for mode, 1 byte lsb for which register
+* 1 - (6(sp)) 3 bits msb for mode, 3 bits lsb for which register
+* 2 - (4(sp)) byte value for how many byte for immediate value
+*      0 for it is not ab value or immediate value
+*      1 for a byte value
+*      2 for word value
+*      3 for long value 
 * NOTE: 
 *   D1 FOR STORE THE PARAMETER
+*   D2 FOR STORE HOW MANY BYTE FOR IMMEDIATE VALUE, AND ABSOLUTE VALUE
 PRINT_REGISTER:
-   MOVE.L 4(SP), D1 
+   MOVE.W 6(SP), D1 
+   ; IMMEDIATE ADDRESS
+   MOVE.W D1,D2
+   CMPI.B #%00111100, D1
+   BEQ PRINT_IMMEDIATE
+   CMPI.B #%00111000, D1
+   BEQ PRINT_AB_SHORT
+   CMPI.B #%00111001, D1
+   BEQ PRINT_AB_LONG 
 
-   CMPI.W #$0704, D1
-   BEQ PRINT_REGISTER_HASH
-
-   SWAP D1 ; TO CHECK THE MODE
-
-   CMPI.B #$02, D1 
+   MOVE.B D1,D2
+   AND.B #%01110000, D2
+   CMPI #%00100000, D2
    BEQ PRINT_OPEN
 
-   CMPI.B #$03, D1 
+   MOVE.B D1,D2
+   AND.B #%01110000, D2
+   CMPI #%00110000, D2
    BEQ PRINT_OPEN
 
-   CMPI.B #$04, D1
+   MOVE.B D1,D2
+   AND.B #%01110000, D2
+   CMPI #%01000000, D2
    BEQ PRINT_MINUS_OPEN
 
 
 CONTINUE_PRINT_REGISTER:
-   CMPI.B #$0, D1
+   MOVE.B D1,D2
+   AND.B #%01110000, D2
+   CMPI #%00000000, D2
    BEQ PRINT_D
 
-   CMPI.B #$01, D1 
+   MOVE.B D1,D2
+   AND.B #%01110000, D2
+   CMPI #%00010000, D2
    BEQ PRINT_A 
 
 CONTINUE_PRINT_RE_NUMBER:
     MOVE.L #OUTPUT_ADDRESS, A1
-    SWAP D1 ; USE TO GET REGISTER NUMBER
     MOVE.B D1,D2
+    AND.B #%00000111, D2
     ADD.B #48, D2 
     MOVE.B D2, (A1) 
     MOVE.B #$0, 1(A1)
     MOVE.B #14, D0
     TRAP #15
 DONE_PRINT_NUMBER:
-   SWAP D1 ; TO CHECK THE MODE
-
-   CMPI.B #$02, D1 
+   MOVE.B D1,D2
+   AND.B #%01110000, D2
+   CMPI #%00100000, D2
    BEQ PRINT_CLOSE
 
-   CMPI.B #$03, D1 
+   MOVE.B D1,D2
+   AND.B #%01110000, D2
+   CMPI #%00110000, D2
    BEQ PRINT_CLOSE_PLUS
 
-   CMPI.B #$04, D1
+   MOVE.B D1,D2
+   AND.B #%01110000, D2
+   CMPI #%01000000, D2
    BEQ PRINT_CLOSE
+
 END_PRINT_REGISTER:
     RTS
 
-PRINT_REGISTER_HASH:
+PRINT_IMMEDIATE:
     MOVE.L #OUTPUT_ADDRESS, A1
     MOVE.B #'#', (A1)
     MOVE.B #$0, 1(A1)
+    MOVE.B #14, D0
+    TRAP #15
+    JSR PRINT_DOLLAR_SIGN
+    MOVE.W (OFFSET_OPC_ADDRES),D0
+    MOVE.W 4(SP), D2 ; HOW MANY BYTE
+    CMPI #$01, D2
+    BEQ PRINT_IMMEDIATE_BYTE ; THIS CASE NEVER HAPPEN BECAUSE IMMEDATE VALUE MINIMUM IS 16 bits
+    CMPI #$02, D2
+    BEQ PRINT_IMMEDIATE_WORD
+    CMPI #$04, D2
+    BEQ PRINT_IMMEDIATE_LONG
+    BRA END_PRINT_REGISTER
+
+PRINT_IMMEDIATE_BYTE:
+    MOVE.L #START_ADDRESS, A2
+    MOVE.B (A2, D0), D2 ; 
+    MOVEM.L D0-D2/A0-A1, -(SP)
+    MOVE.L D2, -(SP)
+    MOVE.L #HEX_TO_ASCII_BYTE, -(SP) 
+    JSR PRINT_HEX
+     ADDQ.L #$08, SP
+    MOVEM.L (SP)+, D0-D2/A0-A1
+    ADDQ.W #$1, D0
+    MOVE.W D0, (OFFSET_OPC_ADDRES)
+    BRA END_PRINT_REGISTER
+PRINT_IMMEDIATE_WORD:
+    MOVE.L #START_ADDRESS, A2
+    MOVE.W (A2, D0), D2 ; 
+    MOVEM.L D0-D2/A0-A1, -(SP)
+    MOVE.L D2, -(SP)
+    MOVE.L #HEX_TO_ASCII_WORD, -(SP) 
+    JSR PRINT_HEX
+    ADDQ.L #$08, SP
+    MOVEM.L (SP)+, D0-D2/A0-A2
+    ADDQ.W #$2, D0
+    MOVE.W D0, (OFFSET_OPC_ADDRES)
+    BRA END_PRINT_REGISTER
+PRINT_IMMEDIATE_LONG:
+    MOVE.W (OFFSET_OPC_ADDRES),D0
+    MOVE.L #START_ADDRESS, A2
+    MOVE.L (A2, D0), D2 ; 
+    MOVEM.L D0-D2/A0-A1, -(SP)
+    MOVE.L D2, -(SP)
+    ; offset to get immediate value from opcode
+    MOVE.W (OFFSET_OPC_ADDRES),D0
+    MOVE.L #HEX_TO_ASCII_LONG, -(SP) 
+    JSR PRINT_HEX
+    ADDQ.L #$08, SP
+    MOVEM.L (SP)+, D0-D2/A0-A1
+    ADDQ.W #$4, D0
+    MOVE.W D0, (OFFSET_OPC_ADDRES)
+    BRA END_PRINT_REGISTER
+PRINT_AB_SHORT:
+    MOVE.L #OUTPUT_ADDRESS, A1
+    MOVE.W #'($', (A1)
+    MOVE.B #0, 2(A1)
+    MOVE.B #14, D0
+    TRAP #15
+    ; offset to get immediate value from opcode
+    MOVE.W (OFFSET_OPC_ADDRES),D0
+    MOVE.W (A2, D0), D2 ; 
+    MOVEM.L D0-D2/A0-A1, -(SP)
+    MOVE.L D2, -(SP)
+    MOVE.L #HEX_TO_ASCII_WORD, -(SP) 
+    JSR PRINT_HEX
+    ADDQ.L #$08, SP
+    MOVEM.L (SP)+, D0-D2/A0-A2
+    ADDQ.W #$2, D0
+    MOVE.W D0, (OFFSET_OPC_ADDRES)
+    ; print close parathesis with W
+    MOVE.L #OUTPUT_ADDRESS, A1
+    MOVE.W #').', (A1)
+    MOVE.B #'W',2(A1)
+    MOVE.B #0, 3(A1)
+    MOVE.B #14, D0
+    TRAP #15
+    BRA END_PRINT_REGISTER
+PRINT_AB_LONG:
+    ;print open parathesis
+    MOVE.L #OUTPUT_ADDRESS, A1
+    MOVE.W #'($', (A1)
+    MOVE.B #0, 2(A1)
+    MOVE.B #14, D0
+    TRAP #15
+    ; print value in long
+    MOVE.L #START_ADDRESS, A2
+    ; offset to get value from opcode
+    MOVE.W (OFFSET_OPC_ADDRES),D0
+    MOVE.L (A2, D0), D2 ; 
+    MOVEM.L D0-D2/A0-A1, -(SP)
+    MOVE.L D2, -(SP)
+    MOVE.L #HEX_TO_ASCII_LONG, -(SP) 
+    JSR PRINT_HEX
+    ADDQ.L #$08, SP
+    MOVEM.L (SP)+, D0-D2/A0-A1
+    ADDQ.W #$4, D0
+    MOVE.W D0, (OFFSET_OPC_ADDRES) ; align offset 
+    ; print close parathesis with W
+    MOVE.L #OUTPUT_ADDRESS, A1
+    MOVE.W #').', (A1)
+    MOVE.B #'L',2(A1)
+    MOVE.B #0, 3(A1)
     MOVE.B #14, D0
     TRAP #15
     BRA END_PRINT_REGISTER
@@ -323,7 +457,8 @@ PRINT_A:
 *-----------------------------------------------------------
 * PRINT HEX 
 * PARAMETERS:
-*   1- (4(SP)) : VALUE IN HEX
+*   1- (8(SP)): VALUE IN HEX
+*   2- (4(SP)): HOW MANY BYTES
 * RETURN NULL
 *-----------------------------------------------------------
 PRINT_HEX:
@@ -343,7 +478,7 @@ END_PRINT_HEX:
 * RETURN:
 *   8 CHARS IN ASCII, STORE IN RETURN ADDRESS (a1)
 * D0 STORES HEX VALUE
-* D4 HOW MAY BYTES TO DISPLAY (1-byte 2-hex 4-long)
+* D4 HOW MAY BYTES TO DISPLAY (2-byte 4-hex 8-long)
 * D1 COUNT LOOP
 * D2 CONVERT TO ASCII
 * D3 USE TO CALCULATE SHIFT
@@ -528,6 +663,7 @@ FETCH_OPCODES:
     MOVE.L 4(SP), A2 ; OPCODE WILL BE RETURNED
     MOVE.W (A0), A0
     MOVE.W A0,(A2)
+    MOVE.W #$2, (OFFSET_OPC_ADDRES)
 END_FETCH_OPCODES:
     RTS
 *------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -544,6 +680,7 @@ C_RTS EQU $4E75
     JSR RTS
 * CONSTANT FOR JSR
     JSR JSR
+    JSR LEA
 
 END_JUMP_TABLE:
     RTS
@@ -559,19 +696,71 @@ JSR_OPCODE EQU %0100111010000000
     AND.W #%1111111111000000, D2
     CMP.W #JSR_OPCODE, D2
     BNE JSR_END 
-    JSR PRINT_RTS
+    JSR PRINT_JSR
+* MASKING TO GET MODE AND REGISTER
+    MOVE.B D1,D2
+    AND.B #%00111111, D2
+    MOVEM.W D1, -(SP)
+    MOVE.W D2, -(SP)
+    MOVE.W #$0, -(SP)
+    JSR PRINT_REGISTER
+    ADDQ.L #4, D2
+    MOVEM.W (SP)+, D1
 JSR_END:
+    RTS
+LEA:
+    CLR.W D2
+    * 0 1 0 0 AN 1 1 1
+    MOVE.W D1,D2 
+    AND.W  #%1111000111000000, D2
+    CMPI.W #%0100000111000000, D2
+    BNE LEA_END
+    JSR PRINT_LEA
+    MOVE.B D1,D2 
+    ; MASK TO GET MODE AND REGISTER
+    AND.B #%0000000000111111, D2
+    MOVEM.W D1, -(SP)
+    MOVE.W D2, -(SP)
+    MOVE.W #$0, -(SP)
+    JSR PRINT_REGISTER
+    ADDQ.L #$4, SP
+    MOVEM.W (SP)+, D1
+    JSR PRINT_COMMA
+    ; MASK TO GET DESTINATION REGISTER
+    MOVE.W D1,D2
+    AND.W #%0000111100000000, D2
+    ASR.W #$08, D2
+    OR.B #%00010000, D2 ; OR TO PASS TO PRINT_REGISTER
+    MOVE.W D2, -(SP)
+    MOVE.W #$0, -(SP) 
+    JSR PRINT_REGISTER
+    ADDQ.L #$04, SP
+LEA_END:
     RTS
 PRINT_RTS:
    LEA P_RTS, A1
    MOVE.B #14, D0
    TRAP #15
+   JSR PRINT_TAB
    RTS 
 PRINT_JSR:
     LEA P_JSR, A1
     MOVE.B #14, D0
     TRAP #15
+    JSR PRINT_TAB
     RTS 
+PRINT_LEA:
+   LEA P_LEA, A1
+   MOVE.B #14, D0
+   TRAP #15
+   JSR PRINT_TAB
+   RTS 
+PRINT_ADD: 
+    LEA P_ADD, A1 
+    MOVE.B #$14. D0
+    TRAP #15 
+    JSR PRINT_TAB
+    RTS
 
 
 
@@ -633,6 +822,13 @@ SIMHALT             ; halt simulator
 PROMT_INPUT_START DC.B 'Please enter starting address(capitalized):  $',0 
 PROMT_INPUT_END DC.B 'Please enter ending address(cappitalized): $',0
     END    START        ; last line of source
+
+
+
+
+
+
+
 
 
 
