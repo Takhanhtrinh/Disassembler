@@ -120,15 +120,28 @@ END_MAIN:
     TRAP #15
     MOVE.B #14,D0
     TRAP #15
-* get user input 
-GET_INPUT:
+* get user starting address input 
+GET_START_INPUT:
     LEA PROMT_INPUT_START, A1
     MOVE.B #13, D0
     TRAP #15
-    MOVEA.L #$2000,A1
+    * MOVEA.L #$2000,A1        * original 
+    MOVEA.L #START_ADDRESS,A1  * change to this for testing
     MOVE.B #2, D0
     TRAP #15
-END_GET_INPUT:
+END_GET_START_INPUT:
+    RTS   
+
+* get user ending address input 
+GET_END_INPUT:
+    LEA PROMT_INPUT_END, A1
+    MOVE.B #13, D0
+    TRAP #15
+    * MOVEA.L #$3000,A1        * original 
+    MOVEA.L #END_ADDRESS,A1  * change to this for testing
+    MOVE.B #2, D0
+    TRAP #15
+END_GET_END_INPUT:
     RTS   
 
 *--------------------------------------------------------------------
@@ -840,34 +853,34 @@ NEG_OPCODE EQU %0100010000000000
 NEG_M      EQU %1111111100000000
 NEG_REG_M  EQU %0000000000111111
 NEG_SIZE_M EQU %0000000011000000
-    CLR.W D2
     MOVE.W D1, D2
 * MASKING WITH NEG UNIQUE CODE
     AND.W #NEG_M, D2
     CMP.W #NEG_OPCODE, D2
     BNE NEG_END
     JSR PRINT_NEG
+    
     MOVE.W D1, D2
-    MOVE.W D1, D3
 * MASKING TO GET NEG SIZE
     AND.W #NEG_SIZE_M, D2
-    ASR.B #6, D2
-    MOVE.B D2, -(SP)
+    ASR.W #6, D2
+    MOVE.W D2 , D6 * COPY SHIFTED SIZE FOR PRINT REGISTER 
+    MOVE.B D6, -(SP)
     JSR PRINT_DATA
-    JSR PRINT_TAB
     ADDQ.L #2, SP
-    MOVE.W D3, D2   * GET ORIGINAL DATA BACK
-    MOVE.W D3, D1
+    JSR PRINT_TAB
+
+    MOVE.W (OPCODE_ADDRESS), D1     
+    MOVE.W D1, D2
 * MASKING TO GET MODE AND REGISTER
-    AND.B #NEG_REG_M, D2
-    MOVE.W D1, -(SP)
+    AND.W #NEG_REG_M, D2
     MOVE.W D2, -(SP)
-    MOVE.W #$0, -(SP)
+    MOVE.W D6, -(SP)
     JSR PRINT_REGISTER
-    ADDQ.L #$4, SP
+    ADDQ.L #$04, SP
     MOVE.W (SP)+, D1
     CLR.W D2
-    CLR.W D3
+    CLR.W D6
 NEG_END: 
     RTS
 
@@ -890,8 +903,82 @@ BRA_SIZE_M EQU %0000000011111111
 BRA_END:
     RTS
 
-* ------------ LEO ------------ *          * ------------ LEO ------------ *          * ------------ LEO ------------ *
+* OR:
+* * CONSTANT FOR OR OPCODE
+* OR_OPCODE EQU %
+* OR_M      EQU %
+* OR_SIZE_M EQU %
+*     CLR.W D2
+*     MOVE.W D1, D2
+* * MASKING WITH OR UNIQUE CODE
+*     AND.W #OR_M, D2
+*     CMP.W #OR_OPCODE, D2
+*     BNE OR_END
+*     JSR PRINT_OR
+*     MOVE.W D1, D2
+*     MOVE.W D1, D3
+* * MASKING TO GET SIZE OF OR
+*     CMP.W #OR_SIZE_M, D2 
+* OR_END:
+*     RTS
 
+* ORI:
+* * CONSTANT FOR ORI OPCODE
+* ORI_OPCODE EQU %
+* ORI_M      EQU %
+* ORI_SIZE_M EQU %
+*     CLR.W D2
+*     MOVE.W D1, D2
+* * MASKING WITH ORI UNIQUE CODE
+*     AND.W #ORI_M, D2
+*     CMP.W #ORI_OPCODE, D2
+*     BNE ORI_END
+*     JSR PRINT_ORI
+*     MOVE.W D1, D2
+*     MOVE.W D1, D3
+* * MASKING TO GET SIZE OF ORI
+*     CMP.W #ORI_SIZE_M, D2 
+* ORI_END:
+*     RTS
+
+* ROR:
+* * CONSTANT FOR ROR OPCODE
+* ROR_OPCODE EQU %
+* ROR_M      EQU %
+* ROR_SIZE_M EQU %
+*     CLR.W D2
+*     MOVE.W D1, D2
+* * MASKING WITH ROR UNIQUE CODE
+*     AND.W #ROR_M, D2
+*     CMP.W #ROR_OPCODE, D2
+*     BNE ROR_END
+*     JSR PRINT_ROR
+*     MOVE.W D1, D2
+*     MOVE.W D1, D3
+* * MASKING TO GET SIZE OF ROR
+*     CMP.W #ROR_SIZE_M, D2 
+* ROR_END:
+*     RTS
+
+* ROL:
+* * CONSTANT FROR ROL OPCODE
+* ROL_OPCODE EQU %
+* ROL_M      EQU %
+* ROL_SIZE_M EQU %
+*     CLR.W D2
+*     MOVE.W D1, D2
+* * MASKING WITH ROL UNIQUE CODE
+*     AND.W #ROL_M, D2
+*     CMP.W #ROL_OPCODE, D2
+*     BNE ROL_END
+*     JSR PRINT_ROL
+*     MOVE.W D1, D2
+*     MOVE.W D1, D3
+* * MASKING TO GET SIZE OF ROL
+*     CMP.W #ROL_SIZE_M, D2 
+* ROL_END:
+*     RTS
+* ------------ LEO ------------ *          * ------------ LEO ------------ *          * ------------ LEO ------------ *
 
 
 PRINT_RTS:
@@ -902,6 +989,26 @@ PRINT_RTS:
    RTS 
 PRINT_NOP:
     LEA P_NOP, A1
+    MOVE.B #14, D0
+    TRAP #15
+    RTS 
+PRINT_OR:
+    LEA P_OR, A1
+    MOVE.B #14, D0
+    TRAP #15
+    RTS 
+PRINT_ORI:
+    LEA P_ORI, A1
+    MOVE.B #14, D0
+    TRAP #15
+    RTS 
+PRINT_ROL:
+    LEA P_ROL, A1
+    MOVE.B #14, D0
+    TRAP #15
+    RTS 
+PRINT_ROR:
+    LEA P_ROR, A1
     MOVE.B #14, D0
     TRAP #15
     RTS 
@@ -953,16 +1060,16 @@ P_SUBQ  DC.B 'SUBQ',0
 P_MULS  DC.B 'MULS',0
 P_DIVS  DC.B 'DIVS',0
 P_LEA   DC.B 'LEA',0          * ------------ DONE ------------ *
-P_OR    DC.B 'OR',0
-P_ORI   DC.B 'ORI', 0
+P_OR    DC.B 'OR',0           * --------- IN PROGRESS -------- *
+P_ORI   DC.B 'ORI', 0         * --------- IN PROGRESS -------- *
+P_ROL   DC.B 'ROL', 0         * --------- IN PROGRESS -------- *
+P_ROR   DC.B 'ROR', 0         * --------- IN PROGRESS -------- *
 P_NEG   DC.B 'NEG', 0         * --------- IN PROGRESS -------- *
 P_EOR   DC.B 'EOR', 0
 P_LSR   DC.B 'LSR',0
 P_LSL   DC.B 'LSL', 0
 P_ASR   DC.B 'ASR', 0
 P_ASL   DC.B 'ASL',0 
-P_ROL   DC.B 'ROL', 0
-P_ROR   DC.B 'ROR', 0
 P_BCLR  DC.B 'BCLR',0
 P_CMP   DC.B 'CMP', 0
 P_CMPI  DC.B 'CMPI', 0

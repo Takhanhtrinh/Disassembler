@@ -1,6 +1,6 @@
 00001000 Starting Address
 Assembler used: EASy68K Editor/Assembler v5.16.01
-Created On: 11/24/2018 8:31:51 PM
+Created On: 11/25/2018 1:48:07 PM
 
 00000000                             1  *-----------------------------------------------------------
 00000000                             2  * Title      : 
@@ -106,12 +106,12 @@ Created On: 11/24/2018 8:31:51 PM
 00001000                           102      * ADDQ.L #$2,SP
 00001000  2F3C 00010000            103      MOVE.L #START_ADDRESS, -(SP)
 00001006  2F3C 00007006            104      MOVE.L #OPCODE_ADDRESS, -(SP)
-0000100C  4EB9 0000158A            105      JSR FETCH_OPCODES
+0000100C  4EB9 000015A4            105      JSR FETCH_OPCODES
 00001012  508F                     106      ADDQ.L #8, SP
 00001014                           107  
 00001014  207C 00007006            108      MOVE.L #OPCODE_ADDRESS, A0
 0000101A  3F10                     109      MOVE.W (A0), -(SP)
-0000101C  4EB9 0000159E            110      JSR JUMP_TABLE
+0000101C  4EB9 000015B8            110      JSR JUMP_TABLE
 00001022  548F                     111      ADDQ.L #$2, SP
 00001024                           112      * MOVE.W #$50, -(SP)
 00001024                           113      * MOVE.W #$02, -(SP) 
@@ -124,873 +124,980 @@ Created On: 11/24/2018 8:31:51 PM
 00001028  4E4F                     120      TRAP #15
 0000102A  103C 000E                121      MOVE.B #14,D0
 0000102E  4E4F                     122      TRAP #15
-00001030                           123  * get user input 
-00001030                           124  GET_INPUT:
-00001030  43F9 00001844            125      LEA PROMT_INPUT_START, A1
+00001030                           123  * get user starting address input 
+00001030                           124  GET_START_INPUT:
+00001030  43F9 00001892            125      LEA PROMT_INPUT_START, A1
 00001036  103C 000D                126      MOVE.B #13, D0
 0000103A  4E4F                     127      TRAP #15
-0000103C  227C 00002000            128      MOVEA.L #$2000,A1
-00001042  103C 0002                129      MOVE.B #2, D0
-00001046  4E4F                     130      TRAP #15
-00001048                           131  END_GET_INPUT:
-00001048  4E75                     132      RTS   
-0000104A                           133  
-0000104A                           134  *--------------------------------------------------------------------
-0000104A                           135  * PRINT_TAB 
-0000104A                           136  PRINT_TAB: 
-0000104A  227C 00007010            137      MOVE.L #OUTPUT_ADDRESS, A1
-00001050  22FC 20202020            138      MOVE.L #'    ', (A1)+
-00001056  12FC 0000                139      MOVE.B #0, (A1)+
-0000105A  227C 00007010            140      MOVE.L #OUTPUT_ADDRESS, A1
-00001060                           141  END_PRINT_TAB:
-00001060  103C 000E                142      MOVE.B #14, D0
-00001064  4E4F                     143      TRAP #15
-00001066  4E75                     144      RTS
-00001068                           145  *--------------------------------------------------------------------
-00001068                           146  * PRINT_COMMA
-00001068                           147  PRINT_COMMA:
-00001068  227C 00007010            148      MOVE.L #OUTPUT_ADDRESS, A1
-0000106E  32FC 2C20                149      MOVE.W #', ', (A1)+
-00001072  12BC 0000                150      MOVE.B #0, (A1)
-00001076  5589                     151      SUBQ.L #2, A1
-00001078                           152  END_PRINT_COMMA:
-00001078  103C 000E                153      MOVE.B #14, D0
-0000107C  4E4F                     154      TRAP #15
-0000107E  4E75                     155      RTS
-00001080                           156  *--------------------------------------------------------------------
-00001080                           157  * PRINT_DOLLAR_SIGN
-00001080                           158  PRINT_DOLLAR_SIGN:
-00001080  227C 00007010            159      MOVE.L #OUTPUT_ADDRESS, A1
-00001086  12BC 0024                160      MOVE.B #'$', (A1)
-0000108A  137C 0000 0001           161      MOVE.B #0, 1(A1) 
-00001090                           162  END_PRINT_DOLLAR_SIGN:
-00001090  103C 000E                163      MOVE.B #14, D0
-00001094  4E4F                     164      TRAP #15
-00001096  4E75                     165      RTS
-00001098                           166  *--------------------------------------------------------------------
-00001098                           167  * PRINT_HASH_SIGN
-00001098                           168  PRINT_HASH_SIGN:
-00001098  227C 00007010            169      MOVE.L #OUTPUT_ADDRESS, A1
-0000109E  12BC 0023                170      MOVE.B #'#', (A1)
-000010A2  137C 0000 0001           171      MOVE.B #0, 1(A1) 
-000010A8                           172  END_PRINT_HASH_SIGN:
-000010A8  103C 000E                173      MOVE.B #14, D0
-000010AC  4E4F                     174      TRAP #15
-000010AE  4E75                     175      RTS
-000010B0                           176  
-000010B0                           177  *--------------------------------------------------------------------
-000010B0                           178  * PRINT A NEW LINE 
-000010B0                           179  PRINT_NEW_LINE: 
-000010B0  227C 00007010            180      MOVE.L #OUTPUT_ADDRESS, A1
-000010B6  12FC 000D                181      MOVE.B #CR, (A1)+ 
-000010BA  12FC 000A                182      MOVE.B #LF, (A1)+
-000010BE  12FC 0000                183      MOVE.B #0, (A1)+
-000010C2                           184  END_PRINT_NEW_LINE:
-000010C2  227C 00007010            185      MOVE.L #OUTPUT_ADDRESS, A1
-000010C8  103C 000E                186      MOVE.B #14, D0
-000010CC  4E4F                     187      TRAP #15 
-000010CE  4E75                     188      RTS
-000010D0                           189  
-000010D0                           190  * PRINT DATA TYPE FOR EXAMPLE .W AND .L ONLY IF YOU WANT TO PRINT .B SEE PRINT_DATA
-000010D0                           191  * PARAMETERS:
-000010D0                           192  *   1- (4(SP)): DATA TYPE (1 BYTE)
-000010D0                           193  *   A1 USE FOR PRINT
-000010D0                           194  *   D0 USE FOR TRAP AND HOLD PARAMETER
-000010D0                           195  PRINT_DATA_1BIT:
-000010D0  102F 0004                196      MOVE.B 4(SP), D0
-000010D4  0C40 0000                197      CMPI #$0, D0 
-000010D8  6700 001E                198      BEQ PRINT_D_WORD
-000010DC  0C40 0001                199      CMPI #$1, D0 
-000010E0  6700 0002                200      BEQ PRINT_D_LONG 
-000010E4                           201  PRINT_D_LONG: 
-000010E4  227C 00007010            202      MOVE.L #OUTPUT_ADDRESS, A1 
-000010EA  32BC 2E4C                203      MOVE.W #'.L', (A1) 
-000010EE  137C 0000 0002           204      MOVE.B #$0, 2(A1)
-000010F4  6000 0016                205      BRA DONE_PRINT_D_1BIT
-000010F8                           206  PRINT_D_WORD:
-000010F8  227C 00007010            207      MOVE.L #OUTPUT_ADDRESS, A1 
-000010FE  32BC 2E57                208      MOVE.W #'.W', (A1)
-00001102  137C 0000 0002           209      MOVE.B #$0, 2(A1)
-00001108  6000 0002                210      BRA DONE_PRINT_D_1BIT
-0000110C                           211  DONE_PRINT_D_1BIT:
-0000110C  103C 000E                212      MOVE.B #14, D0 
-00001110  4E4F                     213      TRAP #15 
-00001112  4E75                     214      RTS 
-00001114                           215  
-00001114                           216  *--------------------------------------------------------------------
-00001114                           217  * PRINT DATA TYPE FOR EXAMPLE: .B .W .L
-00001114                           218  * PARAMETERS: 
-00001114                           219   *   1- (4(sp)): WHAT DATA TYPE (1 BYTE)
-00001114                           220  *       00 - byte
-00001114                           221  *       01 - word
-00001114                           222  *       10 - long
-00001114                           223  * NOTE:
-00001114                           224  *   A1 USE FOR PRINT
-00001114                           225  *   d1 USES TO STORE DATA TYPE OF PARAMETER ABOVE
-00001114                           226  PRINT_DATA:
-00001114  227C 00007010            227      MOVE.L #OUTPUT_ADDRESS, A1
-0000111A  122F 0004                228      MOVE.B 4(SP), D1
-0000111E  0C01 0000                229      CMPI.B #$00, D1
-00001122  6700 001A                230      BEQ PRINT_BYTE
-00001126  0C01 0001                231      CMPI.B #$01, D1
-0000112A  6700 001E                232      BEQ PRINT_WORD
-0000112E  0C01 0002                233      CMPI.B #$02, D1 
-00001132  6700 0022                234      BEQ PRINT_LONG
-00001136                           235  END_PRINT_DATA:
-00001136  103C 000E                236      MOVE.B #14, D0
-0000113A  4E4F                     237      TRAP #15
-0000113C  4E75                     238      RTS 
-0000113E                           239  
-0000113E                           240  PRINT_BYTE: 
-0000113E  32BC 2E42                241      MOVE.W #'.B', (A1)
-00001142  137C 0000 0002           242      MOVE.B #0, 2(A1)
-00001148  60EC                     243      BRA END_PRINT_DATA
-0000114A                           244  PRINT_WORD: 
-0000114A  32BC 2E57                245      MOVE.W #'.W', (A1)
-0000114E  137C 0000 0002           246      MOVE.B #0, 2(A1)
-00001154  60E0                     247      BRA END_PRINT_DATA
-00001156                           248  PRINT_LONG: 
-00001156  32BC 2E4C                249      MOVE.W #'.L', (A1)
-0000115A  137C 0000 0002           250      MOVE.B #0, 2(A1)
-00001160  60D4                     251      BRA END_PRINT_DATA
-00001162                           252  
-00001162                           253  *--------------------------------------------------------------------
-00001162                           254  * PRINT_REGISTER
-00001162                           255  * PARAMETERS: what register 1 byte 4 msb indicate dn(0) or an(1), 4 lsb for number of that register
-00001162                           256  * 1 - (6(sp)) 3 bits msb for mode, 3 bits lsb for which register
-00001162                           257  * 2 - (4(sp)) byte value for how many byte for immediate value
-00001162                           258  *      0 for a byte value
-00001162                           259  *      1 for word value
-00001162                           260  *      2 for long value 
-00001162                           261  * NOTE: 
-00001162                           262  *   D1 FOR STORE THE PARAMETER
-00001162                           263  *   D2 FOR STORE HOW MANY BYTE FOR IMMEDIATE VALUE, AND ABSOLUTE VALUE
-00001162                           264  PRINT_REGISTER:
-00001162  322F 0006                265     MOVE.W 6(SP), D1 
-00001166                           266     ; IMMEDIATE ADDRESS
-00001166  3401                     267     MOVE.W D1,D2
-00001168  0C01 003C                268     CMPI.B #%00111100, D1
-0000116C  6700 00A2                269     BEQ PRINT_IMMEDIATE
-00001170  0C01 0038                270     CMPI.B #%00111000, D1
-00001174  6700 0160                271     BEQ PRINT_AB_SHORT
-00001178  0C01 0039                272     CMPI.B #%00111001, D1
-0000117C  6700 01BA                273     BEQ PRINT_AB_LONG 
-00001180                           274  
-00001180  1401                     275     MOVE.B D1,D2
-00001182  C43C 0038                276     AND.B #%00111000, D2
-00001186  0C42 0010                277     CMPI #%00010000, D2
-0000118A  6700 020E                278     BEQ PRINT_OPEN
-0000118E                           279  
-0000118E  1401                     280     MOVE.B D1,D2
-00001190  C43C 0038                281     AND.B #%00111000, D2
-00001194  0C42 0018                282     CMPI #%00011000, D2
-00001198  6700 0200                283     BEQ PRINT_OPEN
-0000119C                           284  
-0000119C  1401                     285     MOVE.B D1,D2
-0000119E  C43C 0038                286     AND.B #%00111000, D2
-000011A2  0C42 0020                287     CMPI #%00100000, D2
-000011A6  6700 020C                288     BEQ PRINT_MINUS_OPEN
-000011AA                           289  
-000011AA                           290  
-000011AA                           291  CONTINUE_PRINT_REGISTER:
-000011AA  1401                     292     MOVE.B D1,D2
-000011AC  C43C 0038                293     AND.B #%00111000, D2
-000011B0  0C42 0000                294     CMPI #%00000000, D2
-000011B4  6700 024C                295     BEQ PRINT_D
-000011B8                           296  
-000011B8  1401                     297     MOVE.B D1,D2
-000011BA  C43C 0038                298     AND.B #%00111000, D2
-000011BE  0C42 0008                299     CMPI #%00001000, D2
-000011C2  6700 0258                300     BEQ PRINT_A 
-000011C6                           301  
-000011C6                           302  CONTINUE_PRINT_RE_NUMBER:
-000011C6  227C 00007010            303      MOVE.L #OUTPUT_ADDRESS, A1
-000011CC  1401                     304      MOVE.B D1,D2
-000011CE  C43C 0007                305      AND.B #%00000111, D2
-000011D2  0602 0030                306      ADD.B #48, D2 
-000011D6  1282                     307      MOVE.B D2, (A1) 
-000011D8  137C 0000 0001           308      MOVE.B #$0, 1(A1)
-000011DE  103C 000E                309      MOVE.B #14, D0
-000011E2  4E4F                     310      TRAP #15
-000011E4                           311  DONE_PRINT_NUMBER:
-000011E4  1401                     312     MOVE.B D1,D2
-000011E6  C43C 0038                313     AND.B #%00111000, D2
-000011EA  0C42 0010                314     CMPI #%00010000, D2
-000011EE  6700 01DE                315     BEQ PRINT_CLOSE
-000011F2                           316  
-000011F2  1401                     317     MOVE.B D1,D2
-000011F4  C43C 0038                318     AND.B #%00111000, D2
-000011F8  0C42 000C                319     CMPI #%0001100, D2
-000011FC  6700 01EA                320     BEQ PRINT_CLOSE_PLUS
-00001200                           321  
-00001200  1401                     322     MOVE.B D1,D2
-00001202  C43C 0038                323     AND.B #%00111000, D2
-00001206  0C42 0020                324     CMPI #%00100000, D2
-0000120A  6700 01C2                325     BEQ PRINT_CLOSE
-0000120E                           326  
-0000120E                           327  END_PRINT_REGISTER:
-0000120E  4E75                     328      RTS
-00001210                           329  
-00001210                           330  PRINT_IMMEDIATE:
-00001210  227C 00007010            331      MOVE.L #OUTPUT_ADDRESS, A1
-00001216  12BC 0023                332      MOVE.B #'#', (A1)
-0000121A  137C 0000 0001           333      MOVE.B #$0, 1(A1)
-00001220  103C 000E                334      MOVE.B #14, D0
-00001224  4E4F                     335      TRAP #15
-00001226  4EB8 1080                336      JSR PRINT_DOLLAR_SIGN
-0000122A  3038 7008                337      MOVE.W (OFFSET_OPC_ADDRES),D0
-0000122E  342F 0004                338      MOVE.W 4(SP), D2 ; HOW MANY BYTE
-00001232  0C42 0000                339      CMPI #$00, D2
-00001236  6700 0014                340      BEQ PRINT_IMMEDIATE_BYTE ; THIS CASE NEVER HAPPEN BECAUSE IMMEDATE VALUE MINIMUM IS 16 bits
-0000123A  0C42 0001                341      CMPI #$01, D2
-0000123E  6700 0036                342      BEQ PRINT_IMMEDIATE_WORD
-00001242  0C42 0002                343      CMPI #$02, D2
-00001246  6700 005A                344      BEQ PRINT_IMMEDIATE_LONG
-0000124A  60C2                     345      BRA END_PRINT_REGISTER
-0000124C                           346  
-0000124C                           347  PRINT_IMMEDIATE_BYTE:
-0000124C  247C 00010000            348      MOVE.L #START_ADDRESS, A2
-00001252  1432 0000                349      MOVE.B (A2, D0), D2 ; 
-00001256  48E7 E0C0                350      MOVEM.L D0-D2/A0-A1, -(SP)
-0000125A  2F02                     351      MOVE.L D2, -(SP)
-0000125C  2F3C 00000002            352      MOVE.L #HEX_TO_ASCII_BYTE, -(SP) 
-00001262  4EB9 00001436            353      JSR PRINT_HEX
-00001268  508F                     354       ADDQ.L #$08, SP
-0000126A  4CDF 0307                355      MOVEM.L (SP)+, D0-D2/A0-A1
-0000126E  5240                     356      ADDQ.W #$1, D0
-00001270  31C0 7008                357      MOVE.W D0, (OFFSET_OPC_ADDRES)
-00001274  6098                     358      BRA END_PRINT_REGISTER
-00001276                           359  PRINT_IMMEDIATE_WORD:
-00001276  247C 00010000            360      MOVE.L #START_ADDRESS, A2
-0000127C  3432 0000                361      MOVE.W (A2, D0), D2 ; 
-00001280  48E7 E0C0                362      MOVEM.L D0-D2/A0-A1, -(SP)
-00001284  2F02                     363      MOVE.L D2, -(SP)
-00001286  2F3C 00000004            364      MOVE.L #HEX_TO_ASCII_WORD, -(SP) 
-0000128C  4EB9 00001436            365      JSR PRINT_HEX
-00001292  508F                     366      ADDQ.L #$08, SP
-00001294  4CDF 0307                367      MOVEM.L (SP)+, D0-D2/A0-A1
-00001298  5440                     368      ADDQ.W #$2, D0
-0000129A  31C0 7008                369      MOVE.W D0, (OFFSET_OPC_ADDRES)
-0000129E  6000 FF6E                370      BRA END_PRINT_REGISTER
-000012A2                           371  PRINT_IMMEDIATE_LONG:
-000012A2  3038 7008                372      MOVE.W (OFFSET_OPC_ADDRES),D0
-000012A6  247C 00010000            373      MOVE.L #START_ADDRESS, A2
-000012AC  2432 0000                374      MOVE.L (A2, D0), D2 ; 
-000012B0  48E7 E0C0                375      MOVEM.L D0-D2/A0-A1, -(SP)
-000012B4  2F02                     376      MOVE.L D2, -(SP)
-000012B6                           377      ; offset to get immediate value from opcode
-000012B6  3038 7008                378      MOVE.W (OFFSET_OPC_ADDRES),D0
-000012BA  2F3C 00000008            379      MOVE.L #HEX_TO_ASCII_LONG, -(SP) 
-000012C0  4EB9 00001436            380      JSR PRINT_HEX
-000012C6  508F                     381      ADDQ.L #$08, SP
-000012C8  4CDF 0307                382      MOVEM.L (SP)+, D0-D2/A0-A1
-000012CC  5840                     383      ADDQ.W #$4, D0
-000012CE  31C0 7008                384      MOVE.W D0, (OFFSET_OPC_ADDRES)
-000012D2  6000 FF3A                385      BRA END_PRINT_REGISTER
-000012D6                           386  PRINT_AB_SHORT:
-000012D6  227C 00007010            387      MOVE.L #OUTPUT_ADDRESS, A1
-000012DC  32BC 2824                388      MOVE.W #'($', (A1)
-000012E0  137C 0000 0002           389      MOVE.B #0, 2(A1)
-000012E6  103C 000E                390      MOVE.B #14, D0
-000012EA  4E4F                     391      TRAP #15
-000012EC                           392      ; offset to get immediate value from opcode
-000012EC  247C 00010000            393      MOVE.L #START_ADDRESS, A2
-000012F2  3038 7008                394      MOVE.W (OFFSET_OPC_ADDRES),D0
-000012F6  3432 0000                395      MOVE.W (A2, D0), D2 ; 
-000012FA  48E7 E0C0                396      MOVEM.L D0-D2/A0-A1, -(SP)
-000012FE  2F02                     397      MOVE.L D2, -(SP)
-00001300  2F3C 00000004            398      MOVE.L #HEX_TO_ASCII_WORD, -(SP) 
-00001306  4EB9 00001436            399      JSR PRINT_HEX
-0000130C  508F                     400      ADDQ.L #$08, SP
-0000130E  4CDF 0307                401      MOVEM.L (SP)+, D0-D2/A0-A1
-00001312  5440                     402      ADDQ.W #$2, D0
-00001314  31C0 7008                403      MOVE.W D0, (OFFSET_OPC_ADDRES)
-00001318                           404      ; print close parathesis with W
-00001318  227C 00007010            405      MOVE.L #OUTPUT_ADDRESS, A1
-0000131E  32BC 292E                406      MOVE.W #').', (A1)
-00001322  137C 0057 0002           407      MOVE.B #'W',2(A1)
-00001328  137C 0000 0003           408      MOVE.B #0, 3(A1)
-0000132E  103C 000E                409      MOVE.B #14, D0
-00001332  4E4F                     410      TRAP #15
-00001334  6000 FED8                411      BRA END_PRINT_REGISTER
-00001338                           412  PRINT_AB_LONG:
-00001338                           413      ;print open parathesis
-00001338  227C 00007010            414      MOVE.L #OUTPUT_ADDRESS, A1
-0000133E  32BC 2824                415      MOVE.W #'($', (A1)
-00001342  137C 0000 0002           416      MOVE.B #0, 2(A1)
-00001348  103C 000E                417      MOVE.B #14, D0
-0000134C  4E4F                     418      TRAP #15
-0000134E                           419      ; print value in long
-0000134E  247C 00010000            420      MOVE.L #START_ADDRESS, A2
-00001354                           421      ; offset to get value from opcode
-00001354  3038 7008                422      MOVE.W (OFFSET_OPC_ADDRES),D0
-00001358  2432 0000                423      MOVE.L (A2, D0), D2 ; 
-0000135C  48E7 E0C0                424      MOVEM.L D0-D2/A0-A1, -(SP)
-00001360  2F02                     425      MOVE.L D2, -(SP)
-00001362  2F3C 00000008            426      MOVE.L #HEX_TO_ASCII_LONG, -(SP) 
-00001368  4EB9 00001436            427      JSR PRINT_HEX
-0000136E  508F                     428      ADDQ.L #$08, SP
-00001370  4CDF 0307                429      MOVEM.L (SP)+, D0-D2/A0-A1
-00001374  5840                     430      ADDQ.W #$4, D0
-00001376  31C0 7008                431      MOVE.W D0, (OFFSET_OPC_ADDRES) ; align offset 
-0000137A                           432      ; print close parathesis with W
-0000137A  227C 00007010            433      MOVE.L #OUTPUT_ADDRESS, A1
-00001380  32BC 292E                434      MOVE.W #').', (A1)
-00001384  137C 004C 0002           435      MOVE.B #'L',2(A1)
-0000138A  137C 0000 0003           436      MOVE.B #0, 3(A1)
-00001390  103C 000E                437      MOVE.B #14, D0
-00001394  4E4F                     438      TRAP #15
-00001396  6000 FE76                439      BRA END_PRINT_REGISTER
-0000139A                           440  
-0000139A                           441  PRINT_OPEN:
-0000139A  227C 00007010            442      MOVE.L #OUTPUT_ADDRESS, A1
-000013A0  12BC 0028                443      MOVE.B #'(', (A1)
-000013A4  137C 0000 0001           444      MOVE.B #$0, 1(A1)
-000013AA  103C 000E                445      MOVE.B #14, D0
-000013AE  4E4F                     446      TRAP #15
-000013B0  6000 006A                447      BRA PRINT_A
-000013B4                           448  PRINT_MINUS_OPEN: 
-000013B4  227C 00007010            449      MOVE.L #OUTPUT_ADDRESS, A1
-000013BA  32BC 2D28                450      MOVE.W #'-(', (A1)
-000013BE  137C 0000 0002           451      MOVE.B #$0, 2(A1)
-000013C4  103C 000E                452      MOVE.B #14, D0
-000013C8  4E4F                     453      TRAP #15
-000013CA  6000 0050                454      BRA PRINT_A
-000013CE                           455  
-000013CE                           456  PRINT_CLOSE:
-000013CE  227C 00007010            457      MOVE.L #OUTPUT_ADDRESS, A1
-000013D4  12BC 0029                458      MOVE.B #')', (A1)
-000013D8  137C 0000 0001           459      MOVE.B #$0, 1(A1)
-000013DE  103C 000E                460      MOVE.B #14, D0
-000013E2  4E4F                     461      TRAP #15
-000013E4  6000 FE28                462      BRA END_PRINT_REGISTER
-000013E8                           463  PRINT_CLOSE_PLUS:
-000013E8  227C 00007010            464      MOVE.L #OUTPUT_ADDRESS, A1
-000013EE  32BC 292B                465      MOVE.W #')+', (A1)
-000013F2  137C 0000 0002           466      MOVE.B #$0, 2(A1)
-000013F8  103C 000E                467      MOVE.B #14, D0
-000013FC  4E4F                     468      TRAP #15
-000013FE  6000 FE0E                469      BRA END_PRINT_REGISTER
-00001402                           470  PRINT_D:
-00001402  227C 00007010            471      MOVE.L #OUTPUT_ADDRESS, A1 
-00001408  12BC 0044                472      MOVE.B #'D', (A1)
-0000140C  137C 0000 0001           473      MOVE.B #$0, 1(A1)
-00001412  103C 000E                474      MOVE.B #14, D0
-00001416  4E4F                     475      TRAP #15
-00001418  6000 FDAC                476      BRA CONTINUE_PRINT_RE_NUMBER
-0000141C                           477  PRINT_A: 
-0000141C  227C 00007010            478      MOVE.L #OUTPUT_ADDRESS, A1 
-00001422  12BC 0041                479      MOVE.B #'A', (A1)
-00001426  137C 0000 0001           480      MOVE.B #$0, 1(A1)
-0000142C  103C 000E                481      MOVE.B #14, D0
-00001430  4E4F                     482      TRAP #15
-00001432  6000 FD92                483      BRA CONTINUE_PRINT_RE_NUMBER
-00001436                           484  
-00001436                           485  *-----------------------------------------------------------
-00001436                           486  * PRINT HEX 
-00001436                           487  * PARAMETERS:
-00001436                           488  *   1- (8(SP)): VALUE IN HEX
-00001436                           489  *   2- (4(SP)): HOW MANY BYTES
-00001436                           490  * RETURN NULL
-00001436                           491  *-----------------------------------------------------------
-00001436                           492  PRINT_HEX:
-00001436  6000 0016                493      BRA HEX_TO_ASCII
-0000143A                           494  GET_ASCII_FROM_HEX:
-0000143A  227C 00007010            495      MOVE.L #OUTPUT_ADDRESS, A1
-00001440  103C 000E                496      MOVE.B #14, D0
-00001444  4E4F                     497      TRAP #15
-00001446  227C 00007010            498      MOVE.L #OUTPUT_ADDRESS, A1
-0000144C                           499  END_PRINT_HEX:
-0000144C  4E75                     500      RTS
-0000144E                           501  *-----------------------------------------------------------
-0000144E                           502  * CONVERT HEX TO ASCII 
-0000144E                           503  * PARAMATERS:
-0000144E                           504  *   1- (8(SP)): VALUE IN HEX
-0000144E                           505  *   2- (4(SP)): HOW MANY BYTES
-0000144E                           506  * RETURN:
-0000144E                           507  *   8 CHARS IN ASCII, STORE IN RETURN ADDRESS (a1)
-0000144E                           508  * D0 STORES HEX VALUE
-0000144E                           509  * D4 HOW MAY BYTES TO DISPLAY (2-byte 4-hex 8-long)
-0000144E                           510  * D1 COUNT LOOP
-0000144E                           511  * D2 CONVERT TO ASCII
-0000144E                           512  * D3 USE TO CALCULATE SHIFT
-0000144E                           513  HEX_TO_ASCII: 
-0000144E  202F 0008                514      MOVE.L 8(SP), D0 
-00001452  282F 0004                515      MOVE.L 4(SP), D4
-00001456  0C44 0004                516      CMPI #HEX_TO_ASCII_WORD, D4 
-0000145A  6700 004E                517      BEQ HEX_TO_ASCII_SWAP
-0000145E  0C44 0002                518      CMPI #HEX_TO_ASCII_BYTE, D4
-00001462  6700 EB9E                519      BEQ HEX_TO_ASCII_BYTE
-00001466                           520  HEX2ASCII_DONE_CONVERT:
-00001466  4201                     521      CLR.B D1
-00001468  227C 00007010            522      MOVE.L #OUTPUT_ADDRESS, A1
-0000146E  =0000000F                523  HEX_MASKING EQU $0000000F
-0000146E  =00000002                524  HEX_TO_ASCII_BYTE EQU $02
-0000146E  =00000004                525  HEX_TO_ASCII_WORD EQU $04
-0000146E  =00000008                526  HEX_TO_ASCII_LONG EQU $08
-0000146E                           527  
-0000146E                           528  HEX_TO_ASCII_LOOP:
-0000146E  B204                     529      CMP.B D4, D1
-00001470  6700 0032                530      BEQ END_HEX_TO_ASCII ; branch if d1 > d4
-00001474                           531  
-00001474  E998                     532      ROL.L #4, D0 ; shift left 4 bits to get a hex value
-00001476  2600                     533      MOVE.L D0,D3 ; copy the value to mask
-00001478  C6BC 0000000F            534      AND.L #HEX_MASKING, D3  ; mask
-0000147E                           535  
-0000147E  0C03 000A                536      CMPI.B #10, D3 ; compare masked value with 10 if less than than convert to ascii number
-00001482  6D00 000C                537      BLT HEX_TO_ASCII_NUMBER ; let convert to number ascii
-00001486                           538  
-00001486  0C03 0048                539      CMPI.B #72, D3 ; compare masked value with F letter in ascii
-0000148A  6D00 000E                540      BLT HEX_TO_ASCII_LETTER
-0000148E                           541  
-0000148E  60DE                     542      BRA HEX_TO_ASCII_LOOP
-00001490                           543  HEX_TO_ASCII_NUMBER:
-00001490  0603 0030                544      ADD.B #48, D3  ; convert number to letter
-00001494  12C3                     545      MOVE.B D3, (A1)+ ; push to return memory
-00001496  5201                     546      ADDQ.B #$1, D1 ; add for loop count
-00001498  60D4                     547      BRA HEX_TO_ASCII_LOOP ; loop back
-0000149A                           548  HEX_TO_ASCII_LETTER:
-0000149A  0603 0037                549      ADD.B #55, D3 ; convert A-F in ascii
-0000149E  12C3                     550      MOVE.B D3, (A1)+ ; push to return memory
-000014A0  5201                     551      ADDQ.B #$1, D1 ; add to for loop count
-000014A2  60CA                     552      BRA HEX_TO_ASCII_LOOP ;loop back
-000014A4                           553  END_HEX_TO_ASCII:
-000014A4  12FC 0000                554      MOVE.B #0, (A1)+ ; add null terminated value
-000014A8  6090                     555      BRA GET_ASCII_FROM_HEX
-000014AA                           556  HEX_TO_ASCII_SWAP:
-000014AA  4840                     557      SWAP D0
-000014AC  60B8                     558      BRA HEX2ASCII_DONE_CONVERT
-000014AE                           559     
-000014AE                           560  HEX_TO_ASCII_ROR:
-000014AE  E098                     561      ROR.L #$08, D0
-000014B0  60B4                     562      BRA HEX2ASCII_DONE_CONVERT
-000014B2                           563  
-000014B2                           564  
-000014B2                           565  *-----------------------------------------------------------
-000014B2                           566  * CHECK IF THE VALUE IN HEX IS ODD 
-000014B2                           567  * PARAMETER;* 1(4(SP))- HEX VALUE (LONG)
-000014B2                           568  * RETURN:
-000014B2                           569  *   0: IF IT IS EVEN
-000014B2                           570  *   1: IF IT IS ODD
-000014B2                           571  * NOTE:
-000014B2                           572  *   A0 IS FOR RETURN ADDRESS
-000014B2                           573  *   D0 IS FOR HEX VALUE
-000014B2                           574  CHECK_VALUE_IS_ODD:
-000014B2  =00000000                575  VALUE_IS_EVEN EQU $0
-000014B2  =00000001                576  VALUE_IS_ODD EQU $1
-000014B2  41F9 00009000            577      LEA RETURN_ADDRESS, A0
-000014B8  202F 0004                578      MOVE.L 4(SP), D0
-000014BC  C0BC 0000FFFF            579      AND.L #$0000FFFF, D0
-000014C2  80FC 0002                580      DIVU.W #2, D0
-000014C6  4840                     581      SWAP D0      
-000014C8  0C40 0000                582      CMPI.W #0, D0
-000014CC  6700 000C                583      BEQ CHECK_VALUE_IS_ODD_FAILED
-000014D0  30BC 0001                584      MOVE.W #VALUE_IS_ODD, (A0)
-000014D4  6000 0002                585      BRA END_CHECK_VALUE_IS_ODD
-000014D8                           586  END_CHECK_VALUE_IS_ODD:   
-000014D8  4E75                     587      RTS
-000014DA                           588  
-000014DA                           589  CHECK_VALUE_IS_ODD_FAILED:
-000014DA  30BC 0000                590      MOVE.W #VALUE_IS_EVEN, (A0)
-000014DE  60F8                     591      BRA END_CHECK_VALUE_IS_ODD
-000014E0                           592  *-----------------------------------------------------------
-000014E0                           593  * CONVERT ASCII TO HEX
-000014E0                           594  * PARAMETERS:
-000014E0                           595  *   1. LOCATION OF THE ASCII
-000014E0                           596  *   2. LENGTH OF THE ASCII
-000014E0                           597  *   3. MAXIMUM LENGTH (hex/ byte / long)
-000014E0                           598  * RETURN:
-000014E0                           599  * [0=FAILED](2BYTE) (BECAUSE LENGTH > MAXIMUM_LENGTH)
-000014E0                           600  * [1=OK](2BYTE)[VALUE IN HEX(4BYTES)]
-000014E0                           601  * [2= FAILED](2BYTE)(BEACUSE IT IS NOT A NUMBER IN HEX)
-000014E0                           602  * NOTE:
-000014E0                           603  *    D0 FOR LENGTH OF ASCII
-000014E0                           604  *    D1 FOR LOOPING
-000014E0                           605  ; CURRENT INDEX
-000014E0                           606  *    D2 FOR THE VALUE IN ASCII OF THE DATA
-000014E0                           607  *    D3 FOR CONVERT FINAL RESULT
-000014E0                           608  *    D4 FOR CALCULATE NUMBER OF BIT TO SHIFT
-000014E0                           609  *    A0 LOCATION OF THE DATA   
-000014E0                           610  *    A2 CURRENT POINTER AT CONVERT_HEX_RETURN_ADDRESS
-000014E0                           611  ASCII_TO_HEX:
-000014E0  =00000001                612  ASCII_TO_HEX_RETURN_OK EQU $1
-000014E0  45F9 00009000            613      LEA RETURN_ADDRESS, A2
-000014E6  4252                     614      CLR.W (A2)
-000014E8  42AA 0002                615      CLR.L 2(A2)
-000014EC  206F 000C                616      MOVE.L 12(SP),A0
-000014F0                           617   ; LOCATION OF THE DATA
-000014F0  202F 0008                618      MOVE.L 8(SP), D0  ; LENGTH OF ASCII
-000014F4  222F 0004                619      MOVE.L 4(SP), D1  ; MAX LENGTH
-000014F8  B280                     620      CMP.L D0,D1 ; CHECK IF THE LENGTH IS GREATER THAN MAX LENGTH
-000014FA  6D00 0076                621      BLT ASCII_TO_HEX_FAILED_0
-000014FE  4281                     622      CLR.L D1 ; FOR LOOPING
-00001500                           623  ASCII_TO_HEX_LOOP:
-00001500  B081                     624     CMP.L D1, D0 ;COMPARE FOR LOOPING
-00001502  6700 0068                625     BEQ ASCII_TO_HEX_END_LOOP
-00001506                           626     ; D2 USE FOR STORE DATA 
-00001506  1418                     627      MOVE.B (A0)+, D2
-00001508  0C02 002F                628      CMPI.B #47, D2
-0000150C                           629  ASCII_TO_HEX_CHECK_GT_0
-0000150C  6E00 0006                630      BGT ASCII_TO_HEX_CHECK_LT_9 ; GREATER THAN LET COMPARE WITH LESS THAN 9
-00001510  6000 0066                631      BRA ASCII_TO_HEX_FAILED_2 ;ERROR NOT A HEX VALUE
-00001514                           632  ASCII_TO_HEX_CHECK_LT_9:
-00001514  0C02 003A                633      CMPI.B #58, D2 ; CHECK IF IT IS LESS THAN NUMBER '9'
-00001518  6D00 001E                634      BLT ASCII_TO_HEX_CONVERT_NUMBER ; LET CONVERT TO NUMBER
-0000151C                           635      ; IF IT IT IS NOT GREATHER THAN ZERO AND LESS THAN 9 THAN CHECK A-F
-0000151C  6000 0002                636      BRA ASCII_TO_HEX_CHECK_GT_A
-00001520                           637  ASCII_TO_HEX_CHECK_GT_A:
-00001520  0C02 0040                638      CMPI.B #64, D2
-00001524  6E00 0006                639      BGT ASCII_TO_HEX_CHECK_LT_F ; LET CHECK IF IT IS LESS THAN F
-00001528  6000 004E                640      BRA ASCII_TO_HEX_FAILED_2  ; OTHERWISE THE VALUE IS NOT IN HEX
-0000152C                           641  ASCII_TO_HEX_CHECK_LT_F
-0000152C  0C02 0047                642      CMPI.B #71, D2
-00001530  6D00 0020                643      BLT ASCII_TO_HEX_CONVERT_LETTER
-00001534  6000 0042                644      BRA ASCII_TO_HEX_FAILED_2
-00001538                           645  * CONVERT THE NUMBER '0' - '9' IN HEX AND PUT IT IN D4
-00001538                           646  ASCII_TO_HEX_CONVERT_NUMBER:
-00001538  2800                     647       MOVE.L D0,D4 ; MOVE NUMBER OF LENGTH ASCII TO D4
-0000153A  0402 0030                648       SUB.B #48, D2 ; MINUS THE NUMBER FROM ASCII TO GET IN HEX
-0000153E  9881                     649       SUB.L D1,D4 ; TOTAL LENGTH - CURRENT INDEX OF VALUE IN A0
-00001540  5344                     650       SUBQ #1, D4 ; SUB 1 TO FOR SHIFT
-00001542  C8FC 0004                651       MULU #4, D4 ; MULTIPLY NUMBER OF BITS TO SHIFT
-00001546  E9A2                     652       ASL.L D4, D2 ; SHIFT DATA
-00001548  D5AA 0002                653       ADD.L D2, 2(A2) ; ADD THE DATA TO CURRENT VALUE IN A2 
-0000154C  4282                     654       CLR.L D2
-0000154E  5241                     655       ADDQ #1, D1  ; INCRASE LOOP COUNT INDEX
-00001550  60AE                     656       BRA ASCII_TO_HEX_LOOP
-00001552                           657  ASCII_TO_HEX_CONVERT_LETTER:
-00001552  2800                     658      MOVE.L D0, D4
-00001554  0402 0037                659      SUB.B #55, D2
-00001558  9881                     660      SUB.L D1,D4
-0000155A  5344                     661      SUBQ #1, D4
-0000155C  C8FC 0004                662      MULU #4, D4
-00001560  E9A2                     663      ASL.L D4,D2
-00001562  D5AA 0002                664      ADD.L D2, 2(A2)
-00001566  4282                     665      CLR.L D2 
-00001568  5241                     666      ADDQ #1, D1
-0000156A  6094                     667      BRA ASCII_TO_HEX_LOOP
-0000156C                           668  ASCII_TO_HEX_END_LOOP:
-0000156C  34BC 0001                669      MOVE.W #1, (A2)
-00001570  4E75                     670      RTS
-00001572                           671      
-00001572                           672  ASCII_TO_HEX_FAILED_0:
-00001572  34BC 0002                673      MOVE.W #2, (A2)
-00001576  4E75                     674      RTS
-00001578                           675  ASCII_TO_HEX_FAILED_2:
-00001578  34BC 0002                676      MOVE.W #2, (A2)
-0000157C  4E75                     677      RTS 
-0000157E                           678  * THIS METHOD USES TO INCRASE START ADDRESS TO N VALUE 
-0000157E                           679  * PARAMETERS:
-0000157E                           680  *   1 (8(SP)) LONG VALUE: WHERE IS THE START ADDRESS
-0000157E                           681  *   2 (4(SP)) LONG VALUE: HOW MANY OFFSET
-0000157E                           682  * RETURN:
-0000157E                           683  *   NULL
-0000157E                           684  * NOTE:
-0000157E                           685  *   A0 USE TO POINT TO THE ADDRESS
-0000157E                           686  *   d1 USE TO MATH 
-0000157E                           687  INCRASE_POINTER_START_ADDRESS: 
-0000157E  206F 0008                688      MOVE.L 8(SP), A0
-00001582  222F 0004                689      MOVE.L 4(SP), D1
-00001586  D390                     690      ADD.L D1, (A0)
-00001588  4E75                     691      RTS
-0000158A                           692  
-0000158A                           693  * FETCH 16 BIT FROM START_ADDRESS
-0000158A                           694  * PARAMTERS: 
-0000158A                           695  *   1- (8(SP)): WHERE IS OPCODE LOCATION
-0000158A                           696  *   2- (4(SP)): WHERE TO STORE THE RESULT
-0000158A                           697  * RETURN:
-0000158A                           698  *   NULL
-0000158A                           699  * NOTE:
-0000158A                           700  *     A0 USE TO STORE THE OPCODE LOCATION
-0000158A                           701  *     A2 USES TO RETURN THE OPCODE
-0000158A                           702  FETCH_OPCODES:
-0000158A  206F 0008                703      MOVE.L 8(SP), A0 ; LOCATION
-0000158E  246F 0004                704      MOVE.L 4(SP), A2 ; OPCODE WILL BE RETURNED
-00001592  3050                     705      MOVE.W (A0), A0
-00001594  3488                     706      MOVE.W A0,(A2)
-00001596  31FC 0002 7008           707      MOVE.W #$2, (OFFSET_OPC_ADDRES)
-0000159C                           708  END_FETCH_OPCODES:
-0000159C  4E75                     709      RTS
-0000159E                           710  *---------------------------------------------------------DISASSEMBLER START HERE----------------------------------------------------------------------------------------
-0000159E                           711  * jump table uses to jump to decode subroutine
-0000159E                           712  * PARAMATERS:
-0000159E                           713  * 1-(4(Sp)) Word - opcode
-0000159E                           714  * NOTE: 
-0000159E                           715  *   D1 USES TO STORE OPCODE
-0000159E                           716  JUMP_TABLE:
-0000159E  322F 0004                717      MOVE.W 4(SP), D1
-000015A2  4EB9 000015D8            718      JSR RTS
-000015A8  4EB9 000015CE            719      JSR NOP
-000015AE  4EB9 000015E2            720      JSR JSR
-000015B4  4EB9 00001614            721      JSR LEA
-000015BA  4EB9 00001664            722      JSR ADDA
-000015C0  4EB9 00001712            723      JSR BRA
-000015C6  4EB9 000016C8            724      JSR NEG
-000015CC                           725  
-000015CC                           726  END_JUMP_TABLE:
-000015CC  4E75                     727      RTS
-000015CE                           728  
-000015CE                           729  NOP:
-000015CE                           730  * CONSTANT FOR NOP
-000015CE  =00004E71                731  C_NOP EQU $4E71
-000015CE  B27C 4E71                732      CMP.W #C_NOP, D1
-000015D2  6700 0170                733      BEQ PRINT_NOP
-000015D6  4E75                     734      RTS
-000015D8                           735  
-000015D8                           736  RTS:
-000015D8                           737  * constant for RTS 
-000015D8  =00004E75                738  C_RTS EQU $4E75
-000015D8  B27C 4E75                739      CMP.W #C_RTS, D1
-000015DC  6700 0154                740      BEQ PRINT_RTS
-000015E0  4E75                     741      RTS
-000015E2                           742  
-000015E2                           743  JSR:
-000015E2  =00004E80                744  JSR_OPCODE EQU %0100111010000000
-000015E2  4242                     745      CLR.W D2
-000015E4  3401                     746      MOVE.W D1,D2 
-000015E6                           747  * MASKING WITH UNIQUE OPCODE
-000015E6  C47C FFC0                748      AND.W #%1111111111000000, D2
-000015EA  B47C 4E80                749      CMP.W #JSR_OPCODE, D2
-000015EE  6600 0022                750      BNE JSR_END 
-000015F2  4EB9 00001752            751      JSR PRINT_JSR
-000015F8                           752  * MASKING TO GET MODE AND REGISTER
-000015F8  1401                     753      MOVE.B D1,D2
-000015FA  C43C 003F                754      AND.B #%00111111, D2
-000015FE  48A7 4000                755      MOVEM.W D1, -(SP)
-00001602  3F02                     756      MOVE.W D2, -(SP)
-00001604  3F3C 0000                757      MOVE.W #$0, -(SP)
-00001608  4EB8 1162                758      JSR PRINT_REGISTER
-0000160C  5882                     759      ADDQ.L #4, D2
-0000160E  4C9F 0002                760      MOVEM.W (SP)+, D1
-00001612                           761  JSR_END:
-00001612  4E75                     762      RTS
-00001614                           763  
-00001614                           764  LEA:
-00001614  4242                     765      CLR.W D2
-00001616                           766      * 0 1 0 0 AN 1 1 1
-00001616  3401                     767      MOVE.W D1,D2 
-00001618  C47C F1C0                768      AND.W  #%1111000111000000, D2
-0000161C  0C42 41C0                769      CMPI.W #%0100000111000000, D2
-00001620  6600 0040                770      BNE LEA_END
-00001624  4EB9 00001764            771      JSR PRINT_LEA
-0000162A  1401                     772      MOVE.B D1,D2 
-0000162C                           773      ; MASK TO GET MODE AND REGISTER
-0000162C  C43C 003F                774      AND.B #%0000000000111111, D2
-00001630  48A7 4000                775      MOVEM.W D1, -(SP)
-00001634  3F02                     776      MOVE.W D2, -(SP)
-00001636  3F3C 0000                777      MOVE.W #$0, -(SP)
-0000163A  4EB8 1162                778      JSR PRINT_REGISTER
-0000163E  588F                     779      ADDQ.L #$4, SP
-00001640  4C9F 0002                780      MOVEM.W (SP)+, D1
-00001644  4EB8 1068                781      JSR PRINT_COMMA
-00001648                           782      ; MASK TO GET DESTINATION REGISTER
-00001648  3401                     783      MOVE.W D1,D2
-0000164A  C47C 0E00                784      AND.W #%0000111000000000, D2
-0000164E  E042                     785      ASR.W #$08, D2
-00001650  E242                     786      ASR.W #$01, D2
-00001652  843C 0008                787      OR.B #%00001000, D2 ; OR TO PASS TO PRINT_REGISTER
-00001656  3F02                     788      MOVE.W D2, -(SP)
-00001658  3F3C 0000                789      MOVE.W #$0, -(SP) 
-0000165C  4EB8 1162                790      JSR PRINT_REGISTER
-00001660  588F                     791      ADDQ.L #$04, SP
-00001662                           792  LEA_END:
-00001662  4E75                     793      RTS
-00001664                           794  
-00001664                           795  ADDA:
-00001664  3401                     796      MOVE.W D1, D2
-00001666  =0000D0C0                797  C_ADDA EQU       %1101000011000000
-00001666  =0000F0C0                798  ADDA_MASKING EQU %1111000011000000
-00001666  C47C F0C0                799      AND.W #ADDA_MASKING, D2 ; GET PATTERN
-0000166A  0C42 D0C0                800      CMPI.W #C_ADDA, D2 ; COMPARE WITH THE PATTERN
-0000166E  6600 0056                801      BNE ADDA_END 
-00001672  4EB9 00001776            802      JSR PRINT_ADDA
-00001678  3401                     803      MOVE.W D1, D2  ; START TO MASK SIZE 
-0000167A  =00000100                804  ADDA_SIZE_MASKING EQU %0000000100000000
-0000167A  C47C 0100                805      AND.W #ADDA_SIZE_MASKING,D2 
-0000167E  E042                     806      ASR.W #8, D2 
-00001680  3C02                     807      MOVE.W D2 , D6 ; FOR SIZE TO PRINT REGISTER 
-00001682  5246                     808      ADDQ #$1, D6
-00001684  1F06                     809      MOVE.B D6 , -(SP)
-00001686  4EB8 1114                810      JSR PRINT_DATA
-0000168A  548F                     811      ADDQ.L #$2, SP 
-0000168C  4EB8 104A                812      JSR PRINT_TAB
-00001690                           813  
-00001690  3238 7006                814      MOVE.W (OPCODE_ADDRESS), D1 
-00001694  1401                     815      MOVE.B D1, D2 
-00001696  C43C 003F                816      AND.B #%00111111, D2 
-0000169A  3F02                     817      MOVE.W D2, -(SP)
-0000169C  3F06                     818      MOVE.W D6, -(SP)
-0000169E  4EB8 1162                819      JSR PRINT_REGISTER 
-000016A2  588F                     820      ADDQ.L #$04, SP 
-000016A4  4EB8 1068                821      JSR PRINT_COMMA
-000016A8  3238 7006                822      MOVE.W (OPCODE_ADDRESS), D1  ; get back the opcode just in case
-000016AC  3401                     823      MOVE.W D1, D2
-000016AE  =00000E00                824  ADDA_AN_MASKING EQU %0000111000000000
-000016AE  C47C 0E00                825      AND.W #ADDA_AN_MASKING, D2
-000016B2  E042                     826      ASR.W #8, D2 
-000016B4  E242                     827      ASR.W #1, D2 
-000016B6  843C 0008                828      OR.B #%00001000, D2 ; TO APPEND MODE FOR PRINT REGISTER 
-000016BA  3F02                     829      MOVE.W D2, -(SP)
-000016BC  3F3C 0000                830      MOVE.W #$0, -(SP)
-000016C0  4EB8 1162                831      JSR PRINT_REGISTER 
-000016C4  588F                     832      ADDQ.L #$4, SP 
-000016C6                           833  ADDA_END:
-000016C6  4E75                     834      RTS
-000016C8                           835  
-000016C8                           836  * ------------ LEO ------------ *          * ------------ LEO ------------ *          * ------------ LEO ------------ *
-000016C8                           837  NEG:
-000016C8                           838  * CONSTANT FOR NEG OPCODE
-000016C8  =00004400                839  NEG_OPCODE EQU %0100010000000000
-000016C8  =0000FF00                840  NEG_M      EQU %1111111100000000
-000016C8  =0000003F                841  NEG_REG_M  EQU %0000000000111111
-000016C8  =000000C0                842  NEG_SIZE_M EQU %0000000011000000
-000016C8  4242                     843      CLR.W D2
-000016CA  3401                     844      MOVE.W D1, D2
-000016CC                           845  * MASKING WITH NEG UNIQUE CODE
-000016CC  C47C FF00                846      AND.W #NEG_M, D2
-000016D0  B47C 4400                847      CMP.W #NEG_OPCODE, D2
-000016D4  6600 003A                848      BNE NEG_END
-000016D8  4EB9 000017A4            849      JSR PRINT_NEG
-000016DE  3401                     850      MOVE.W D1, D2
-000016E0  3601                     851      MOVE.W D1, D3
-000016E2                           852  * MASKING TO GET NEG SIZE
-000016E2  C47C 00C0                853      AND.W #NEG_SIZE_M, D2
-000016E6  EC02                     854      ASR.B #6, D2
-000016E8  1F02                     855      MOVE.B D2, -(SP)
-000016EA  4EB8 1114                856      JSR PRINT_DATA
-000016EE  4EB8 104A                857      JSR PRINT_TAB
-000016F2  548F                     858      ADDQ.L #2, SP
-000016F4  3403                     859      MOVE.W D3, D2   * GET ORIGINAL DATA BACK
-000016F6  3203                     860      MOVE.W D3, D1
-000016F8                           861  * MASKING TO GET MODE AND REGISTER
-000016F8  C43C 003F                862      AND.B #NEG_REG_M, D2
-000016FC  3F01                     863      MOVE.W D1, -(SP)
-000016FE  3F02                     864      MOVE.W D2, -(SP)
-00001700  3F3C 0000                865      MOVE.W #$0, -(SP)
-00001704  4EB8 1162                866      JSR PRINT_REGISTER
-00001708  588F                     867      ADDQ.L #$4, SP
-0000170A  321F                     868      MOVE.W (SP)+, D1
-0000170C  4242                     869      CLR.W D2
-0000170E  4243                     870      CLR.W D3
-00001710                           871  NEG_END: 
-00001710  4E75                     872      RTS
-00001712                           873  
-00001712                           874  BRA:
-00001712                           875  * CONSTANT FOR BRA OPCODE
-00001712  =00006000                876  BRA_OPCODE EQU %0110000000000000
-00001712  =00006000                877  BRA_M      EQU %0110000000000000
-00001712  =000000FF                878  BRA_SIZE_M EQU %0000000011111111
-00001712  4242                     879      CLR.W D2
-00001714  3401                     880      MOVE.W D1, D2
-00001716                           881  * MASKING WITH BRA UNIQUE CODE
-00001716  C47C 6000                882      AND.W #BRA_M, D2
-0000171A  B47C 6000                883      CMP.W #BRA_OPCODE, D2
-0000171E  6600 0010                884      BNE BRA_END
-00001722  4EB9 00001796            885      JSR PRINT_BRA
-00001728  3401                     886      MOVE.W D1, D2
-0000172A  3601                     887      MOVE.W D1, D3
-0000172C                           888  * MASKING TO GET SIZE OF BRA
-0000172C  B47C 00FF                889      CMP.W #BRA_SIZE_M, D2 
-00001730                           890  BRA_END:
-00001730  4E75                     891      RTS
-00001732                           892  
-00001732                           893  * ------------ LEO ------------ *          * ------------ LEO ------------ *          * ------------ LEO ------------ *
-00001732                           894  
-00001732                           895  
-00001732                           896  
-00001732                           897  PRINT_RTS:
-00001732  43F9 000017B2            898     LEA P_RTS, A1
-00001738  103C 000E                899     MOVE.B #14, D0
-0000173C  4E4F                     900     TRAP #15
-0000173E  4EB8 104A                901     JSR PRINT_TAB
-00001742  4E75                     902     RTS 
-00001744                           903  PRINT_NOP:
-00001744  43F9 00001834            904      LEA P_NOP, A1
-0000174A  103C 000E                905      MOVE.B #14, D0
-0000174E  4E4F                     906      TRAP #15
-00001750  4E75                     907      RTS 
-00001752                           908  PRINT_JSR:
-00001752  43F9 00001830            909      LEA P_JSR, A1
-00001758  103C 000E                910      MOVE.B #14, D0
-0000175C  4E4F                     911      TRAP #15
-0000175E  4EB8 104A                912      JSR PRINT_TAB
-00001762  4E75                     913      RTS 
-00001764                           914  PRINT_LEA:
-00001764  43F9 000017E3            915     LEA P_LEA, A1
-0000176A  103C 000E                916     MOVE.B #14, D0
-0000176E  4E4F                     917     TRAP #15
-00001770  4EB8 104A                918     JSR PRINT_TAB
-00001774  4E75                     919     RTS 
-00001776                           920  PRINT_ADDA: 
-00001776  43F9 000017CB            921      LEA P_ADDA, A1 
-0000177C  103C 000E                922      MOVE.B #14, D0
-00001780  4E4F                     923      TRAP #15 
-00001782  4E75                     924      RTS
-00001784                           925  PRINT_ADD: 
-00001784  43F9 000017C7            926      LEA P_ADD, A1 
-0000178A  103C 0014                927      MOVE.B #$14, D0
-0000178E  4E4F                     928      TRAP #15 
-00001790  4EB8 104A                929      JSR PRINT_TAB
-00001794  4E75                     930      RTS
-00001796                           931  PRINT_BRA:
-00001796  43F9 0000182C            932      LEA P_BRA, A1
-0000179C  103C 000E                933      MOVE.B #14, D0
-000017A0  4E4F                     934      TRAP #15
-000017A2  4E75                     935      RTS 
-000017A4                           936  PRINT_NEG:
-000017A4  43F9 000017EE            937      LEA P_NEG, A1
-000017AA  103C 000E                938      MOVE.B #14, D0
-000017AE  4E4F                     939      TRAP #15
-000017B0  4E75                     940      RTS
-000017B2                           941  
-000017B2                           942  
-000017B2                           943  
-000017B2                           944  
-000017B2= 52 54 53 00              945  P_RTS   DC.B 'RTS',0          * ------------ DONE ------------ *
-000017B6= 4D 4F 56 45 00           946  P_MOVE  DC.B 'MOVE',0
-000017BB= 4D 4F 56 45 41 00        947  P_MOVEA DC.B 'MOVEA', 0
-000017C1= 4D 4F 56 45 4D 00        948  P_MOVEM DC.B 'MOVEM', 0
-000017C7= 41 44 44 00              949  P_ADD   DC.B 'ADD', 0
-000017CB= 41 44 44 41 00           950  P_ADDA  DC.B 'ADDA',0         * ------------ DONE ------------ *
-000017D0= 53 55 42 00              951  P_SUB   DC.B 'SUB', 0
-000017D4= 53 55 42 51 00           952  P_SUBQ  DC.B 'SUBQ',0
-000017D9= 4D 55 4C 53 00           953  P_MULS  DC.B 'MULS',0
-000017DE= 44 49 56 53 00           954  P_DIVS  DC.B 'DIVS',0
-000017E3= 4C 45 41 00              955  P_LEA   DC.B 'LEA',0          * ------------ DONE ------------ *
-000017E7= 4F 52 00                 956  P_OR    DC.B 'OR',0
-000017EA= 4F 52 49 00              957  P_ORI   DC.B 'ORI', 0
-000017EE= 4E 45 47 00              958  P_NEG   DC.B 'NEG', 0         * --------- IN PROGRESS -------- *
-000017F2= 45 4F 52 00              959  P_EOR   DC.B 'EOR', 0
-000017F6= 4C 53 52 00              960  P_LSR   DC.B 'LSR',0
-000017FA= 4C 53 4C 00              961  P_LSL   DC.B 'LSL', 0
-000017FE= 41 53 52 00              962  P_ASR   DC.B 'ASR', 0
-00001802= 41 53 4C 00              963  P_ASL   DC.B 'ASL',0 
-00001806= 52 4F 4C 00              964  P_ROL   DC.B 'ROL', 0
-0000180A= 52 4F 52 00              965  P_ROR   DC.B 'ROR', 0
-0000180E= 42 43 4C 52 00           966  P_BCLR  DC.B 'BCLR',0
-00001813= 43 4D 50 00              967  P_CMP   DC.B 'CMP', 0
-00001817= 43 4D 50 49 00           968  P_CMPI  DC.B 'CMPI', 0
-0000181C= 42 43 53 00              969  P_BCS   DC.B 'BCS', 0
-00001820= 42 47 45 00              970  P_BGE   DC.B 'BGE', 0
-00001824= 42 4C 54 00              971  P_BLT   DC.B 'BLT',0
-00001828= 42 56 43 00              972  P_BVC   DC.B 'BVC', 0
-0000182C= 42 52 41 00              973  P_BRA   DC.B 'BRA',0          * --------- IN PROGRESS -------- *
-00001830= 4A 53 52 00              974  P_JSR   DC.B 'JSR',0          * ------------ DONE ------------ *
-00001834= 4E 4F 50 00              975  P_NOP   DC.B 'NOP',0          * ------------ DONE ------------ *
-00001838                           976  
-00001838  =00000004                977  WORD_LENGTH EQU $04
-00001838  =00000008                978  LONG_LENGTH EQU $08
-00001838  =0000000A                979  LF          EQU $0A
-00001838  =0000000D                980  CR          EQU $0D
-00001838  =00000009                981  HT          EQU  $09 
-00001838= 31 30 30 32 30 30 ...    982  TEST_VAL            DC.B '10020009'
-00001840= 20 0D 0A 00              983  NEW_LINE            DC.B ' ',CR,LF,0
-00001844= 50 6C 65 61 73 65 ...    984  PROMT_INPUT_START   DC.B 'Please enter starting address(capitalized):  $',0 
-00001873= 50 6C 65 61 73 65 ...    985  PROMT_INPUT_END     DC.B 'Please enter ending address(cappitalized): $',0
-000018A0                           986      
-000018A0  FFFF FFFF                987      SIMHALT             ; halt simulator
-000018A4                           988      
-000018A4                           989      END    START        ; last line of source
+0000103C                           128      * MOVEA.L #$2000,A1        * original 
+0000103C  227C 00010000            129      MOVEA.L #START_ADDRESS,A1  * change to this for testing
+00001042  103C 0002                130      MOVE.B #2, D0
+00001046  4E4F                     131      TRAP #15
+00001048                           132  END_GET_START_INPUT:
+00001048  4E75                     133      RTS   
+0000104A                           134  
+0000104A                           135  * get user ending address input 
+0000104A                           136  GET_END_INPUT:
+0000104A  43F9 000018C1            137      LEA PROMT_INPUT_END, A1
+00001050  103C 000D                138      MOVE.B #13, D0
+00001054  4E4F                     139      TRAP #15
+00001056                           140      * MOVEA.L #$3000,A1        * original 
+00001056  227C 00007004            141      MOVEA.L #END_ADDRESS,A1  * change to this for testing
+0000105C  103C 0002                142      MOVE.B #2, D0
+00001060  4E4F                     143      TRAP #15
+00001062                           144  END_GET_END_INPUT:
+00001062  4E75                     145      RTS   
+00001064                           146  
+00001064                           147  *--------------------------------------------------------------------
+00001064                           148  * PRINT_TAB 
+00001064                           149  PRINT_TAB: 
+00001064  227C 00007010            150      MOVE.L #OUTPUT_ADDRESS, A1
+0000106A  22FC 20202020            151      MOVE.L #'    ', (A1)+
+00001070  12FC 0000                152      MOVE.B #0, (A1)+
+00001074  227C 00007010            153      MOVE.L #OUTPUT_ADDRESS, A1
+0000107A                           154  END_PRINT_TAB:
+0000107A  103C 000E                155      MOVE.B #14, D0
+0000107E  4E4F                     156      TRAP #15
+00001080  4E75                     157      RTS
+00001082                           158  *--------------------------------------------------------------------
+00001082                           159  * PRINT_COMMA
+00001082                           160  PRINT_COMMA:
+00001082  227C 00007010            161      MOVE.L #OUTPUT_ADDRESS, A1
+00001088  32FC 2C20                162      MOVE.W #', ', (A1)+
+0000108C  12BC 0000                163      MOVE.B #0, (A1)
+00001090  5589                     164      SUBQ.L #2, A1
+00001092                           165  END_PRINT_COMMA:
+00001092  103C 000E                166      MOVE.B #14, D0
+00001096  4E4F                     167      TRAP #15
+00001098  4E75                     168      RTS
+0000109A                           169  *--------------------------------------------------------------------
+0000109A                           170  * PRINT_DOLLAR_SIGN
+0000109A                           171  PRINT_DOLLAR_SIGN:
+0000109A  227C 00007010            172      MOVE.L #OUTPUT_ADDRESS, A1
+000010A0  12BC 0024                173      MOVE.B #'$', (A1)
+000010A4  137C 0000 0001           174      MOVE.B #0, 1(A1) 
+000010AA                           175  END_PRINT_DOLLAR_SIGN:
+000010AA  103C 000E                176      MOVE.B #14, D0
+000010AE  4E4F                     177      TRAP #15
+000010B0  4E75                     178      RTS
+000010B2                           179  *--------------------------------------------------------------------
+000010B2                           180  * PRINT_HASH_SIGN
+000010B2                           181  PRINT_HASH_SIGN:
+000010B2  227C 00007010            182      MOVE.L #OUTPUT_ADDRESS, A1
+000010B8  12BC 0023                183      MOVE.B #'#', (A1)
+000010BC  137C 0000 0001           184      MOVE.B #0, 1(A1) 
+000010C2                           185  END_PRINT_HASH_SIGN:
+000010C2  103C 000E                186      MOVE.B #14, D0
+000010C6  4E4F                     187      TRAP #15
+000010C8  4E75                     188      RTS
+000010CA                           189  
+000010CA                           190  *--------------------------------------------------------------------
+000010CA                           191  * PRINT A NEW LINE 
+000010CA                           192  PRINT_NEW_LINE: 
+000010CA  227C 00007010            193      MOVE.L #OUTPUT_ADDRESS, A1
+000010D0  12FC 000D                194      MOVE.B #CR, (A1)+ 
+000010D4  12FC 000A                195      MOVE.B #LF, (A1)+
+000010D8  12FC 0000                196      MOVE.B #0, (A1)+
+000010DC                           197  END_PRINT_NEW_LINE:
+000010DC  227C 00007010            198      MOVE.L #OUTPUT_ADDRESS, A1
+000010E2  103C 000E                199      MOVE.B #14, D0
+000010E6  4E4F                     200      TRAP #15 
+000010E8  4E75                     201      RTS
+000010EA                           202  
+000010EA                           203  * PRINT DATA TYPE FOR EXAMPLE .W AND .L ONLY IF YOU WANT TO PRINT .B SEE PRINT_DATA
+000010EA                           204  * PARAMETERS:
+000010EA                           205  *   1- (4(SP)): DATA TYPE (1 BYTE)
+000010EA                           206  *   A1 USE FOR PRINT
+000010EA                           207  *   D0 USE FOR TRAP AND HOLD PARAMETER
+000010EA                           208  PRINT_DATA_1BIT:
+000010EA  102F 0004                209      MOVE.B 4(SP), D0
+000010EE  0C40 0000                210      CMPI #$0, D0 
+000010F2  6700 001E                211      BEQ PRINT_D_WORD
+000010F6  0C40 0001                212      CMPI #$1, D0 
+000010FA  6700 0002                213      BEQ PRINT_D_LONG 
+000010FE                           214  PRINT_D_LONG: 
+000010FE  227C 00007010            215      MOVE.L #OUTPUT_ADDRESS, A1 
+00001104  32BC 2E4C                216      MOVE.W #'.L', (A1) 
+00001108  137C 0000 0002           217      MOVE.B #$0, 2(A1)
+0000110E  6000 0016                218      BRA DONE_PRINT_D_1BIT
+00001112                           219  PRINT_D_WORD:
+00001112  227C 00007010            220      MOVE.L #OUTPUT_ADDRESS, A1 
+00001118  32BC 2E57                221      MOVE.W #'.W', (A1)
+0000111C  137C 0000 0002           222      MOVE.B #$0, 2(A1)
+00001122  6000 0002                223      BRA DONE_PRINT_D_1BIT
+00001126                           224  DONE_PRINT_D_1BIT:
+00001126  103C 000E                225      MOVE.B #14, D0 
+0000112A  4E4F                     226      TRAP #15 
+0000112C  4E75                     227      RTS 
+0000112E                           228  
+0000112E                           229  *--------------------------------------------------------------------
+0000112E                           230  * PRINT DATA TYPE FOR EXAMPLE: .B .W .L
+0000112E                           231  * PARAMETERS: 
+0000112E                           232   *   1- (4(sp)): WHAT DATA TYPE (1 BYTE)
+0000112E                           233  *       00 - byte
+0000112E                           234  *       01 - word
+0000112E                           235  *       10 - long
+0000112E                           236  * NOTE:
+0000112E                           237  *   A1 USE FOR PRINT
+0000112E                           238  *   d1 USES TO STORE DATA TYPE OF PARAMETER ABOVE
+0000112E                           239  PRINT_DATA:
+0000112E  227C 00007010            240      MOVE.L #OUTPUT_ADDRESS, A1
+00001134  122F 0004                241      MOVE.B 4(SP), D1
+00001138  0C01 0000                242      CMPI.B #$00, D1
+0000113C  6700 001A                243      BEQ PRINT_BYTE
+00001140  0C01 0001                244      CMPI.B #$01, D1
+00001144  6700 001E                245      BEQ PRINT_WORD
+00001148  0C01 0002                246      CMPI.B #$02, D1 
+0000114C  6700 0022                247      BEQ PRINT_LONG
+00001150                           248  END_PRINT_DATA:
+00001150  103C 000E                249      MOVE.B #14, D0
+00001154  4E4F                     250      TRAP #15
+00001156  4E75                     251      RTS 
+00001158                           252  
+00001158                           253  PRINT_BYTE: 
+00001158  32BC 2E42                254      MOVE.W #'.B', (A1)
+0000115C  137C 0000 0002           255      MOVE.B #0, 2(A1)
+00001162  60EC                     256      BRA END_PRINT_DATA
+00001164                           257  PRINT_WORD: 
+00001164  32BC 2E57                258      MOVE.W #'.W', (A1)
+00001168  137C 0000 0002           259      MOVE.B #0, 2(A1)
+0000116E  60E0                     260      BRA END_PRINT_DATA
+00001170                           261  PRINT_LONG: 
+00001170  32BC 2E4C                262      MOVE.W #'.L', (A1)
+00001174  137C 0000 0002           263      MOVE.B #0, 2(A1)
+0000117A  60D4                     264      BRA END_PRINT_DATA
+0000117C                           265  
+0000117C                           266  *--------------------------------------------------------------------
+0000117C                           267  * PRINT_REGISTER
+0000117C                           268  * PARAMETERS: what register 1 byte 4 msb indicate dn(0) or an(1), 4 lsb for number of that register
+0000117C                           269  * 1 - (6(sp)) 3 bits msb for mode, 3 bits lsb for which register
+0000117C                           270  * 2 - (4(sp)) byte value for how many byte for immediate value
+0000117C                           271  *      0 for a byte value
+0000117C                           272  *      1 for word value
+0000117C                           273  *      2 for long value 
+0000117C                           274  * NOTE: 
+0000117C                           275  *   D1 FOR STORE THE PARAMETER
+0000117C                           276  *   D2 FOR STORE HOW MANY BYTE FOR IMMEDIATE VALUE, AND ABSOLUTE VALUE
+0000117C                           277  PRINT_REGISTER:
+0000117C  322F 0006                278     MOVE.W 6(SP), D1 
+00001180                           279     ; IMMEDIATE ADDRESS
+00001180  3401                     280     MOVE.W D1,D2
+00001182  0C01 003C                281     CMPI.B #%00111100, D1
+00001186  6700 00A2                282     BEQ PRINT_IMMEDIATE
+0000118A  0C01 0038                283     CMPI.B #%00111000, D1
+0000118E  6700 0160                284     BEQ PRINT_AB_SHORT
+00001192  0C01 0039                285     CMPI.B #%00111001, D1
+00001196  6700 01BA                286     BEQ PRINT_AB_LONG 
+0000119A                           287  
+0000119A  1401                     288     MOVE.B D1,D2
+0000119C  C43C 0038                289     AND.B #%00111000, D2
+000011A0  0C42 0010                290     CMPI #%00010000, D2
+000011A4  6700 020E                291     BEQ PRINT_OPEN
+000011A8                           292  
+000011A8  1401                     293     MOVE.B D1,D2
+000011AA  C43C 0038                294     AND.B #%00111000, D2
+000011AE  0C42 0018                295     CMPI #%00011000, D2
+000011B2  6700 0200                296     BEQ PRINT_OPEN
+000011B6                           297  
+000011B6  1401                     298     MOVE.B D1,D2
+000011B8  C43C 0038                299     AND.B #%00111000, D2
+000011BC  0C42 0020                300     CMPI #%00100000, D2
+000011C0  6700 020C                301     BEQ PRINT_MINUS_OPEN
+000011C4                           302  
+000011C4                           303  
+000011C4                           304  CONTINUE_PRINT_REGISTER:
+000011C4  1401                     305     MOVE.B D1,D2
+000011C6  C43C 0038                306     AND.B #%00111000, D2
+000011CA  0C42 0000                307     CMPI #%00000000, D2
+000011CE  6700 024C                308     BEQ PRINT_D
+000011D2                           309  
+000011D2  1401                     310     MOVE.B D1,D2
+000011D4  C43C 0038                311     AND.B #%00111000, D2
+000011D8  0C42 0008                312     CMPI #%00001000, D2
+000011DC  6700 0258                313     BEQ PRINT_A 
+000011E0                           314  
+000011E0                           315  CONTINUE_PRINT_RE_NUMBER:
+000011E0  227C 00007010            316      MOVE.L #OUTPUT_ADDRESS, A1
+000011E6  1401                     317      MOVE.B D1,D2
+000011E8  C43C 0007                318      AND.B #%00000111, D2
+000011EC  0602 0030                319      ADD.B #48, D2 
+000011F0  1282                     320      MOVE.B D2, (A1) 
+000011F2  137C 0000 0001           321      MOVE.B #$0, 1(A1)
+000011F8  103C 000E                322      MOVE.B #14, D0
+000011FC  4E4F                     323      TRAP #15
+000011FE                           324  DONE_PRINT_NUMBER:
+000011FE  1401                     325     MOVE.B D1,D2
+00001200  C43C 0038                326     AND.B #%00111000, D2
+00001204  0C42 0010                327     CMPI #%00010000, D2
+00001208  6700 01DE                328     BEQ PRINT_CLOSE
+0000120C                           329  
+0000120C  1401                     330     MOVE.B D1,D2
+0000120E  C43C 0038                331     AND.B #%00111000, D2
+00001212  0C42 000C                332     CMPI #%0001100, D2
+00001216  6700 01EA                333     BEQ PRINT_CLOSE_PLUS
+0000121A                           334  
+0000121A  1401                     335     MOVE.B D1,D2
+0000121C  C43C 0038                336     AND.B #%00111000, D2
+00001220  0C42 0020                337     CMPI #%00100000, D2
+00001224  6700 01C2                338     BEQ PRINT_CLOSE
+00001228                           339  
+00001228                           340  END_PRINT_REGISTER:
+00001228  4E75                     341      RTS
+0000122A                           342  
+0000122A                           343  PRINT_IMMEDIATE:
+0000122A  227C 00007010            344      MOVE.L #OUTPUT_ADDRESS, A1
+00001230  12BC 0023                345      MOVE.B #'#', (A1)
+00001234  137C 0000 0001           346      MOVE.B #$0, 1(A1)
+0000123A  103C 000E                347      MOVE.B #14, D0
+0000123E  4E4F                     348      TRAP #15
+00001240  4EB8 109A                349      JSR PRINT_DOLLAR_SIGN
+00001244  3038 7008                350      MOVE.W (OFFSET_OPC_ADDRES),D0
+00001248  342F 0004                351      MOVE.W 4(SP), D2 ; HOW MANY BYTE
+0000124C  0C42 0000                352      CMPI #$00, D2
+00001250  6700 0014                353      BEQ PRINT_IMMEDIATE_BYTE ; THIS CASE NEVER HAPPEN BECAUSE IMMEDATE VALUE MINIMUM IS 16 bits
+00001254  0C42 0001                354      CMPI #$01, D2
+00001258  6700 0036                355      BEQ PRINT_IMMEDIATE_WORD
+0000125C  0C42 0002                356      CMPI #$02, D2
+00001260  6700 005A                357      BEQ PRINT_IMMEDIATE_LONG
+00001264  60C2                     358      BRA END_PRINT_REGISTER
+00001266                           359  
+00001266                           360  PRINT_IMMEDIATE_BYTE:
+00001266  247C 00010000            361      MOVE.L #START_ADDRESS, A2
+0000126C  1432 0000                362      MOVE.B (A2, D0), D2 ; 
+00001270  48E7 E0C0                363      MOVEM.L D0-D2/A0-A1, -(SP)
+00001274  2F02                     364      MOVE.L D2, -(SP)
+00001276  2F3C 00000002            365      MOVE.L #HEX_TO_ASCII_BYTE, -(SP) 
+0000127C  4EB9 00001450            366      JSR PRINT_HEX
+00001282  508F                     367       ADDQ.L #$08, SP
+00001284  4CDF 0307                368      MOVEM.L (SP)+, D0-D2/A0-A1
+00001288  5240                     369      ADDQ.W #$1, D0
+0000128A  31C0 7008                370      MOVE.W D0, (OFFSET_OPC_ADDRES)
+0000128E  6098                     371      BRA END_PRINT_REGISTER
+00001290                           372  PRINT_IMMEDIATE_WORD:
+00001290  247C 00010000            373      MOVE.L #START_ADDRESS, A2
+00001296  3432 0000                374      MOVE.W (A2, D0), D2 ; 
+0000129A  48E7 E0C0                375      MOVEM.L D0-D2/A0-A1, -(SP)
+0000129E  2F02                     376      MOVE.L D2, -(SP)
+000012A0  2F3C 00000004            377      MOVE.L #HEX_TO_ASCII_WORD, -(SP) 
+000012A6  4EB9 00001450            378      JSR PRINT_HEX
+000012AC  508F                     379      ADDQ.L #$08, SP
+000012AE  4CDF 0307                380      MOVEM.L (SP)+, D0-D2/A0-A1
+000012B2  5440                     381      ADDQ.W #$2, D0
+000012B4  31C0 7008                382      MOVE.W D0, (OFFSET_OPC_ADDRES)
+000012B8  6000 FF6E                383      BRA END_PRINT_REGISTER
+000012BC                           384  PRINT_IMMEDIATE_LONG:
+000012BC  3038 7008                385      MOVE.W (OFFSET_OPC_ADDRES),D0
+000012C0  247C 00010000            386      MOVE.L #START_ADDRESS, A2
+000012C6  2432 0000                387      MOVE.L (A2, D0), D2 ; 
+000012CA  48E7 E0C0                388      MOVEM.L D0-D2/A0-A1, -(SP)
+000012CE  2F02                     389      MOVE.L D2, -(SP)
+000012D0                           390      ; offset to get immediate value from opcode
+000012D0  3038 7008                391      MOVE.W (OFFSET_OPC_ADDRES),D0
+000012D4  2F3C 00000008            392      MOVE.L #HEX_TO_ASCII_LONG, -(SP) 
+000012DA  4EB9 00001450            393      JSR PRINT_HEX
+000012E0  508F                     394      ADDQ.L #$08, SP
+000012E2  4CDF 0307                395      MOVEM.L (SP)+, D0-D2/A0-A1
+000012E6  5840                     396      ADDQ.W #$4, D0
+000012E8  31C0 7008                397      MOVE.W D0, (OFFSET_OPC_ADDRES)
+000012EC  6000 FF3A                398      BRA END_PRINT_REGISTER
+000012F0                           399  PRINT_AB_SHORT:
+000012F0  227C 00007010            400      MOVE.L #OUTPUT_ADDRESS, A1
+000012F6  32BC 2824                401      MOVE.W #'($', (A1)
+000012FA  137C 0000 0002           402      MOVE.B #0, 2(A1)
+00001300  103C 000E                403      MOVE.B #14, D0
+00001304  4E4F                     404      TRAP #15
+00001306                           405      ; offset to get immediate value from opcode
+00001306  247C 00010000            406      MOVE.L #START_ADDRESS, A2
+0000130C  3038 7008                407      MOVE.W (OFFSET_OPC_ADDRES),D0
+00001310  3432 0000                408      MOVE.W (A2, D0), D2 ; 
+00001314  48E7 E0C0                409      MOVEM.L D0-D2/A0-A1, -(SP)
+00001318  2F02                     410      MOVE.L D2, -(SP)
+0000131A  2F3C 00000004            411      MOVE.L #HEX_TO_ASCII_WORD, -(SP) 
+00001320  4EB9 00001450            412      JSR PRINT_HEX
+00001326  508F                     413      ADDQ.L #$08, SP
+00001328  4CDF 0307                414      MOVEM.L (SP)+, D0-D2/A0-A1
+0000132C  5440                     415      ADDQ.W #$2, D0
+0000132E  31C0 7008                416      MOVE.W D0, (OFFSET_OPC_ADDRES)
+00001332                           417      ; print close parathesis with W
+00001332  227C 00007010            418      MOVE.L #OUTPUT_ADDRESS, A1
+00001338  32BC 292E                419      MOVE.W #').', (A1)
+0000133C  137C 0057 0002           420      MOVE.B #'W',2(A1)
+00001342  137C 0000 0003           421      MOVE.B #0, 3(A1)
+00001348  103C 000E                422      MOVE.B #14, D0
+0000134C  4E4F                     423      TRAP #15
+0000134E  6000 FED8                424      BRA END_PRINT_REGISTER
+00001352                           425  PRINT_AB_LONG:
+00001352                           426      ;print open parathesis
+00001352  227C 00007010            427      MOVE.L #OUTPUT_ADDRESS, A1
+00001358  32BC 2824                428      MOVE.W #'($', (A1)
+0000135C  137C 0000 0002           429      MOVE.B #0, 2(A1)
+00001362  103C 000E                430      MOVE.B #14, D0
+00001366  4E4F                     431      TRAP #15
+00001368                           432      ; print value in long
+00001368  247C 00010000            433      MOVE.L #START_ADDRESS, A2
+0000136E                           434      ; offset to get value from opcode
+0000136E  3038 7008                435      MOVE.W (OFFSET_OPC_ADDRES),D0
+00001372  2432 0000                436      MOVE.L (A2, D0), D2 ; 
+00001376  48E7 E0C0                437      MOVEM.L D0-D2/A0-A1, -(SP)
+0000137A  2F02                     438      MOVE.L D2, -(SP)
+0000137C  2F3C 00000008            439      MOVE.L #HEX_TO_ASCII_LONG, -(SP) 
+00001382  4EB9 00001450            440      JSR PRINT_HEX
+00001388  508F                     441      ADDQ.L #$08, SP
+0000138A  4CDF 0307                442      MOVEM.L (SP)+, D0-D2/A0-A1
+0000138E  5840                     443      ADDQ.W #$4, D0
+00001390  31C0 7008                444      MOVE.W D0, (OFFSET_OPC_ADDRES) ; align offset 
+00001394                           445      ; print close parathesis with W
+00001394  227C 00007010            446      MOVE.L #OUTPUT_ADDRESS, A1
+0000139A  32BC 292E                447      MOVE.W #').', (A1)
+0000139E  137C 004C 0002           448      MOVE.B #'L',2(A1)
+000013A4  137C 0000 0003           449      MOVE.B #0, 3(A1)
+000013AA  103C 000E                450      MOVE.B #14, D0
+000013AE  4E4F                     451      TRAP #15
+000013B0  6000 FE76                452      BRA END_PRINT_REGISTER
+000013B4                           453  
+000013B4                           454  PRINT_OPEN:
+000013B4  227C 00007010            455      MOVE.L #OUTPUT_ADDRESS, A1
+000013BA  12BC 0028                456      MOVE.B #'(', (A1)
+000013BE  137C 0000 0001           457      MOVE.B #$0, 1(A1)
+000013C4  103C 000E                458      MOVE.B #14, D0
+000013C8  4E4F                     459      TRAP #15
+000013CA  6000 006A                460      BRA PRINT_A
+000013CE                           461  PRINT_MINUS_OPEN: 
+000013CE  227C 00007010            462      MOVE.L #OUTPUT_ADDRESS, A1
+000013D4  32BC 2D28                463      MOVE.W #'-(', (A1)
+000013D8  137C 0000 0002           464      MOVE.B #$0, 2(A1)
+000013DE  103C 000E                465      MOVE.B #14, D0
+000013E2  4E4F                     466      TRAP #15
+000013E4  6000 0050                467      BRA PRINT_A
+000013E8                           468  
+000013E8                           469  PRINT_CLOSE:
+000013E8  227C 00007010            470      MOVE.L #OUTPUT_ADDRESS, A1
+000013EE  12BC 0029                471      MOVE.B #')', (A1)
+000013F2  137C 0000 0001           472      MOVE.B #$0, 1(A1)
+000013F8  103C 000E                473      MOVE.B #14, D0
+000013FC  4E4F                     474      TRAP #15
+000013FE  6000 FE28                475      BRA END_PRINT_REGISTER
+00001402                           476  PRINT_CLOSE_PLUS:
+00001402  227C 00007010            477      MOVE.L #OUTPUT_ADDRESS, A1
+00001408  32BC 292B                478      MOVE.W #')+', (A1)
+0000140C  137C 0000 0002           479      MOVE.B #$0, 2(A1)
+00001412  103C 000E                480      MOVE.B #14, D0
+00001416  4E4F                     481      TRAP #15
+00001418  6000 FE0E                482      BRA END_PRINT_REGISTER
+0000141C                           483  PRINT_D:
+0000141C  227C 00007010            484      MOVE.L #OUTPUT_ADDRESS, A1 
+00001422  12BC 0044                485      MOVE.B #'D', (A1)
+00001426  137C 0000 0001           486      MOVE.B #$0, 1(A1)
+0000142C  103C 000E                487      MOVE.B #14, D0
+00001430  4E4F                     488      TRAP #15
+00001432  6000 FDAC                489      BRA CONTINUE_PRINT_RE_NUMBER
+00001436                           490  PRINT_A: 
+00001436  227C 00007010            491      MOVE.L #OUTPUT_ADDRESS, A1 
+0000143C  12BC 0041                492      MOVE.B #'A', (A1)
+00001440  137C 0000 0001           493      MOVE.B #$0, 1(A1)
+00001446  103C 000E                494      MOVE.B #14, D0
+0000144A  4E4F                     495      TRAP #15
+0000144C  6000 FD92                496      BRA CONTINUE_PRINT_RE_NUMBER
+00001450                           497  
+00001450                           498  *-----------------------------------------------------------
+00001450                           499  * PRINT HEX 
+00001450                           500  * PARAMETERS:
+00001450                           501  *   1- (8(SP)): VALUE IN HEX
+00001450                           502  *   2- (4(SP)): HOW MANY BYTES
+00001450                           503  * RETURN NULL
+00001450                           504  *-----------------------------------------------------------
+00001450                           505  PRINT_HEX:
+00001450  6000 0016                506      BRA HEX_TO_ASCII
+00001454                           507  GET_ASCII_FROM_HEX:
+00001454  227C 00007010            508      MOVE.L #OUTPUT_ADDRESS, A1
+0000145A  103C 000E                509      MOVE.B #14, D0
+0000145E  4E4F                     510      TRAP #15
+00001460  227C 00007010            511      MOVE.L #OUTPUT_ADDRESS, A1
+00001466                           512  END_PRINT_HEX:
+00001466  4E75                     513      RTS
+00001468                           514  *-----------------------------------------------------------
+00001468                           515  * CONVERT HEX TO ASCII 
+00001468                           516  * PARAMATERS:
+00001468                           517  *   1- (8(SP)): VALUE IN HEX
+00001468                           518  *   2- (4(SP)): HOW MANY BYTES
+00001468                           519  * RETURN:
+00001468                           520  *   8 CHARS IN ASCII, STORE IN RETURN ADDRESS (a1)
+00001468                           521  * D0 STORES HEX VALUE
+00001468                           522  * D4 HOW MAY BYTES TO DISPLAY (2-byte 4-hex 8-long)
+00001468                           523  * D1 COUNT LOOP
+00001468                           524  * D2 CONVERT TO ASCII
+00001468                           525  * D3 USE TO CALCULATE SHIFT
+00001468                           526  HEX_TO_ASCII: 
+00001468  202F 0008                527      MOVE.L 8(SP), D0 
+0000146C  282F 0004                528      MOVE.L 4(SP), D4
+00001470  0C44 0004                529      CMPI #HEX_TO_ASCII_WORD, D4 
+00001474  6700 004E                530      BEQ HEX_TO_ASCII_SWAP
+00001478  0C44 0002                531      CMPI #HEX_TO_ASCII_BYTE, D4
+0000147C  6700 EB84                532      BEQ HEX_TO_ASCII_BYTE
+00001480                           533  HEX2ASCII_DONE_CONVERT:
+00001480  4201                     534      CLR.B D1
+00001482  227C 00007010            535      MOVE.L #OUTPUT_ADDRESS, A1
+00001488  =0000000F                536  HEX_MASKING EQU $0000000F
+00001488  =00000002                537  HEX_TO_ASCII_BYTE EQU $02
+00001488  =00000004                538  HEX_TO_ASCII_WORD EQU $04
+00001488  =00000008                539  HEX_TO_ASCII_LONG EQU $08
+00001488                           540  
+00001488                           541  HEX_TO_ASCII_LOOP:
+00001488  B204                     542      CMP.B D4, D1
+0000148A  6700 0032                543      BEQ END_HEX_TO_ASCII ; branch if d1 > d4
+0000148E                           544  
+0000148E  E998                     545      ROL.L #4, D0 ; shift left 4 bits to get a hex value
+00001490  2600                     546      MOVE.L D0,D3 ; copy the value to mask
+00001492  C6BC 0000000F            547      AND.L #HEX_MASKING, D3  ; mask
+00001498                           548  
+00001498  0C03 000A                549      CMPI.B #10, D3 ; compare masked value with 10 if less than than convert to ascii number
+0000149C  6D00 000C                550      BLT HEX_TO_ASCII_NUMBER ; let convert to number ascii
+000014A0                           551  
+000014A0  0C03 0048                552      CMPI.B #72, D3 ; compare masked value with F letter in ascii
+000014A4  6D00 000E                553      BLT HEX_TO_ASCII_LETTER
+000014A8                           554  
+000014A8  60DE                     555      BRA HEX_TO_ASCII_LOOP
+000014AA                           556  HEX_TO_ASCII_NUMBER:
+000014AA  0603 0030                557      ADD.B #48, D3  ; convert number to letter
+000014AE  12C3                     558      MOVE.B D3, (A1)+ ; push to return memory
+000014B0  5201                     559      ADDQ.B #$1, D1 ; add for loop count
+000014B2  60D4                     560      BRA HEX_TO_ASCII_LOOP ; loop back
+000014B4                           561  HEX_TO_ASCII_LETTER:
+000014B4  0603 0037                562      ADD.B #55, D3 ; convert A-F in ascii
+000014B8  12C3                     563      MOVE.B D3, (A1)+ ; push to return memory
+000014BA  5201                     564      ADDQ.B #$1, D1 ; add to for loop count
+000014BC  60CA                     565      BRA HEX_TO_ASCII_LOOP ;loop back
+000014BE                           566  END_HEX_TO_ASCII:
+000014BE  12FC 0000                567      MOVE.B #0, (A1)+ ; add null terminated value
+000014C2  6090                     568      BRA GET_ASCII_FROM_HEX
+000014C4                           569  HEX_TO_ASCII_SWAP:
+000014C4  4840                     570      SWAP D0
+000014C6  60B8                     571      BRA HEX2ASCII_DONE_CONVERT
+000014C8                           572     
+000014C8                           573  HEX_TO_ASCII_ROR:
+000014C8  E098                     574      ROR.L #$08, D0
+000014CA  60B4                     575      BRA HEX2ASCII_DONE_CONVERT
+000014CC                           576  
+000014CC                           577  
+000014CC                           578  *-----------------------------------------------------------
+000014CC                           579  * CHECK IF THE VALUE IN HEX IS ODD 
+000014CC                           580  * PARAMETER;* 1(4(SP))- HEX VALUE (LONG)
+000014CC                           581  * RETURN:
+000014CC                           582  *   0: IF IT IS EVEN
+000014CC                           583  *   1: IF IT IS ODD
+000014CC                           584  * NOTE:
+000014CC                           585  *   A0 IS FOR RETURN ADDRESS
+000014CC                           586  *   D0 IS FOR HEX VALUE
+000014CC                           587  CHECK_VALUE_IS_ODD:
+000014CC  =00000000                588  VALUE_IS_EVEN EQU $0
+000014CC  =00000001                589  VALUE_IS_ODD EQU $1
+000014CC  41F9 00009000            590      LEA RETURN_ADDRESS, A0
+000014D2  202F 0004                591      MOVE.L 4(SP), D0
+000014D6  C0BC 0000FFFF            592      AND.L #$0000FFFF, D0
+000014DC  80FC 0002                593      DIVU.W #2, D0
+000014E0  4840                     594      SWAP D0      
+000014E2  0C40 0000                595      CMPI.W #0, D0
+000014E6  6700 000C                596      BEQ CHECK_VALUE_IS_ODD_FAILED
+000014EA  30BC 0001                597      MOVE.W #VALUE_IS_ODD, (A0)
+000014EE  6000 0002                598      BRA END_CHECK_VALUE_IS_ODD
+000014F2                           599  END_CHECK_VALUE_IS_ODD:   
+000014F2  4E75                     600      RTS
+000014F4                           601  
+000014F4                           602  CHECK_VALUE_IS_ODD_FAILED:
+000014F4  30BC 0000                603      MOVE.W #VALUE_IS_EVEN, (A0)
+000014F8  60F8                     604      BRA END_CHECK_VALUE_IS_ODD
+000014FA                           605  *-----------------------------------------------------------
+000014FA                           606  * CONVERT ASCII TO HEX
+000014FA                           607  * PARAMETERS:
+000014FA                           608  *   1. LOCATION OF THE ASCII
+000014FA                           609  *   2. LENGTH OF THE ASCII
+000014FA                           610  *   3. MAXIMUM LENGTH (hex/ byte / long)
+000014FA                           611  * RETURN:
+000014FA                           612  * [0=FAILED](2BYTE) (BECAUSE LENGTH > MAXIMUM_LENGTH)
+000014FA                           613  * [1=OK](2BYTE)[VALUE IN HEX(4BYTES)]
+000014FA                           614  * [2= FAILED](2BYTE)(BEACUSE IT IS NOT A NUMBER IN HEX)
+000014FA                           615  * NOTE:
+000014FA                           616  *    D0 FOR LENGTH OF ASCII
+000014FA                           617  *    D1 FOR LOOPING
+000014FA                           618  ; CURRENT INDEX
+000014FA                           619  *    D2 FOR THE VALUE IN ASCII OF THE DATA
+000014FA                           620  *    D3 FOR CONVERT FINAL RESULT
+000014FA                           621  *    D4 FOR CALCULATE NUMBER OF BIT TO SHIFT
+000014FA                           622  *    A0 LOCATION OF THE DATA   
+000014FA                           623  *    A2 CURRENT POINTER AT CONVERT_HEX_RETURN_ADDRESS
+000014FA                           624  ASCII_TO_HEX:
+000014FA  =00000001                625  ASCII_TO_HEX_RETURN_OK EQU $1
+000014FA  45F9 00009000            626      LEA RETURN_ADDRESS, A2
+00001500  4252                     627      CLR.W (A2)
+00001502  42AA 0002                628      CLR.L 2(A2)
+00001506  206F 000C                629      MOVE.L 12(SP),A0
+0000150A                           630   ; LOCATION OF THE DATA
+0000150A  202F 0008                631      MOVE.L 8(SP), D0  ; LENGTH OF ASCII
+0000150E  222F 0004                632      MOVE.L 4(SP), D1  ; MAX LENGTH
+00001512  B280                     633      CMP.L D0,D1 ; CHECK IF THE LENGTH IS GREATER THAN MAX LENGTH
+00001514  6D00 0076                634      BLT ASCII_TO_HEX_FAILED_0
+00001518  4281                     635      CLR.L D1 ; FOR LOOPING
+0000151A                           636  ASCII_TO_HEX_LOOP:
+0000151A  B081                     637     CMP.L D1, D0 ;COMPARE FOR LOOPING
+0000151C  6700 0068                638     BEQ ASCII_TO_HEX_END_LOOP
+00001520                           639     ; D2 USE FOR STORE DATA 
+00001520  1418                     640      MOVE.B (A0)+, D2
+00001522  0C02 002F                641      CMPI.B #47, D2
+00001526                           642  ASCII_TO_HEX_CHECK_GT_0
+00001526  6E00 0006                643      BGT ASCII_TO_HEX_CHECK_LT_9 ; GREATER THAN LET COMPARE WITH LESS THAN 9
+0000152A  6000 0066                644      BRA ASCII_TO_HEX_FAILED_2 ;ERROR NOT A HEX VALUE
+0000152E                           645  ASCII_TO_HEX_CHECK_LT_9:
+0000152E  0C02 003A                646      CMPI.B #58, D2 ; CHECK IF IT IS LESS THAN NUMBER '9'
+00001532  6D00 001E                647      BLT ASCII_TO_HEX_CONVERT_NUMBER ; LET CONVERT TO NUMBER
+00001536                           648      ; IF IT IT IS NOT GREATHER THAN ZERO AND LESS THAN 9 THAN CHECK A-F
+00001536  6000 0002                649      BRA ASCII_TO_HEX_CHECK_GT_A
+0000153A                           650  ASCII_TO_HEX_CHECK_GT_A:
+0000153A  0C02 0040                651      CMPI.B #64, D2
+0000153E  6E00 0006                652      BGT ASCII_TO_HEX_CHECK_LT_F ; LET CHECK IF IT IS LESS THAN F
+00001542  6000 004E                653      BRA ASCII_TO_HEX_FAILED_2  ; OTHERWISE THE VALUE IS NOT IN HEX
+00001546                           654  ASCII_TO_HEX_CHECK_LT_F
+00001546  0C02 0047                655      CMPI.B #71, D2
+0000154A  6D00 0020                656      BLT ASCII_TO_HEX_CONVERT_LETTER
+0000154E  6000 0042                657      BRA ASCII_TO_HEX_FAILED_2
+00001552                           658  * CONVERT THE NUMBER '0' - '9' IN HEX AND PUT IT IN D4
+00001552                           659  ASCII_TO_HEX_CONVERT_NUMBER:
+00001552  2800                     660       MOVE.L D0,D4 ; MOVE NUMBER OF LENGTH ASCII TO D4
+00001554  0402 0030                661       SUB.B #48, D2 ; MINUS THE NUMBER FROM ASCII TO GET IN HEX
+00001558  9881                     662       SUB.L D1,D4 ; TOTAL LENGTH - CURRENT INDEX OF VALUE IN A0
+0000155A  5344                     663       SUBQ #1, D4 ; SUB 1 TO FOR SHIFT
+0000155C  C8FC 0004                664       MULU #4, D4 ; MULTIPLY NUMBER OF BITS TO SHIFT
+00001560  E9A2                     665       ASL.L D4, D2 ; SHIFT DATA
+00001562  D5AA 0002                666       ADD.L D2, 2(A2) ; ADD THE DATA TO CURRENT VALUE IN A2 
+00001566  4282                     667       CLR.L D2
+00001568  5241                     668       ADDQ #1, D1  ; INCRASE LOOP COUNT INDEX
+0000156A  60AE                     669       BRA ASCII_TO_HEX_LOOP
+0000156C                           670  ASCII_TO_HEX_CONVERT_LETTER:
+0000156C  2800                     671      MOVE.L D0, D4
+0000156E  0402 0037                672      SUB.B #55, D2
+00001572  9881                     673      SUB.L D1,D4
+00001574  5344                     674      SUBQ #1, D4
+00001576  C8FC 0004                675      MULU #4, D4
+0000157A  E9A2                     676      ASL.L D4,D2
+0000157C  D5AA 0002                677      ADD.L D2, 2(A2)
+00001580  4282                     678      CLR.L D2 
+00001582  5241                     679      ADDQ #1, D1
+00001584  6094                     680      BRA ASCII_TO_HEX_LOOP
+00001586                           681  ASCII_TO_HEX_END_LOOP:
+00001586  34BC 0001                682      MOVE.W #1, (A2)
+0000158A  4E75                     683      RTS
+0000158C                           684      
+0000158C                           685  ASCII_TO_HEX_FAILED_0:
+0000158C  34BC 0002                686      MOVE.W #2, (A2)
+00001590  4E75                     687      RTS
+00001592                           688  ASCII_TO_HEX_FAILED_2:
+00001592  34BC 0002                689      MOVE.W #2, (A2)
+00001596  4E75                     690      RTS 
+00001598                           691  * THIS METHOD USES TO INCRASE START ADDRESS TO N VALUE 
+00001598                           692  * PARAMETERS:
+00001598                           693  *   1 (8(SP)) LONG VALUE: WHERE IS THE START ADDRESS
+00001598                           694  *   2 (4(SP)) LONG VALUE: HOW MANY OFFSET
+00001598                           695  * RETURN:
+00001598                           696  *   NULL
+00001598                           697  * NOTE:
+00001598                           698  *   A0 USE TO POINT TO THE ADDRESS
+00001598                           699  *   d1 USE TO MATH 
+00001598                           700  INCRASE_POINTER_START_ADDRESS: 
+00001598  206F 0008                701      MOVE.L 8(SP), A0
+0000159C  222F 0004                702      MOVE.L 4(SP), D1
+000015A0  D390                     703      ADD.L D1, (A0)
+000015A2  4E75                     704      RTS
+000015A4                           705  
+000015A4                           706  * FETCH 16 BIT FROM START_ADDRESS
+000015A4                           707  * PARAMTERS: 
+000015A4                           708  *   1- (8(SP)): WHERE IS OPCODE LOCATION
+000015A4                           709  *   2- (4(SP)): WHERE TO STORE THE RESULT
+000015A4                           710  * RETURN:
+000015A4                           711  *   NULL
+000015A4                           712  * NOTE:
+000015A4                           713  *     A0 USE TO STORE THE OPCODE LOCATION
+000015A4                           714  *     A2 USES TO RETURN THE OPCODE
+000015A4                           715  FETCH_OPCODES:
+000015A4  206F 0008                716      MOVE.L 8(SP), A0 ; LOCATION
+000015A8  246F 0004                717      MOVE.L 4(SP), A2 ; OPCODE WILL BE RETURNED
+000015AC  3050                     718      MOVE.W (A0), A0
+000015AE  3488                     719      MOVE.W A0,(A2)
+000015B0  31FC 0002 7008           720      MOVE.W #$2, (OFFSET_OPC_ADDRES)
+000015B6                           721  END_FETCH_OPCODES:
+000015B6  4E75                     722      RTS
+000015B8                           723  *---------------------------------------------------------DISASSEMBLER START HERE----------------------------------------------------------------------------------------
+000015B8                           724  * jump table uses to jump to decode subroutine
+000015B8                           725  * PARAMATERS:
+000015B8                           726  * 1-(4(Sp)) Word - opcode
+000015B8                           727  * NOTE: 
+000015B8                           728  *   D1 USES TO STORE OPCODE
+000015B8                           729  JUMP_TABLE:
+000015B8  322F 0004                730      MOVE.W 4(SP), D1
+000015BC  4EB9 000015F2            731      JSR RTS
+000015C2  4EB9 000015E8            732      JSR NOP
+000015C8  4EB9 000015FC            733      JSR JSR
+000015CE  4EB9 0000162E            734      JSR LEA
+000015D4  4EB9 0000167E            735      JSR ADDA
+000015DA  4EB9 00001728            736      JSR BRA
+000015E0  4EB9 000016E2            737      JSR NEG
+000015E6                           738  
+000015E6                           739  END_JUMP_TABLE:
+000015E6  4E75                     740      RTS
+000015E8                           741  
+000015E8                           742  NOP:
+000015E8                           743  * CONSTANT FOR NOP
+000015E8  =00004E71                744  C_NOP EQU $4E71
+000015E8  B27C 4E71                745      CMP.W #C_NOP, D1
+000015EC  6700 016C                746      BEQ PRINT_NOP
+000015F0  4E75                     747      RTS
+000015F2                           748  
+000015F2                           749  RTS:
+000015F2                           750  * constant for RTS 
+000015F2  =00004E75                751  C_RTS EQU $4E75
+000015F2  B27C 4E75                752      CMP.W #C_RTS, D1
+000015F6  6700 0150                753      BEQ PRINT_RTS
+000015FA  4E75                     754      RTS
+000015FC                           755  
+000015FC                           756  JSR:
+000015FC  =00004E80                757  JSR_OPCODE EQU %0100111010000000
+000015FC  4242                     758      CLR.W D2
+000015FE  3401                     759      MOVE.W D1,D2 
+00001600                           760  * MASKING WITH UNIQUE OPCODE
+00001600  C47C FFC0                761      AND.W #%1111111111000000, D2
+00001604  B47C 4E80                762      CMP.W #JSR_OPCODE, D2
+00001608  6600 0022                763      BNE JSR_END 
+0000160C  4EB9 000017A0            764      JSR PRINT_JSR
+00001612                           765  * MASKING TO GET MODE AND REGISTER
+00001612  1401                     766      MOVE.B D1,D2
+00001614  C43C 003F                767      AND.B #%00111111, D2
+00001618  48A7 4000                768      MOVEM.W D1, -(SP)
+0000161C  3F02                     769      MOVE.W D2, -(SP)
+0000161E  3F3C 0000                770      MOVE.W #$0, -(SP)
+00001622  4EB8 117C                771      JSR PRINT_REGISTER
+00001626  5882                     772      ADDQ.L #4, D2
+00001628  4C9F 0002                773      MOVEM.W (SP)+, D1
+0000162C                           774  JSR_END:
+0000162C  4E75                     775      RTS
+0000162E                           776  
+0000162E                           777  LEA:
+0000162E  4242                     778      CLR.W D2
+00001630                           779      * 0 1 0 0 AN 1 1 1
+00001630  3401                     780      MOVE.W D1,D2 
+00001632  C47C F1C0                781      AND.W  #%1111000111000000, D2
+00001636  0C42 41C0                782      CMPI.W #%0100000111000000, D2
+0000163A  6600 0040                783      BNE LEA_END
+0000163E  4EB9 000017B2            784      JSR PRINT_LEA
+00001644  1401                     785      MOVE.B D1,D2 
+00001646                           786      ; MASK TO GET MODE AND REGISTER
+00001646  C43C 003F                787      AND.B #%0000000000111111, D2
+0000164A  48A7 4000                788      MOVEM.W D1, -(SP)
+0000164E  3F02                     789      MOVE.W D2, -(SP)
+00001650  3F3C 0000                790      MOVE.W #$0, -(SP)
+00001654  4EB8 117C                791      JSR PRINT_REGISTER
+00001658  588F                     792      ADDQ.L #$4, SP
+0000165A  4C9F 0002                793      MOVEM.W (SP)+, D1
+0000165E  4EB8 1082                794      JSR PRINT_COMMA
+00001662                           795      ; MASK TO GET DESTINATION REGISTER
+00001662  3401                     796      MOVE.W D1,D2
+00001664  C47C 0E00                797      AND.W #%0000111000000000, D2
+00001668  E042                     798      ASR.W #$08, D2
+0000166A  E242                     799      ASR.W #$01, D2
+0000166C  843C 0008                800      OR.B #%00001000, D2 ; OR TO PASS TO PRINT_REGISTER
+00001670  3F02                     801      MOVE.W D2, -(SP)
+00001672  3F3C 0000                802      MOVE.W #$0, -(SP) 
+00001676  4EB8 117C                803      JSR PRINT_REGISTER
+0000167A  588F                     804      ADDQ.L #$04, SP
+0000167C                           805  LEA_END:
+0000167C  4E75                     806      RTS
+0000167E                           807  
+0000167E                           808  ADDA:
+0000167E  3401                     809      MOVE.W D1, D2
+00001680  =0000D0C0                810  C_ADDA EQU       %1101000011000000
+00001680  =0000F0C0                811  ADDA_MASKING EQU %1111000011000000
+00001680  C47C F0C0                812      AND.W #ADDA_MASKING, D2 ; GET PATTERN
+00001684  0C42 D0C0                813      CMPI.W #C_ADDA, D2 ; COMPARE WITH THE PATTERN
+00001688  6600 0056                814      BNE ADDA_END 
+0000168C  4EB9 000017C4            815      JSR PRINT_ADDA
+00001692  3401                     816      MOVE.W D1, D2  ; START TO MASK SIZE 
+00001694  =00000100                817  ADDA_SIZE_MASKING EQU %0000000100000000
+00001694  C47C 0100                818      AND.W #ADDA_SIZE_MASKING,D2 
+00001698  E042                     819      ASR.W #8, D2 
+0000169A  3C02                     820      MOVE.W D2 , D6 ; FOR SIZE TO PRINT REGISTER 
+0000169C  5246                     821      ADDQ #$1, D6
+0000169E  1F06                     822      MOVE.B D6 , -(SP)
+000016A0  4EB8 112E                823      JSR PRINT_DATA
+000016A4  548F                     824      ADDQ.L #$2, SP 
+000016A6  4EB8 1064                825      JSR PRINT_TAB
+000016AA                           826  
+000016AA  3238 7006                827      MOVE.W (OPCODE_ADDRESS), D1 
+000016AE  1401                     828      MOVE.B D1, D2 
+000016B0  C43C 003F                829      AND.B #%00111111, D2 
+000016B4  3F02                     830      MOVE.W D2, -(SP)
+000016B6  3F06                     831      MOVE.W D6, -(SP)
+000016B8  4EB8 117C                832      JSR PRINT_REGISTER 
+000016BC  588F                     833      ADDQ.L #$04, SP 
+000016BE  4EB8 1082                834      JSR PRINT_COMMA
+000016C2  3238 7006                835      MOVE.W (OPCODE_ADDRESS), D1  ; get back the opcode just in case
+000016C6  3401                     836      MOVE.W D1, D2
+000016C8  =00000E00                837  ADDA_AN_MASKING EQU %0000111000000000
+000016C8  C47C 0E00                838      AND.W #ADDA_AN_MASKING, D2
+000016CC  E042                     839      ASR.W #8, D2 
+000016CE  E242                     840      ASR.W #1, D2 
+000016D0  843C 0008                841      OR.B #%00001000, D2 ; TO APPEND MODE FOR PRINT REGISTER 
+000016D4  3F02                     842      MOVE.W D2, -(SP)
+000016D6  3F3C 0000                843      MOVE.W #$0, -(SP)
+000016DA  4EB8 117C                844      JSR PRINT_REGISTER 
+000016DE  588F                     845      ADDQ.L #$4, SP 
+000016E0                           846  ADDA_END:
+000016E0  4E75                     847      RTS
+000016E2                           848  
+000016E2                           849  * ------------ LEO ------------ *          * ------------ LEO ------------ *          * ------------ LEO ------------ *
+000016E2                           850  NEG:
+000016E2                           851  * CONSTANT FOR NEG OPCODE
+000016E2  =00004400                852  NEG_OPCODE EQU %0100010000000000
+000016E2  =0000FF00                853  NEG_M      EQU %1111111100000000
+000016E2  =0000003F                854  NEG_REG_M  EQU %0000000000111111
+000016E2  =000000C0                855  NEG_SIZE_M EQU %0000000011000000
+000016E2  3401                     856      MOVE.W D1, D2
+000016E4                           857  * MASKING WITH NEG UNIQUE CODE
+000016E4  C47C FF00                858      AND.W #NEG_M, D2
+000016E8  B47C 4400                859      CMP.W #NEG_OPCODE, D2
+000016EC  6600 0038                860      BNE NEG_END
+000016F0  4EB9 000017F2            861      JSR PRINT_NEG
+000016F6                           862      
+000016F6  3401                     863      MOVE.W D1, D2
+000016F8                           864  * MASKING TO GET NEG SIZE
+000016F8  C47C 00C0                865      AND.W #NEG_SIZE_M, D2
+000016FC  EC42                     866      ASR.W #6, D2
+000016FE  3C02                     867      MOVE.W D2 , D6 * COPY SHIFTED SIZE FOR PRINT REGISTER 
+00001700  1F06                     868      MOVE.B D6, -(SP)
+00001702  4EB8 112E                869      JSR PRINT_DATA
+00001706  548F                     870      ADDQ.L #2, SP
+00001708  4EB8 1064                871      JSR PRINT_TAB
+0000170C                           872  
+0000170C  3238 7006                873      MOVE.W (OPCODE_ADDRESS), D1     
+00001710  3401                     874      MOVE.W D1, D2
+00001712                           875  * MASKING TO GET MODE AND REGISTER
+00001712  C47C 003F                876      AND.W #NEG_REG_M, D2
+00001716  3F02                     877      MOVE.W D2, -(SP)
+00001718  3F06                     878      MOVE.W D6, -(SP)
+0000171A  4EB8 117C                879      JSR PRINT_REGISTER
+0000171E  588F                     880      ADDQ.L #$04, SP
+00001720  321F                     881      MOVE.W (SP)+, D1
+00001722  4242                     882      CLR.W D2
+00001724  4246                     883      CLR.W D6
+00001726                           884  NEG_END: 
+00001726  4E75                     885      RTS
+00001728                           886  
+00001728                           887  BRA:
+00001728                           888  * CONSTANT FOR BRA OPCODE
+00001728  =00006000                889  BRA_OPCODE EQU %0110000000000000
+00001728  =00006000                890  BRA_M      EQU %0110000000000000
+00001728  =000000FF                891  BRA_SIZE_M EQU %0000000011111111
+00001728  4242                     892      CLR.W D2
+0000172A  3401                     893      MOVE.W D1, D2
+0000172C                           894  * MASKING WITH BRA UNIQUE CODE
+0000172C  C47C 6000                895      AND.W #BRA_M, D2
+00001730  B47C 6000                896      CMP.W #BRA_OPCODE, D2
+00001734  6600 0010                897      BNE BRA_END
+00001738  4EB9 000017E4            898      JSR PRINT_BRA
+0000173E  3401                     899      MOVE.W D1, D2
+00001740  3601                     900      MOVE.W D1, D3
+00001742                           901  * MASKING TO GET SIZE OF BRA
+00001742  B47C 00FF                902      CMP.W #BRA_SIZE_M, D2 
+00001746                           903  BRA_END:
+00001746  4E75                     904      RTS
+00001748                           905  
+00001748                           906  * OR:
+00001748                           907  * * CONSTANT FOR OR OPCODE
+00001748                           908  * OR_OPCODE EQU %
+00001748                           909  * OR_M      EQU %
+00001748                           910  * OR_SIZE_M EQU %
+00001748                           911  *     CLR.W D2
+00001748                           912  *     MOVE.W D1, D2
+00001748                           913  * * MASKING WITH OR UNIQUE CODE
+00001748                           914  *     AND.W #OR_M, D2
+00001748                           915  *     CMP.W #OR_OPCODE, D2
+00001748                           916  *     BNE OR_END
+00001748                           917  *     JSR PRINT_OR
+00001748                           918  *     MOVE.W D1, D2
+00001748                           919  *     MOVE.W D1, D3
+00001748                           920  * * MASKING TO GET SIZE OF OR
+00001748                           921  *     CMP.W #OR_SIZE_M, D2 
+00001748                           922  * OR_END:
+00001748                           923  *     RTS
+00001748                           924  
+00001748                           925  * ORI:
+00001748                           926  * * CONSTANT FOR ORI OPCODE
+00001748                           927  * ORI_OPCODE EQU %
+00001748                           928  * ORI_M      EQU %
+00001748                           929  * ORI_SIZE_M EQU %
+00001748                           930  *     CLR.W D2
+00001748                           931  *     MOVE.W D1, D2
+00001748                           932  * * MASKING WITH ORI UNIQUE CODE
+00001748                           933  *     AND.W #ORI_M, D2
+00001748                           934  *     CMP.W #ORI_OPCODE, D2
+00001748                           935  *     BNE ORI_END
+00001748                           936  *     JSR PRINT_ORI
+00001748                           937  *     MOVE.W D1, D2
+00001748                           938  *     MOVE.W D1, D3
+00001748                           939  * * MASKING TO GET SIZE OF ORI
+00001748                           940  *     CMP.W #ORI_SIZE_M, D2 
+00001748                           941  * ORI_END:
+00001748                           942  *     RTS
+00001748                           943  
+00001748                           944  * ROR:
+00001748                           945  * * CONSTANT FOR ROR OPCODE
+00001748                           946  * ROR_OPCODE EQU %
+00001748                           947  * ROR_M      EQU %
+00001748                           948  * ROR_SIZE_M EQU %
+00001748                           949  *     CLR.W D2
+00001748                           950  *     MOVE.W D1, D2
+00001748                           951  * * MASKING WITH ROR UNIQUE CODE
+00001748                           952  *     AND.W #ROR_M, D2
+00001748                           953  *     CMP.W #ROR_OPCODE, D2
+00001748                           954  *     BNE ROR_END
+00001748                           955  *     JSR PRINT_ROR
+00001748                           956  *     MOVE.W D1, D2
+00001748                           957  *     MOVE.W D1, D3
+00001748                           958  * * MASKING TO GET SIZE OF ROR
+00001748                           959  *     CMP.W #ROR_SIZE_M, D2 
+00001748                           960  * ROR_END:
+00001748                           961  *     RTS
+00001748                           962  
+00001748                           963  * ROL:
+00001748                           964  * * CONSTANT FROR ROL OPCODE
+00001748                           965  * ROL_OPCODE EQU %
+00001748                           966  * ROL_M      EQU %
+00001748                           967  * ROL_SIZE_M EQU %
+00001748                           968  *     CLR.W D2
+00001748                           969  *     MOVE.W D1, D2
+00001748                           970  * * MASKING WITH ROL UNIQUE CODE
+00001748                           971  *     AND.W #ROL_M, D2
+00001748                           972  *     CMP.W #ROL_OPCODE, D2
+00001748                           973  *     BNE ROL_END
+00001748                           974  *     JSR PRINT_ROL
+00001748                           975  *     MOVE.W D1, D2
+00001748                           976  *     MOVE.W D1, D3
+00001748                           977  * * MASKING TO GET SIZE OF ROL
+00001748                           978  *     CMP.W #ROL_SIZE_M, D2 
+00001748                           979  * ROL_END:
+00001748                           980  *     RTS
+00001748                           981  * ------------ LEO ------------ *          * ------------ LEO ------------ *          * ------------ LEO ------------ *
+00001748                           982  
+00001748                           983  
+00001748                           984  PRINT_RTS:
+00001748  43F9 00001800            985     LEA P_RTS, A1
+0000174E  103C 000E                986     MOVE.B #14, D0
+00001752  4E4F                     987     TRAP #15
+00001754  4EB8 1064                988     JSR PRINT_TAB
+00001758  4E75                     989     RTS 
+0000175A                           990  PRINT_NOP:
+0000175A  43F9 00001882            991      LEA P_NOP, A1
+00001760  103C 000E                992      MOVE.B #14, D0
+00001764  4E4F                     993      TRAP #15
+00001766  4E75                     994      RTS 
+00001768                           995  PRINT_OR:
+00001768  43F9 00001835            996      LEA P_OR, A1
+0000176E  103C 000E                997      MOVE.B #14, D0
+00001772  4E4F                     998      TRAP #15
+00001774  4E75                     999      RTS 
+00001776                          1000  PRINT_ORI:
+00001776  43F9 00001838           1001      LEA P_ORI, A1
+0000177C  103C 000E               1002      MOVE.B #14, D0
+00001780  4E4F                    1003      TRAP #15
+00001782  4E75                    1004      RTS 
+00001784                          1005  PRINT_ROL:
+00001784  43F9 0000183C           1006      LEA P_ROL, A1
+0000178A  103C 000E               1007      MOVE.B #14, D0
+0000178E  4E4F                    1008      TRAP #15
+00001790  4E75                    1009      RTS 
+00001792                          1010  PRINT_ROR:
+00001792  43F9 00001840           1011      LEA P_ROR, A1
+00001798  103C 000E               1012      MOVE.B #14, D0
+0000179C  4E4F                    1013      TRAP #15
+0000179E  4E75                    1014      RTS 
+000017A0                          1015  PRINT_JSR:
+000017A0  43F9 0000187E           1016      LEA P_JSR, A1
+000017A6  103C 000E               1017      MOVE.B #14, D0
+000017AA  4E4F                    1018      TRAP #15
+000017AC  4EB8 1064               1019      JSR PRINT_TAB
+000017B0  4E75                    1020      RTS 
+000017B2                          1021  PRINT_LEA:
+000017B2  43F9 00001831           1022     LEA P_LEA, A1
+000017B8  103C 000E               1023     MOVE.B #14, D0
+000017BC  4E4F                    1024     TRAP #15
+000017BE  4EB8 1064               1025     JSR PRINT_TAB
+000017C2  4E75                    1026     RTS 
+000017C4                          1027  PRINT_ADDA: 
+000017C4  43F9 00001819           1028      LEA P_ADDA, A1 
+000017CA  103C 000E               1029      MOVE.B #14, D0
+000017CE  4E4F                    1030      TRAP #15 
+000017D0  4E75                    1031      RTS
+000017D2                          1032  PRINT_ADD: 
+000017D2  43F9 00001815           1033      LEA P_ADD, A1 
+000017D8  103C 0014               1034      MOVE.B #$14, D0
+000017DC  4E4F                    1035      TRAP #15 
+000017DE  4EB8 1064               1036      JSR PRINT_TAB
+000017E2  4E75                    1037      RTS
+000017E4                          1038  PRINT_BRA:
+000017E4  43F9 0000187A           1039      LEA P_BRA, A1
+000017EA  103C 000E               1040      MOVE.B #14, D0
+000017EE  4E4F                    1041      TRAP #15
+000017F0  4E75                    1042      RTS 
+000017F2                          1043  PRINT_NEG:
+000017F2  43F9 00001844           1044      LEA P_NEG, A1
+000017F8  103C 000E               1045      MOVE.B #14, D0
+000017FC  4E4F                    1046      TRAP #15
+000017FE  4E75                    1047      RTS
+00001800                          1048  
+00001800                          1049  
+00001800                          1050  
+00001800                          1051  
+00001800= 52 54 53 00             1052  P_RTS   DC.B 'RTS',0          * ------------ DONE ------------ *
+00001804= 4D 4F 56 45 00          1053  P_MOVE  DC.B 'MOVE',0
+00001809= 4D 4F 56 45 41 00       1054  P_MOVEA DC.B 'MOVEA', 0
+0000180F= 4D 4F 56 45 4D 00       1055  P_MOVEM DC.B 'MOVEM', 0
+00001815= 41 44 44 00             1056  P_ADD   DC.B 'ADD', 0
+00001819= 41 44 44 41 00          1057  P_ADDA  DC.B 'ADDA',0         * ------------ DONE ------------ *
+0000181E= 53 55 42 00             1058  P_SUB   DC.B 'SUB', 0
+00001822= 53 55 42 51 00          1059  P_SUBQ  DC.B 'SUBQ',0
+00001827= 4D 55 4C 53 00          1060  P_MULS  DC.B 'MULS',0
+0000182C= 44 49 56 53 00          1061  P_DIVS  DC.B 'DIVS',0
+00001831= 4C 45 41 00             1062  P_LEA   DC.B 'LEA',0          * ------------ DONE ------------ *
+00001835= 4F 52 00                1063  P_OR    DC.B 'OR',0           * --------- IN PROGRESS -------- *
+00001838= 4F 52 49 00             1064  P_ORI   DC.B 'ORI', 0         * --------- IN PROGRESS -------- *
+0000183C= 52 4F 4C 00             1065  P_ROL   DC.B 'ROL', 0         * --------- IN PROGRESS -------- *
+00001840= 52 4F 52 00             1066  P_ROR   DC.B 'ROR', 0         * --------- IN PROGRESS -------- *
+00001844= 4E 45 47 00             1067  P_NEG   DC.B 'NEG', 0         * --------- IN PROGRESS -------- *
+00001848= 45 4F 52 00             1068  P_EOR   DC.B 'EOR', 0
+0000184C= 4C 53 52 00             1069  P_LSR   DC.B 'LSR',0
+00001850= 4C 53 4C 00             1070  P_LSL   DC.B 'LSL', 0
+00001854= 41 53 52 00             1071  P_ASR   DC.B 'ASR', 0
+00001858= 41 53 4C 00             1072  P_ASL   DC.B 'ASL',0 
+0000185C= 42 43 4C 52 00          1073  P_BCLR  DC.B 'BCLR',0
+00001861= 43 4D 50 00             1074  P_CMP   DC.B 'CMP', 0
+00001865= 43 4D 50 49 00          1075  P_CMPI  DC.B 'CMPI', 0
+0000186A= 42 43 53 00             1076  P_BCS   DC.B 'BCS', 0
+0000186E= 42 47 45 00             1077  P_BGE   DC.B 'BGE', 0
+00001872= 42 4C 54 00             1078  P_BLT   DC.B 'BLT',0
+00001876= 42 56 43 00             1079  P_BVC   DC.B 'BVC', 0
+0000187A= 42 52 41 00             1080  P_BRA   DC.B 'BRA',0          * --------- IN PROGRESS -------- *
+0000187E= 4A 53 52 00             1081  P_JSR   DC.B 'JSR',0          * ------------ DONE ------------ *
+00001882= 4E 4F 50 00             1082  P_NOP   DC.B 'NOP',0          * ------------ DONE ------------ *
+00001886                          1083  
+00001886  =00000004               1084  WORD_LENGTH EQU $04
+00001886  =00000008               1085  LONG_LENGTH EQU $08
+00001886  =0000000A               1086  LF          EQU $0A
+00001886  =0000000D               1087  CR          EQU $0D
+00001886  =00000009               1088  HT          EQU  $09 
+00001886= 31 30 30 32 30 30 ...   1089  TEST_VAL            DC.B '10020009'
+0000188E= 20 0D 0A 00             1090  NEW_LINE            DC.B ' ',CR,LF,0
+00001892= 50 6C 65 61 73 65 ...   1091  PROMT_INPUT_START   DC.B 'Please enter starting address(capitalized):  $',0 
+000018C1= 50 6C 65 61 73 65 ...   1092  PROMT_INPUT_END     DC.B 'Please enter ending address(cappitalized): $',0
+000018EE                          1093      
+000018EE  FFFF FFFF               1094      SIMHALT             ; halt simulator
+000018F2                          1095      
+000018F2                          1096      END    START        ; last line of source
 
 No errors detected
 No warnings generated
@@ -999,163 +1106,169 @@ No warnings generated
 SYMBOL TABLE INFORMATION
 Symbol-name         Value
 -------------------------
-ADDA                1664
+ADDA                167E
 ADDA_AN_MASKING     E00
-ADDA_END            16C6
+ADDA_END            16E0
 ADDA_MASKING        F0C0
 ADDA_SIZE_MASKING   100
-ASCII_TO_HEX        14E0
-ASCII_TO_HEX_CHECK_GT_0  150C
-ASCII_TO_HEX_CHECK_GT_A  1520
-ASCII_TO_HEX_CHECK_LT_9  1514
-ASCII_TO_HEX_CHECK_LT_F  152C
-ASCII_TO_HEX_CONVERT_LETTER  1552
-ASCII_TO_HEX_CONVERT_NUMBER  1538
-ASCII_TO_HEX_END_LOOP  156C
-ASCII_TO_HEX_FAILED_0  1572
-ASCII_TO_HEX_FAILED_2  1578
-ASCII_TO_HEX_LOOP   1500
+ASCII_TO_HEX        14FA
+ASCII_TO_HEX_CHECK_GT_0  1526
+ASCII_TO_HEX_CHECK_GT_A  153A
+ASCII_TO_HEX_CHECK_LT_9  152E
+ASCII_TO_HEX_CHECK_LT_F  1546
+ASCII_TO_HEX_CONVERT_LETTER  156C
+ASCII_TO_HEX_CONVERT_NUMBER  1552
+ASCII_TO_HEX_END_LOOP  1586
+ASCII_TO_HEX_FAILED_0  158C
+ASCII_TO_HEX_FAILED_2  1592
+ASCII_TO_HEX_LOOP   151A
 ASCII_TO_HEX_RETURN_OK  1
-BRA                 1712
-BRA_END             1730
+BRA                 1728
+BRA_END             1746
 BRA_M               6000
 BRA_OPCODE          6000
 BRA_SIZE_M          FF
-CHECK_VALUE_IS_ODD  14B2
-CHECK_VALUE_IS_ODD_FAILED  14DA
-CONTINUE_PRINT_REGISTER  11AA
-CONTINUE_PRINT_RE_NUMBER  11C6
+CHECK_VALUE_IS_ODD  14CC
+CHECK_VALUE_IS_ODD_FAILED  14F4
+CONTINUE_PRINT_REGISTER  11C4
+CONTINUE_PRINT_RE_NUMBER  11E0
 CR                  D
 C_ADDA              D0C0
 C_NOP               4E71
 C_RTS               4E75
-DONE_PRINT_D_1BIT   110C
-DONE_PRINT_NUMBER   11E4
+DONE_PRINT_D_1BIT   1126
+DONE_PRINT_NUMBER   11FE
 END_ADDRESS         7004
-END_CHECK_VALUE_IS_ODD  14D8
-END_FETCH_OPCODES   159C
-END_GET_INPUT       1048
-END_HEX_TO_ASCII    14A4
-END_JUMP_TABLE      15CC
+END_CHECK_VALUE_IS_ODD  14F2
+END_FETCH_OPCODES   15B6
+END_GET_END_INPUT   1062
+END_GET_START_INPUT  1048
+END_HEX_TO_ASCII    14BE
+END_JUMP_TABLE      15E6
 END_MAIN            1024
-END_PRINT_COMMA     1078
-END_PRINT_DATA      1136
-END_PRINT_DOLLAR_SIGN  1090
-END_PRINT_HASH_SIGN  10A8
-END_PRINT_HEX       144C
-END_PRINT_NEW_LINE  10C2
-END_PRINT_REGISTER  120E
-END_PRINT_TAB       1060
-FETCH_OPCODES       158A
-GET_ASCII_FROM_HEX  143A
-GET_INPUT           1030
-HEX2ASCII_DONE_CONVERT  1466
+END_PRINT_COMMA     1092
+END_PRINT_DATA      1150
+END_PRINT_DOLLAR_SIGN  10AA
+END_PRINT_HASH_SIGN  10C2
+END_PRINT_HEX       1466
+END_PRINT_NEW_LINE  10DC
+END_PRINT_REGISTER  1228
+END_PRINT_TAB       107A
+FETCH_OPCODES       15A4
+GET_ASCII_FROM_HEX  1454
+GET_END_INPUT       104A
+GET_START_INPUT     1030
+HEX2ASCII_DONE_CONVERT  1480
 HEX_MASKING         F
-HEX_TO_ASCII        144E
+HEX_TO_ASCII        1468
 HEX_TO_ASCII_BYTE   2
-HEX_TO_ASCII_LETTER  149A
+HEX_TO_ASCII_LETTER  14B4
 HEX_TO_ASCII_LONG   8
-HEX_TO_ASCII_LOOP   146E
-HEX_TO_ASCII_NUMBER  1490
-HEX_TO_ASCII_ROR    14AE
-HEX_TO_ASCII_SWAP   14AA
+HEX_TO_ASCII_LOOP   1488
+HEX_TO_ASCII_NUMBER  14AA
+HEX_TO_ASCII_ROR    14C8
+HEX_TO_ASCII_SWAP   14C4
 HEX_TO_ASCII_WORD   4
 HT                  9
-INCRASE_POINTER_START_ADDRESS  157E
-JSR                 15E2
-JSR_END             1612
+INCRASE_POINTER_START_ADDRESS  1598
+JSR                 15FC
+JSR_END             162C
 JSR_OPCODE          4E80
-JUMP_TABLE          159E
-LEA                 1614
-LEA_END             1662
+JUMP_TABLE          15B8
+LEA                 162E
+LEA_END             167C
 LF                  A
 LONG_LENGTH         8
 MAIN                1024
-NEG                 16C8
-NEG_END             1710
+NEG                 16E2
+NEG_END             1726
 NEG_M               FF00
 NEG_OPCODE          4400
 NEG_REG_M           3F
 NEG_SIZE_M          C0
-NEW_LINE            1840
-NOP                 15CE
+NEW_LINE            188E
+NOP                 15E8
 OFFSET_OPC_ADDRES   7008
 OPCODE_ADDRESS      7006
 OUTPUT_ADDRESS      7010
-PRINT_A             141C
-PRINT_AB_LONG       1338
-PRINT_AB_SHORT      12D6
-PRINT_ADD           1784
-PRINT_ADDA          1776
-PRINT_BRA           1796
-PRINT_BYTE          113E
-PRINT_CLOSE         13CE
-PRINT_CLOSE_PLUS    13E8
-PRINT_COMMA         1068
-PRINT_D             1402
-PRINT_DATA          1114
-PRINT_DATA_1BIT     10D0
-PRINT_DOLLAR_SIGN   1080
-PRINT_D_LONG        10E4
-PRINT_D_WORD        10F8
-PRINT_HASH_SIGN     1098
-PRINT_HEX           1436
-PRINT_IMMEDIATE     1210
-PRINT_IMMEDIATE_BYTE  124C
-PRINT_IMMEDIATE_LONG  12A2
-PRINT_IMMEDIATE_WORD  1276
-PRINT_JSR           1752
-PRINT_LEA           1764
-PRINT_LONG          1156
-PRINT_MINUS_OPEN    13B4
-PRINT_NEG           17A4
-PRINT_NEW_LINE      10B0
-PRINT_NOP           1744
-PRINT_OPEN          139A
-PRINT_REGISTER      1162
-PRINT_RTS           1732
-PRINT_TAB           104A
-PRINT_WORD          114A
-PROMT_INPUT_END     1873
-PROMT_INPUT_START   1844
-P_ADD               17C7
-P_ADDA              17CB
-P_ASL               1802
-P_ASR               17FE
-P_BCLR              180E
-P_BCS               181C
-P_BGE               1820
-P_BLT               1824
-P_BRA               182C
-P_BVC               1828
-P_CMP               1813
-P_CMPI              1817
-P_DIVS              17DE
-P_EOR               17F2
-P_JSR               1830
-P_LEA               17E3
-P_LSL               17FA
-P_LSR               17F6
-P_MOVE              17B6
-P_MOVEA             17BB
-P_MOVEM             17C1
-P_MULS              17D9
-P_NEG               17EE
-P_NOP               1834
-P_OR                17E7
-P_ORI               17EA
-P_ROL               1806
-P_ROR               180A
-P_RTS               17B2
-P_SUB               17D0
-P_SUBQ              17D4
+PRINT_A             1436
+PRINT_AB_LONG       1352
+PRINT_AB_SHORT      12F0
+PRINT_ADD           17D2
+PRINT_ADDA          17C4
+PRINT_BRA           17E4
+PRINT_BYTE          1158
+PRINT_CLOSE         13E8
+PRINT_CLOSE_PLUS    1402
+PRINT_COMMA         1082
+PRINT_D             141C
+PRINT_DATA          112E
+PRINT_DATA_1BIT     10EA
+PRINT_DOLLAR_SIGN   109A
+PRINT_D_LONG        10FE
+PRINT_D_WORD        1112
+PRINT_HASH_SIGN     10B2
+PRINT_HEX           1450
+PRINT_IMMEDIATE     122A
+PRINT_IMMEDIATE_BYTE  1266
+PRINT_IMMEDIATE_LONG  12BC
+PRINT_IMMEDIATE_WORD  1290
+PRINT_JSR           17A0
+PRINT_LEA           17B2
+PRINT_LONG          1170
+PRINT_MINUS_OPEN    13CE
+PRINT_NEG           17F2
+PRINT_NEW_LINE      10CA
+PRINT_NOP           175A
+PRINT_OPEN          13B4
+PRINT_OR            1768
+PRINT_ORI           1776
+PRINT_REGISTER      117C
+PRINT_ROL           1784
+PRINT_ROR           1792
+PRINT_RTS           1748
+PRINT_TAB           1064
+PRINT_WORD          1164
+PROMT_INPUT_END     18C1
+PROMT_INPUT_START   1892
+P_ADD               1815
+P_ADDA              1819
+P_ASL               1858
+P_ASR               1854
+P_BCLR              185C
+P_BCS               186A
+P_BGE               186E
+P_BLT               1872
+P_BRA               187A
+P_BVC               1876
+P_CMP               1861
+P_CMPI              1865
+P_DIVS              182C
+P_EOR               1848
+P_JSR               187E
+P_LEA               1831
+P_LSL               1850
+P_LSR               184C
+P_MOVE              1804
+P_MOVEA             1809
+P_MOVEM             180F
+P_MULS              1827
+P_NEG               1844
+P_NOP               1882
+P_OR                1835
+P_ORI               1838
+P_ROL               183C
+P_ROR               1840
+P_RTS               1800
+P_SUB               181E
+P_SUBQ              1822
 RETURN_ADDRESS      9000
-RTS                 15D8
+RTS                 15F2
 STACK_ADDRESS       8000
 START               1000
 START_ADDRESS       10000
 STORE_REGISTER_ADDRESS  700A
-TEST_VAL            1838
+TEST_VAL            1886
 VALUE_IS_EVEN       0
 VALUE_IS_ODD        1
 WORD_LENGTH         4
