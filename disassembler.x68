@@ -109,7 +109,9 @@ START:                  ; first instruction of program
     MOVE.W (A0), -(SP)
     JSR JUMP_TABLE
     ADDQ.L #$2, SP
-     
+    * MOVE.W #$50, -(SP)
+    * MOVE.W #$02, -(SP) 
+    * JSR PRINT_HEX 
 * Put program code here
 MAIN:
 
@@ -184,12 +186,43 @@ END_PRINT_NEW_LINE:
     MOVE.B #14, D0
     TRAP #15 
     RTS
+
+
+
+* PRINT DATA TYPE FOR EXAMPLE .W AND .L ONLY IF YOU WANT TO PRINT .B SEE PRINT_DATA
+* PARAMETERS:
+*   1- (4(SP)): DATA TYPE (1 BYTE)
+*   A1 USE FOR PRINT
+*   D0 USE FOR TRAP AND HOLD PARAMETER
+PRINT_DATA_1BIT:
+    MOVE.B 4(SP), D0
+    CMPI #$0, D0 
+    BEQ PRINT_D_WORD
+    CMPI #$1, D0 
+    BEQ PRINT_D_LONG 
+PRINT_D_LONG: 
+    MOVE.L #OUTPUT_ADDRESS, A1 
+    MOVE.W #'.L', (A1) 
+    MOVE.B #$0, 2(A1)
+    BRA DONE_PRINT_D_1BIT
+PRINT_D_WORD:
+    MOVE.L #OUTPUT_ADDRESS, A1 
+    MOVE.W #'.W', (A1)
+    MOVE.B #$0, 2(A1)
+    BRA DONE_PRINT_D_1BIT
+DONE_PRINT_D_1BIT:
+    MOVE.B #14, D0 
+    TRAP #15 
+    RTS 
+
+
+
 *--------------------------------------------------------------------
 * PRINT DATA TYPE FOR EXAMPLE: .B .W .L
 * PARAMETERS: 
  *   1- (4(sp)): WHAT DATA TYPE (1 BYTE)
-*       01 - byte
-*       11 - word
+*       00 - byte
+*       01 - word
 *       10 - long
 * NOTE:
 *   A1 USE FOR PRINT
@@ -197,11 +230,11 @@ END_PRINT_NEW_LINE:
 PRINT_DATA:
     MOVE.L #OUTPUT_ADDRESS, A1
     MOVE.B 4(SP), D1
-    CMPI #$01, D1
+    CMPI.B #$00, D1
     BEQ PRINT_BYTE
-    CMPI #$02, D1
+    CMPI.B #$01, D1
     BEQ PRINT_WORD
-    CMPI #$03, D1 
+    CMPI.B #$02, D1 
     BEQ PRINT_LONG
 END_PRINT_DATA:
     MOVE.B #14, D0
@@ -227,10 +260,9 @@ PRINT_LONG:
 * PARAMETERS: what register 1 byte 4 msb indicate dn(0) or an(1), 4 lsb for number of that register
 * 1 - (6(sp)) 3 bits msb for mode, 3 bits lsb for which register
 * 2 - (4(sp)) byte value for how many byte for immediate value
-*      0 for it is not ab value or immediate value
-*      1 for a byte value
-*      2 for word value
-*      3 for long value 
+*      0 for a byte value
+*      1 for word value
+*      2 for long value 
 * NOTE: 
 *   D1 FOR STORE THE PARAMETER
 *   D2 FOR STORE HOW MANY BYTE FOR IMMEDIATE VALUE, AND ABSOLUTE VALUE
@@ -246,30 +278,30 @@ PRINT_REGISTER:
    BEQ PRINT_AB_LONG 
 
    MOVE.B D1,D2
-   AND.B #%01110000, D2
+   AND.B #%00111000, D2
+   CMPI #%00010000, D2
+   BEQ PRINT_OPEN
+
+   MOVE.B D1,D2
+   AND.B #%00111000, D2
+   CMPI #%00011000, D2
+   BEQ PRINT_OPEN
+
+   MOVE.B D1,D2
+   AND.B #%00111000, D2
    CMPI #%00100000, D2
-   BEQ PRINT_OPEN
-
-   MOVE.B D1,D2
-   AND.B #%01110000, D2
-   CMPI #%00110000, D2
-   BEQ PRINT_OPEN
-
-   MOVE.B D1,D2
-   AND.B #%01110000, D2
-   CMPI #%01000000, D2
    BEQ PRINT_MINUS_OPEN
 
 
 CONTINUE_PRINT_REGISTER:
    MOVE.B D1,D2
-   AND.B #%01110000, D2
+   AND.B #%00111000, D2
    CMPI #%00000000, D2
    BEQ PRINT_D
 
    MOVE.B D1,D2
-   AND.B #%01110000, D2
-   CMPI #%00010000, D2
+   AND.B #%00111000, D2
+   CMPI #%00001000, D2
    BEQ PRINT_A 
 
 CONTINUE_PRINT_RE_NUMBER:
@@ -283,18 +315,18 @@ CONTINUE_PRINT_RE_NUMBER:
     TRAP #15
 DONE_PRINT_NUMBER:
    MOVE.B D1,D2
-   AND.B #%01110000, D2
-   CMPI #%00100000, D2
+   AND.B #%00111000, D2
+   CMPI #%00010000, D2
    BEQ PRINT_CLOSE
 
    MOVE.B D1,D2
-   AND.B #%01110000, D2
-   CMPI #%00110000, D2
+   AND.B #%00111000, D2
+   CMPI #%0001100, D2
    BEQ PRINT_CLOSE_PLUS
 
    MOVE.B D1,D2
-   AND.B #%01110000, D2
-   CMPI #%01000000, D2
+   AND.B #%00111000, D2
+   CMPI #%00100000, D2
    BEQ PRINT_CLOSE
 
 END_PRINT_REGISTER:
@@ -309,11 +341,11 @@ PRINT_IMMEDIATE:
     JSR PRINT_DOLLAR_SIGN
     MOVE.W (OFFSET_OPC_ADDRES),D0
     MOVE.W 4(SP), D2 ; HOW MANY BYTE
-    CMPI #$01, D2
+    CMPI #$00, D2
     BEQ PRINT_IMMEDIATE_BYTE ; THIS CASE NEVER HAPPEN BECAUSE IMMEDATE VALUE MINIMUM IS 16 bits
-    CMPI #$02, D2
+    CMPI #$01, D2
     BEQ PRINT_IMMEDIATE_WORD
-    CMPI #$04, D2
+    CMPI #$02, D2
     BEQ PRINT_IMMEDIATE_LONG
     BRA END_PRINT_REGISTER
 
@@ -337,7 +369,7 @@ PRINT_IMMEDIATE_WORD:
     MOVE.L #HEX_TO_ASCII_WORD, -(SP) 
     JSR PRINT_HEX
     ADDQ.L #$08, SP
-    MOVEM.L (SP)+, D0-D2/A0-A2
+    MOVEM.L (SP)+, D0-D2/A0-A1
     ADDQ.W #$2, D0
     MOVE.W D0, (OFFSET_OPC_ADDRES)
     BRA END_PRINT_REGISTER
@@ -363,6 +395,7 @@ PRINT_AB_SHORT:
     MOVE.B #14, D0
     TRAP #15
     ; offset to get immediate value from opcode
+    MOVE.L #START_ADDRESS, A2
     MOVE.W (OFFSET_OPC_ADDRES),D0
     MOVE.W (A2, D0), D2 ; 
     MOVEM.L D0-D2/A0-A1, -(SP)
@@ -370,7 +403,7 @@ PRINT_AB_SHORT:
     MOVE.L #HEX_TO_ASCII_WORD, -(SP) 
     JSR PRINT_HEX
     ADDQ.L #$08, SP
-    MOVEM.L (SP)+, D0-D2/A0-A2
+    MOVEM.L (SP)+, D0-D2/A0-A1
     ADDQ.W #$2, D0
     MOVE.W D0, (OFFSET_OPC_ADDRES)
     ; print close parathesis with W
@@ -485,12 +518,18 @@ END_PRINT_HEX:
 HEX_TO_ASCII: 
     MOVE.L 8(SP), D0 
     MOVE.L 4(SP), D4
+    CMPI #HEX_TO_ASCII_WORD, D4 
+    BEQ HEX_TO_ASCII_SWAP
+    CMPI #HEX_TO_ASCII_BYTE, D4
+    BEQ HEX_TO_ASCII_BYTE
+HEX2ASCII_DONE_CONVERT:
     CLR.B D1
     MOVE.L #OUTPUT_ADDRESS, A1
 HEX_MASKING EQU $0000000F
 HEX_TO_ASCII_BYTE EQU $02
 HEX_TO_ASCII_WORD EQU $04
 HEX_TO_ASCII_LONG EQU $08
+
 HEX_TO_ASCII_LOOP:
     CMP.B D4, D1
     BEQ END_HEX_TO_ASCII ; branch if d1 > d4
@@ -519,6 +558,13 @@ HEX_TO_ASCII_LETTER:
 END_HEX_TO_ASCII:
     MOVE.B #0, (A1)+ ; add null terminated value
     BRA GET_ASCII_FROM_HEX
+HEX_TO_ASCII_SWAP:
+    SWAP D0
+    BRA HEX2ASCII_DONE_CONVERT
+   
+HEX_TO_ASCII_ROR:
+    ROR.L #$08, D0
+    BRA HEX2ASCII_DONE_CONVERT
 
 
 *-----------------------------------------------------------
@@ -681,6 +727,7 @@ C_RTS EQU $4E75
 * CONSTANT FOR JSR
     JSR JSR
     JSR LEA
+    JSR ADDA
 
 END_JUMP_TABLE:
     RTS
@@ -728,15 +775,57 @@ LEA:
     JSR PRINT_COMMA
     ; MASK TO GET DESTINATION REGISTER
     MOVE.W D1,D2
-    AND.W #%0000111100000000, D2
+    AND.W #%0000111000000000, D2
     ASR.W #$08, D2
-    OR.B #%00010000, D2 ; OR TO PASS TO PRINT_REGISTER
+    ASR.W #$01, D2
+    OR.B #%00001000, D2 ; OR TO PASS TO PRINT_REGISTER
     MOVE.W D2, -(SP)
     MOVE.W #$0, -(SP) 
     JSR PRINT_REGISTER
     ADDQ.L #$04, SP
 LEA_END:
     RTS
+ADDA:
+    MOVE.W D1, D2
+C_ADDA EQU       %1101000011000000
+ADDA_MASKING EQU %1111000011000000
+    AND.W #ADDA_MASKING, D2 ; GET PATTERN
+    CMPI.W #C_ADDA, D2 ; COMPARE WITH THE PATTERN
+    BNE ADDA_END 
+    JSR PRINT_ADDA
+    MOVE.W D1, D2  ; START TO MASK SIZE 
+ADDA_SIZE_MASKING EQU %0000000100000000
+    AND.W #ADDA_SIZE_MASKING,D2 
+    ASR.W #8, D2 
+    MOVE.W D2 , D6 ; FOR SIZE TO PRINT REGISTER 
+    ADDQ #$1, D6
+    MOVE.B D6 , -(SP)
+    JSR PRINT_DATA
+    ADDQ.L #$2, SP 
+    JSR PRINT_TAB
+
+    MOVE.W (OPCODE_ADDRESS), D1 
+    MOVE.B D1, D2 
+    AND.B #%00111111, D2 
+    MOVE.W D2, -(SP)
+    MOVE.W D6, -(SP)
+    JSR PRINT_REGISTER 
+    ADDQ.L #$04, SP 
+    JSR PRINT_COMMA
+    MOVE.W (OPCODE_ADDRESS), D1  ; get back the opcode just in case
+    MOVE.W D1, D2
+ADDA_AN_MASKING EQU %0000111000000000
+    AND.W #ADDA_AN_MASKING, D2
+    ASR.W #8, D2 
+    ASR.W #1, D2 
+    OR.B #%00001000, D2 ; TO APPEND MODE FOR PRINT REGISTER 
+    MOVE.W D2, -(SP)
+    MOVE.W #$0, -(SP)
+    JSR PRINT_REGISTER 
+    ADDQ.L #$4, SP 
+ADDA_END:
+    RTS
+
 PRINT_RTS:
    LEA P_RTS, A1
    MOVE.B #14, D0
@@ -755,11 +844,10 @@ PRINT_LEA:
    TRAP #15
    JSR PRINT_TAB
    RTS 
-PRINT_ADD: 
-    LEA P_ADD, A1 
-    MOVE.B #$14. D0
+PRINT_ADDA: 
+    LEA P_ADDA, A1 
+    MOVE.B #14, D0
     TRAP #15 
-    JSR PRINT_TAB
     RTS
 
 
@@ -822,6 +910,14 @@ SIMHALT             ; halt simulator
 PROMT_INPUT_START DC.B 'Please enter starting address(capitalized):  $',0 
 PROMT_INPUT_END DC.B 'Please enter ending address(cappitalized): $',0
     END    START        ; last line of source
+
+
+
+
+
+
+
+
 
 
 
