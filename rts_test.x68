@@ -6,20 +6,10 @@
 *-----------------------------------------------------------
     ORG    $10000
 START:  
-
-    NEG.B D2
-    NEG.W D3
-    NEG.B D4
-    NEG.W D5
-    NEG.B D6
-    NEG.W D7
-   
-   
-    NEG.B (A1)
-    NEG.B (A2)
-    NEG.L (A3)    
-    
-
+    ORI.B    #$7F, D4
+*    ORI.W   #$7F, D1
+*    ORI.L   #$00004000,d7
+*    ORI.L   #$4000,$2000
     SIMHALT  
 
     END    START    
