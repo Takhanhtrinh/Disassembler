@@ -5,17 +5,15 @@
 * Description:
 *-----------------------------------------------------------
     ORG    $10000
-START:                  ; first instruction of program
-    RTS
+START:               
 
+    NEG.B D3
+    NEG.W $C1
+    NEG.L $10A
 
-* Put program code here
+    SIMHALT  
 
-    SIMHALT             ; halt simulator
-
-* Put variables and constants here
-
-    END    START        ; last line of source
+    END    START    
 
 *~Font name~Courier New~
 *~Font size~10~

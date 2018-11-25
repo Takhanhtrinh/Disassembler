@@ -1,6 +1,6 @@
 00010000 Starting Address
 Assembler used: EASy68K Editor/Assembler v5.16.01
-Created On: 11/23/2018 8:19:43 PM
+Created On: 11/24/2018 8:31:43 PM
 
 00000000                             1      *-----------------------------------------------------------
 00000000                             2  * Title      :
@@ -9,18 +9,15 @@ Created On: 11/23/2018 8:19:43 PM
 00000000                             5  * Description:
 00000000                             6  *-----------------------------------------------------------
 00010000                             7      ORG    $10000
-00010000                             8  START:                  ; first instruction of program
+00010000                             8  START:               
 00010000                             9  
-00010000  4EB9 00010000             10      JSR START
-00010006                            11  
-00010006                            12  
-00010006                            13  * Put program code here
-00010006                            14  
-00010006  FFFF FFFF                 15      SIMHALT             ; halt simulator
-0001000A                            16  
-0001000A                            17  * Put variables and constants here
-0001000A                            18  
-0001000A                            19      END    START        ; last line of source
+00010000  4403                      10      NEG.B D3
+00010002  4478 00C1                 11      NEG.W $C1
+00010006  44B8 010A                 12      NEG.L $10A
+0001000A                            13  
+0001000A  FFFF FFFF                 14      SIMHALT  
+0001000E                            15  
+0001000E                            16      END    START    
 
 No errors detected
 No warnings generated

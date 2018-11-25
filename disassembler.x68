@@ -187,8 +187,6 @@ END_PRINT_NEW_LINE:
     TRAP #15 
     RTS
 
-
-
 * PRINT DATA TYPE FOR EXAMPLE .W AND .L ONLY IF YOU WANT TO PRINT .B SEE PRINT_DATA
 * PARAMETERS:
 *   1- (4(SP)): DATA TYPE (1 BYTE)
@@ -214,8 +212,6 @@ DONE_PRINT_D_1BIT:
     MOVE.B #14, D0 
     TRAP #15 
     RTS 
-
-
 
 *--------------------------------------------------------------------
 * PRINT DATA TYPE FOR EXAMPLE: .B .W .L
@@ -253,7 +249,6 @@ PRINT_LONG:
     MOVE.W #'.L', (A1)
     MOVE.B #0, 2(A1)
     BRA END_PRINT_DATA
-
 
 *--------------------------------------------------------------------
 * PRINT_REGISTER
@@ -873,7 +868,6 @@ NEG_SIZE_M EQU %0000000011000000
     MOVE.W (SP)+, D1
     CLR.W D2
     CLR.W D3
-
 NEG_END: 
     RTS
 
@@ -892,20 +886,7 @@ BRA_SIZE_M EQU %0000000011111111
     MOVE.W D1, D2
     MOVE.W D1, D3
 * MASKING TO GET SIZE OF BRA
-    
-    CMP.W  #BRA_SIZE_M, D2 
-    BEQ
-* MASKING TO GET MODE AND REGISTER
-    * AND.B #BRA_REG_M, D2
-    * MOVE.W D1, -(SP)
-    * MOVE.W D2, -(SP)
-    * MOVE.W #$0, -(SP)
-    * JSR PRINT_REGISTER
-    * ADDQ.L #$4, SP
-    * MOVE.W (SP)+, D1
-    CLR.W D2
-    CLR.W D3
-
+    CMP.W #BRA_SIZE_M, D2 
 BRA_END:
     RTS
 
@@ -919,6 +900,11 @@ PRINT_RTS:
    TRAP #15
    JSR PRINT_TAB
    RTS 
+PRINT_NOP:
+    LEA P_NOP, A1
+    MOVE.B #14, D0
+    TRAP #15
+    RTS 
 PRINT_JSR:
     LEA P_JSR, A1
     MOVE.B #14, D0
@@ -936,76 +922,70 @@ PRINT_ADDA:
     MOVE.B #14, D0
     TRAP #15 
     RTS
-PRINT_ADDA: 
-    LEA P_ADDA, A1 
-    MOVE.B #14, D0
+PRINT_ADD: 
+    LEA P_ADD, A1 
+    MOVE.B #$14, D0
     TRAP #15 
+    JSR PRINT_TAB
     RTS
-PRINT_ADDA: 
-    LEA P_ADDA, A1 
+PRINT_BRA:
+    LEA P_BRA, A1
     MOVE.B #14, D0
-    TRAP #15 
+    TRAP #15
+    RTS 
+PRINT_NEG:
+    LEA P_NEG, A1
+    MOVE.B #14, D0
+    TRAP #15
     RTS
 
 
 
 
-
-
-
-
-
-
-P_RTS DC.B 'RTS',0
-P_MOVE DC.B 'MOVE',0
+P_RTS   DC.B 'RTS',0          * ------------ DONE ------------ *
+P_MOVE  DC.B 'MOVE',0
 P_MOVEA DC.B 'MOVEA', 0
 P_MOVEM DC.B 'MOVEM', 0
-P_ADD DC.B 'ADD', 0
-P_ADDA DC.B 'ADDA',0
-P_SUB DC.B 'SUB', 0
-P_SUBQ DC.B 'SUBQ',0
-P_MULS DC.B 'MULS',0
-P_DIVS DC.B 'DIVS',0
-P_LEA DC.B 'LEA',0
-P_OR DC.B 'OR',0
-P_ORI DC.B 'ORI', 0
-P_NEG DC.B 'NEG', 0
-P_EOR DC.B 'EOR', 0
-P_LSR DC.B 'LSR',0
-P_LSL DC.B 'LSL', 0
-P_ASR DC.B 'ASR', 0
-P_ASL DC.B 'ASL',0 
-P_ROL DC.B 'ROL', 0
-P_ROR DC.B 'ROR', 0
-P_BCLR DC.B 'BCLR',0
-P_CMP DC.B 'CMP', 0
-P_CMPI DC.B 'CMPI', 0
-P_BCS DC.B 'BCS', 0
-P_BGE DC.B 'BGE', 0
-P_BLT DC.B 'BLT',0
-P_BVC DC.B 'BVC', 0
-P_BRA DC.B 'BRA',0
-P_JSR DC.B 'JSR',0
-* P_RTS DC.B 'RTS',0
-
+P_ADD   DC.B 'ADD', 0
+P_ADDA  DC.B 'ADDA',0         * ------------ DONE ------------ *
+P_SUB   DC.B 'SUB', 0
+P_SUBQ  DC.B 'SUBQ',0
+P_MULS  DC.B 'MULS',0
+P_DIVS  DC.B 'DIVS',0
+P_LEA   DC.B 'LEA',0          * ------------ DONE ------------ *
+P_OR    DC.B 'OR',0
+P_ORI   DC.B 'ORI', 0
+P_NEG   DC.B 'NEG', 0         * --------- IN PROGRESS -------- *
+P_EOR   DC.B 'EOR', 0
+P_LSR   DC.B 'LSR',0
+P_LSL   DC.B 'LSL', 0
+P_ASR   DC.B 'ASR', 0
+P_ASL   DC.B 'ASL',0 
+P_ROL   DC.B 'ROL', 0
+P_ROR   DC.B 'ROR', 0
+P_BCLR  DC.B 'BCLR',0
+P_CMP   DC.B 'CMP', 0
+P_CMPI  DC.B 'CMPI', 0
+P_BCS   DC.B 'BCS', 0
+P_BGE   DC.B 'BGE', 0
+P_BLT   DC.B 'BLT',0
+P_BVC   DC.B 'BVC', 0
+P_BRA   DC.B 'BRA',0          * --------- IN PROGRESS -------- *
+P_JSR   DC.B 'JSR',0          * ------------ DONE ------------ *
+P_NOP   DC.B 'NOP',0          * ------------ DONE ------------ *
 
 WORD_LENGTH EQU $04
 LONG_LENGTH EQU $08
-TEST_VAL DC.B '10020009'
-LF EQU $0A
-CR EQU $0D
-HT  EQU  $09 
-NEW_LINE DC.B ' ',CR,LF,0
-SIMHALT             ; halt simulator
-* Put variables and constants here
-
-
-
-
-
-
-PROMT_INPUT_START DC.B 'Please enter starting address(capitalized):  $',0 
-PROMT_INPUT_END DC.B 'Please enter ending address(cappitalized): $',0
+LF          EQU $0A
+CR          EQU $0D
+HT          EQU  $09 
+TEST_VAL            DC.B '10020009'
+NEW_LINE            DC.B ' ',CR,LF,0
+PROMT_INPUT_START   DC.B 'Please enter starting address(capitalized):  $',0 
+PROMT_INPUT_END     DC.B 'Please enter ending address(cappitalized): $',0
+    
+    SIMHALT             ; halt simulator
+    
     END    START        ; last line of source
 
 
