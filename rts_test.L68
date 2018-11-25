@@ -1,6 +1,6 @@
 00010000 Starting Address
 Assembler used: EASy68K Editor/Assembler v5.16.01
-Created On: 11/23/2018 8:19:43 PM
+Created On: 11/25/2018 3:12:59 PM
 
 00000000                             1      *-----------------------------------------------------------
 00000000                             2  * Title      :
@@ -11,16 +11,39 @@ Created On: 11/23/2018 8:19:43 PM
 00010000                             7      ORG    $10000
 00010000                             8  START:                  ; first instruction of program
 00010000                             9  
-00010000  4EB9 00010000             10      JSR START
-00010006                            11  
-00010006                            12  
-00010006                            13  * Put program code here
-00010006                            14  
-00010006  FFFF FFFF                 15      SIMHALT             ; halt simulator
-0001000A                            16  
-0001000A                            17  * Put variables and constants here
-0001000A                            18  
-0001000A                            19      END    START        ; last line of source
+00010000                            10       
+00010000                            11  * Put program code here
+00010000  D469 0004                 12      add.w 4(a1), d2 
+00010004                            13  
+00010004  D481                      14      ADD.L d1, d2 
+00010006  D2C1                      15      add.w d1, a1 
+00010008                            16      ;ADD.L 4(a1), d2
+00010008  D259                      17      ADD.W (a1)+, d1 
+0001000A  D261                      18      ADD.W -(a1), d1 
+0001000C                            19      
+0001000C                            20  
+0001000C                            21  
+0001000C  D251                      22      add.w (a1), d1 
+0001000E  D2FC 0435                 23      adda.w #$435, a1
+00010012  D4E7                      24      ADDA.W -(sp), a2 
+00010014  D4D9                      25      adda.w (a1)+, a2  
+00010016  D401                      26      add.b d1, d2 
+00010018  43F9 0001002C             27      LEA PRINT, a1 
+0001001E                            28  
+0001001E                            29  VKL: 
+0001001E  4E71                      30      NOP
+00010020  4E75                      31      RTS
+00010022                            32  
+00010022                            33  
+00010022                            34  
+00010022                            35  TEMP:
+00010022  103C 0025                 36      MOVE.B #$25, D0
+00010026  60F6                      37      BRA VKL
+00010028  FFFF FFFF                 38      SIMHALT             ; halt simulator
+0001002C                            39  
+0001002C                            40  * Put variables and constants here
+0001002C= 56 4B 4C 00               41  PRINT DC.B 'VKL',0 
+00010030                            42      END    START        ; last line of source
 
 No errors detected
 No warnings generated
@@ -29,4 +52,7 @@ No warnings generated
 SYMBOL TABLE INFORMATION
 Symbol-name         Value
 -------------------------
+PRINT               1002C
 START               10000
+TEMP                10022
+VKL                 1001E
