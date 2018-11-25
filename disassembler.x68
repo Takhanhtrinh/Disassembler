@@ -712,29 +712,39 @@ FETCH_OPCODES:
     MOVE.W #$2, (OFFSET_OPC_ADDRES)
 END_FETCH_OPCODES:
     RTS
-*------------------------------------------------------------------------------------------------------------------------------------------------------
-* LETS DECODE
+*---------------------------------------------------------DISASSEMBLER START HERE----------------------------------------------------------------------------------------
 * jump table uses to jump to decode subroutine
 * PARAMATERS:
 * 1-(4(Sp)) Word - opcode
 * NOTE: 
 *   D1 USES TO STORE OPCODE
 JUMP_TABLE:
-* constant for RTS 
-C_RTS EQU $4E75
     MOVE.W 4(SP), D1
     JSR RTS
-* CONSTANT FOR JSR
+    JSR NOP
     JSR JSR
     JSR LEA
     JSR ADDA
+    JSR BRA
+    JSR NEG
 
 END_JUMP_TABLE:
     RTS
+
+NOP:
+* CONSTANT FOR NOP
+C_NOP EQU $4E71
+    CMP.W #C_NOP, D1
+    BEQ PRINT_NOP
+    RTS
+
 RTS:
+* constant for RTS 
+C_RTS EQU $4E75
     CMP.W #C_RTS, D1
     BEQ PRINT_RTS
     RTS
+
 JSR:
 JSR_OPCODE EQU %0100111010000000
     CLR.W D2
@@ -755,6 +765,7 @@ JSR_OPCODE EQU %0100111010000000
     MOVEM.W (SP)+, D1
 JSR_END:
     RTS
+
 LEA:
     CLR.W D2
     * 0 1 0 0 AN 1 1 1
@@ -785,6 +796,7 @@ LEA:
     ADDQ.L #$04, SP
 LEA_END:
     RTS
+
 ADDA:
     MOVE.W D1, D2
 C_ADDA EQU       %1101000011000000
@@ -826,6 +838,81 @@ ADDA_AN_MASKING EQU %0000111000000000
 ADDA_END:
     RTS
 
+* ------------ LEO ------------ *          * ------------ LEO ------------ *          * ------------ LEO ------------ *
+NEG:
+* CONSTANT FOR NEG OPCODE
+NEG_OPCODE EQU %0100010000000000
+NEG_M      EQU %1111111100000000
+NEG_REG_M  EQU %0000000000111111
+NEG_SIZE_M EQU %0000000011000000
+    CLR.W D2
+    MOVE.W D1, D2
+* MASKING WITH NEG UNIQUE CODE
+    AND.W #NEG_M, D2
+    CMP.W #NEG_OPCODE, D2
+    BNE NEG_END
+    JSR PRINT_NEG
+    MOVE.W D1, D2
+    MOVE.W D1, D3
+* MASKING TO GET NEG SIZE
+    AND.W #NEG_SIZE_M, D2
+    ASR.B #6, D2
+    MOVE.B D2, -(SP)
+    JSR PRINT_DATA
+    JSR PRINT_TAB
+    ADDQ.L #2, SP
+    MOVE.W D3, D2   * GET ORIGINAL DATA BACK
+    MOVE.W D3, D1
+* MASKING TO GET MODE AND REGISTER
+    AND.B #NEG_REG_M, D2
+    MOVE.W D1, -(SP)
+    MOVE.W D2, -(SP)
+    MOVE.W #$0, -(SP)
+    JSR PRINT_REGISTER
+    ADDQ.L #$4, SP
+    MOVE.W (SP)+, D1
+    CLR.W D2
+    CLR.W D3
+
+NEG_END: 
+    RTS
+
+BRA:
+* CONSTANT FOR BRA OPCODE
+BRA_OPCODE EQU %0110000000000000
+BRA_M      EQU %0110000000000000
+BRA_SIZE_M EQU %0000000011111111
+    CLR.W D2
+    MOVE.W D1, D2
+* MASKING WITH BRA UNIQUE CODE
+    AND.W #BRA_M, D2
+    CMP.W #BRA_OPCODE, D2
+    BNE BRA_END
+    JSR PRINT_BRA
+    MOVE.W D1, D2
+    MOVE.W D1, D3
+* MASKING TO GET SIZE OF BRA
+    
+    CMP.W  #BRA_SIZE_M, D2 
+    BEQ
+* MASKING TO GET MODE AND REGISTER
+    * AND.B #BRA_REG_M, D2
+    * MOVE.W D1, -(SP)
+    * MOVE.W D2, -(SP)
+    * MOVE.W #$0, -(SP)
+    * JSR PRINT_REGISTER
+    * ADDQ.L #$4, SP
+    * MOVE.W (SP)+, D1
+    CLR.W D2
+    CLR.W D3
+
+BRA_END:
+    RTS
+
+* ------------ LEO ------------ *          * ------------ LEO ------------ *          * ------------ LEO ------------ *
+
+
+
 PRINT_RTS:
    LEA P_RTS, A1
    MOVE.B #14, D0
@@ -844,6 +931,16 @@ PRINT_LEA:
    TRAP #15
    JSR PRINT_TAB
    RTS 
+PRINT_ADDA: 
+    LEA P_ADDA, A1 
+    MOVE.B #14, D0
+    TRAP #15 
+    RTS
+PRINT_ADDA: 
+    LEA P_ADDA, A1 
+    MOVE.B #14, D0
+    TRAP #15 
+    RTS
 PRINT_ADDA: 
     LEA P_ADDA, A1 
     MOVE.B #14, D0
