@@ -1,6 +1,10 @@
 00010000 Starting Address
 Assembler used: EASy68K Editor/Assembler v5.16.01
+<<<<<<< HEAD
 Created On: 11/25/2018 3:12:59 PM
+=======
+Created On: 11/25/2018 1:47:57 PM
+>>>>>>> 0ce50c0d4394f532a1250bf23f6fce6f2154e651
 
 00000000                             1      *-----------------------------------------------------------
 00000000                             2  * Title      :
@@ -9,8 +13,9 @@ Created On: 11/25/2018 3:12:59 PM
 00000000                             5  * Description:
 00000000                             6  *-----------------------------------------------------------
 00010000                             7      ORG    $10000
-00010000                             8  START:                  ; first instruction of program
+00010000                             8  START:  
 00010000                             9  
+<<<<<<< HEAD
 00010000                            10       
 00010000                            11  * Put program code here
 00010000  D469 0004                 12      add.w 4(a1), d2 
@@ -44,6 +49,24 @@ Created On: 11/25/2018 3:12:59 PM
 0001002C                            40  * Put variables and constants here
 0001002C= 56 4B 4C 00               41  PRINT DC.B 'VKL',0 
 00010030                            42      END    START        ; last line of source
+=======
+00010000  4402                      10      NEG.B D2
+00010002  4443                      11      NEG.W D3
+00010004  4404                      12      NEG.B D4
+00010006  4445                      13      NEG.W D5
+00010008  4406                      14      NEG.B D6
+0001000A  4447                      15      NEG.W D7
+0001000C                            16     
+0001000C                            17     
+0001000C  4411                      18      NEG.B (A1)
+0001000E  4412                      19      NEG.B (A2)
+00010010  4493                      20      NEG.L (A3)    
+00010012                            21      
+00010012                            22  
+00010012  FFFF FFFF                 23      SIMHALT  
+00010016                            24  
+00010016                            25      END    START    
+>>>>>>> 0ce50c0d4394f532a1250bf23f6fce6f2154e651
 
 No errors detected
 No warnings generated
