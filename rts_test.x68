@@ -7,19 +7,19 @@
 *-----------------------------------------------------------
     ORG    $10000
 START:                  ; first instruction of program
-   
-    eor.w     d0,(a3)
-    eor.L     d7,$00004000
-    eor.w     d3,d1
-    eor.B     d2,(a3)
-    eor.w     d0,$00004000
-    eor.B     d1,d4
+
+    sub.l     $40,d4
+
+    sub.w     d5,(a1)
+
+    sub.w     (a1),d0
 
     SIMHALT             ; halt simulator
 
 * Put variables and constants here
 PRINT DC.B 'VKL',0 
     END    START        ; last line of source
+
 
 
 
