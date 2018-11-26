@@ -1,6 +1,6 @@
 00001000 Starting Address
 Assembler used: EASy68K Editor/Assembler v5.16.01
-Created On: 11/25/2018 11:19:00 PM
+Created On: 11/25/2018 11:44:41 PM
 
 00000000                             1  *-----------------------------------------------------------
 00000000                             2  * Title      : HEX DUMP Disassembler
@@ -143,7 +143,7 @@ Created On: 11/25/2018 11:19:00 PM
 0000106E  60A4                     139      BRA LOOP_START
 00001070                           140  
 00001070                           141  CLR_SCREEN:
-00001070  43F9 00001F9B            142      LEA PROMT_INPUT_CONTINUE, A1 
+00001070  43F9 0000202B            142      LEA PROMT_INPUT_CONTINUE, A1 
 00001076  103C 000D                143      MOVE.B #13, D0 
 0000107A  4E4F                     144      TRAP #15 
 0000107C  4207                     145      CLR.B D7
@@ -163,7 +163,7 @@ Created On: 11/25/2018 11:19:00 PM
 00001098  4E4F                     159      TRAP #15
 0000109A                           160  * get user input 
 0000109A                           161  GET_INPUT:
-0000109A  43F9 00001F3F            162      LEA PROMT_INPUT_START, A1
+0000109A  43F9 00001FCF            162      LEA PROMT_INPUT_START, A1
 000010A0  103C 000D                163      MOVE.B #13, D0
 000010A4  4E4F                     164      TRAP #15
 000010A6  227C 00002000            165      MOVEA.L #$2000,A1
@@ -310,7 +310,7 @@ Created On: 11/25/2018 11:19:00 PM
 000011E6                           306  
 000011E6                           307  UNSUPPORT_OPCODE: 
 000011E6  267C 00009000            308      MOVE.L #RETURN_ADDRESS, A3
-000011EC  4EB9 00001E9A            309      JSR PRINT_UNSUPPORTED
+000011EC  4EB9 00001F2A            309      JSR PRINT_UNSUPPORTED
 000011F2  4EB8 10B4                310      JSR PRINT_TAB 
 000011F6  4EB8 1102                311      JSR PRINT_HASH_SIGN 
 000011FA  4EB8 10EA                312      JSR PRINT_DOLLAR_SIGN 
@@ -325,7 +325,7 @@ Created On: 11/25/2018 11:19:00 PM
 0000121A                           321  UNSUPPORT_REGISTER:
 0000121A  =00000002                322  C_UNSUPPORT_REGISTER EQU $2
 0000121A  267C 00009000            323      MOVE.L #RETURN_ADDRESS, A3
-00001220  4EB9 00001E9A            324      JSR PRINT_UNSUPPORTED
+00001220  4EB9 00001F2A            324      JSR PRINT_UNSUPPORTED
 00001226  4EB8 10B4                325      JSR PRINT_TAB 
 0000122A  4EB8 1102                326      JSR PRINT_HASH_SIGN 
 0000122E  4EB8 10EA                327      JSR PRINT_DOLLAR_SIGN 
@@ -806,1001 +806,1065 @@ Created On: 11/25/2018 11:19:00 PM
 0000168E                           802  *   D1 USES TO STORE OPCODE
 0000168E                           803  JUMP_TABLE:
 0000168E  322F 0004                804      MOVE.W 4(SP), D1
-00001692  4EB9 00001700            805      JSR RTS
-00001698  4EB9 000016F6            806      JSR NOP
-0000169E  4EB9 0000170A            807      JSR JSR
-000016A4  4EB9 00001756            808      JSR LEA
-000016AA  4EB9 00001B36            809      JSR OR
-000016B0  4EB9 00001C04            810      JSR ORI
-000016B6  4EB9 00001C5A            811      JSR EOR
-000016BC  4EB9 00001A94            812      JSR NEG
-000016C2  4EB9 0000170A            813      JSR JSR
-000016C8  4EB9 00001848            814      JSR ADD 
-000016CE  4EB9 000017C4            815      JSR ADDA
-000016D4  4EB9 00001CDC            816      JSR SUB
-000016DA  4EB9 0000191A            817      JSR MOVEA 
-000016E0  4EB9 000019D0            818      JSR MOVE
-000016E6  4EB9 00001A94            819      JSR MOVEM 
-000016EC  4EB9 00001AF8            820      JSR BRA
-000016F2                           821  ; IF THE OPCODES DONT MATCH THE OPCODE ABOVE THAN PRINT DATA OPCODE
-000016F2                           822  END_JUMP_TABLE:
-000016F2  4EB8 11E6                823      JSR UNSUPPORT_OPCODE
-000016F6                           824  
-000016F6                           825  NOP:
-000016F6                           826  * constant for NOP 
-000016F6  =00004E71                827  C_NOP EQU $4E71
-000016F6  B27C 4E71                828      CMP.W #C_NOP, D1
-000016FA  6700 06DE                829      BEQ PRINT_NOP
-000016FE  4E75                     830      RTS
-00001700                           831  
-00001700                           832  RTS:
-00001700                           833  * constant for RTS 
-00001700  =00004E75                834  C_RTS EQU $4E75
-00001700  B27C 4E75                835      CMP.W #C_RTS, D1
-00001704  6700 06A4                836      BEQ PRINT_RTS
-00001708  4E75                     837      RTS
-0000170A                           838  
-0000170A                           839  JSR:
-0000170A  =00004E80                840  JSR_OPCODE EQU %0100111010000000
-0000170A  3401                     841      MOVE.W D1,D2 
-0000170C                           842  * MASKING WITH UNIQUE OPCODE
-0000170C  C47C FFC0                843      AND.W #%1111111111000000, D2
-00001710  B47C 4E80                844      CMP.W #JSR_OPCODE, D2
-00001714  6600 003E                845      BNE JSR_END 
-00001718                           846      ; check to make sure we support this register 
-00001718  3401                     847      MOVE.W D1, D2 
-0000171A  C43C 003F                848      AND.B #%00111111, D2 
-0000171E  3F02                     849      MOVE.W D2, -(SP)
-00001720  4EB8 11AC                850      JSR CHECK_SUPPORT_REGISTER 
-00001724  544F                     851      ADDQ #2, SP 
-00001726                           852      ; check return value
-00001726                           853      *  from print_register to see if it is unsupported register 
-00001726  3439 00009000            854      MOVE.W (RETURN_ADDRESS), D2 
-0000172C  0C42 0002                855      CMPI.W #C_UNSUPPORT_REGISTER, D2 ; IF EQUAL RETURN TO FETCH NEXT OPCODE 
-00001730  6700 0022                856      BEQ JSR_END
-00001734                           857      ; done checking 
-00001734  4EB9 00001E30            858      JSR PRINT_JSR
-0000173A                           859  * MASKING TO GET MODE AND REGISTER
-0000173A  1401                     860      MOVE.B D1,D2
-0000173C  C43C 003F                861      AND.B #%00111111, D2
-00001740  48A7 4000                862      MOVEM.W D1, -(SP)
-00001744  3F02                     863      MOVE.W D2, -(SP)
-00001746  3F3C 0000                864      MOVE.W #$0, -(SP)
-0000174A  4EB8 1252                865      JSR PRINT_REGISTER
-0000174E  5882                     866      ADDQ.L #4, D2
-00001750  4C9F 0002                867      MOVEM.W (SP)+, D1
-00001754                           868  JSR_END:
-00001754  4E75                     869      RTS
-00001756                           870  
-00001756                           871  LEA:
-00001756  3401                     872      MOVE.W D1,D2 
-00001758  C47C F1C0                873      AND.W  #%1111000111000000, D2
-0000175C  0C42 41C0                874      CMPI.W #%0100000111000000, D2
-00001760  6600 0060                875      BNE LEA_END
-00001764                           876  
-00001764                           877      ; CHECK TO MAKE SURE WE SUPPORT THE EA
-00001764  3401                     878      MOVE.W D1, D2 
-00001766  C43C 003F                879      AND.B #%00111111, D2 
-0000176A  3F02                     880      MOVE.W D2, -(SP)
-0000176C  4EB8 11AC                881      JSR CHECK_SUPPORT_REGISTER
-00001770  544F                     882      ADDQ #2, SP 
-00001772                           883      ; check return value
-00001772                           884      *  from print_register to see if it is unsupported register 
-00001772  3439 00009000            885      MOVE.W (RETURN_ADDRESS), D2 
-00001778  0C42 0002                886      CMPI.W #C_UNSUPPORT_REGISTER, D2 ; IF EQUAL RETURN TO FETCH NEXT OPCODE 
-0000177C  6700 F8CA                887      BEQ FINISH_OPCODE
-00001780                           888      * END CHECKING
-00001780  4EB9 00001E42            889      JSR PRINT_LEA
-00001786  1401                     890      MOVE.B D1,D2 
-00001788                           891      ; MASK TO GET MODE AND REGISTER
-00001788  C43C 003F                892      AND.B #%0000000000111111, D2
-0000178C  48A7 4000                893      MOVEM.W D1, -(SP)
-00001790  3F02                     894      MOVE.W D2, -(SP)
-00001792  3F3C 0000                895      MOVE.W #$0, -(SP)
-00001796  4EB8 1252                896      JSR PRINT_REGISTER
-0000179A  588F                     897      ADDQ.L #$4, SP
-0000179C  4C9F 0002                898      MOVEM.W (SP)+, D1
-000017A0  4EB8 10D2                899      JSR PRINT_COMMA
-000017A4                           900      ; MASK TO GET DESTINATION REGISTER
-000017A4  3401                     901      MOVE.W D1,D2
-000017A6  C47C 0E00                902      AND.W #%0000111000000000, D2
-000017AA  E04A                     903      LSR.W #$08, D2
-000017AC  E24A                     904      LSR.W #$01, D2
-000017AE  843C 0008                905      OR.B #%00001000, D2 ; OR TO PASS TO PRINT_REGISTER
-000017B2  3F02                     906      MOVE.W D2, -(SP)
-000017B4  3F3C 0000                907      MOVE.W #$0, -(SP) 
-000017B8  4EB8 1252                908      JSR PRINT_REGISTER
-000017BC  588F                     909      ADDQ.L #$04, SP
-000017BE  6000 F888                910      BRA FINISH_OPCODE
-000017C2                           911  LEA_END:
-000017C2  4E75                     912      RTS
-000017C4                           913  
-000017C4                           914  ADDA:
-000017C4  =0000D0C0                915  C_ADDA EQU       %1101000011000000
-000017C4  =0000F0C0                916  ADDA_MASKING EQU %1111000011000000
-000017C4  =00000100                917  ADDA_SIZE_MASKING EQU %0000000100000000
-000017C4  =00000E00                918  ADDA_AN_MASKING EQU %0000111000000000
-000017C4  3401                     919      MOVE.W D1, D2
-000017C6  C47C F0C0                920      AND.W #ADDA_MASKING, D2 ; GET PATTERN
-000017CA  0C42 D0C0                921      CMPI.W #C_ADDA, D2 ; COMPARE WITH THE PATTERN
-000017CE  6600 0076                922      BNE ADDA_END 
-000017D2                           923      ; CHECK TO MAKE SURE WE SUPPORT THE EA
-000017D2  3401                     924      MOVE.W D1, D2 
-000017D4  C43C 003F                925      AND.B #%00111111, D2 
-000017D8  3F02                     926      MOVE.W D2, -(SP)
-000017DA  4EB8 11AC                927      JSR CHECK_SUPPORT_REGISTER
-000017DE  544F                     928      ADDQ #2, SP 
-000017E0                           929      ; check return value
-000017E0                           930      *  from print_register to see if it is unsupported register 
-000017E0  3439 00009000            931      MOVE.W (RETURN_ADDRESS), D2 
-000017E6  0C42 0002                932      CMPI.W #C_UNSUPPORT_REGISTER, D2 ; IF EQUAL RETURN TO FETCH NEXT OPCODE 
-000017EA  6700 F85C                933      BEQ FINISH_OPCODE
-000017EE  4EB9 00001E54            934      JSR PRINT_ADDA
-000017F4  3401                     935      MOVE.W D1, D2  ; START TO MASK SIZE 
-000017F6  C47C 0100                936      AND.W #ADDA_SIZE_MASKING,D2 
-000017FA  E04A                     937      LSR.W #8, D2 
-000017FC  3C02                     938      MOVE.W D2 , D6 ; FOR SIZE TO PRINT REGISTER 
-000017FE  5246                     939      ADDQ #$1, D6
-00001800  1F06                     940      MOVE.B D6 , -(SP)
-00001802  4EB8 113A                941      JSR PRINT_DATA
-00001806  548F                     942      ADDQ.L #$2, SP 
-00001808  4EB8 10B4                943      JSR PRINT_TAB
-0000180C                           944      ; GET MODE AND REGISTER
-0000180C  3238 7006                945      MOVE.W (OPCODE_ADDRESS), D1 
-00001810  1401                     946      MOVE.B D1, D2 
-00001812  C43C 003F                947      AND.B #%00111111, D2 
-00001816  3F02                     948      MOVE.W D2, -(SP)
-00001818  3F06                     949      MOVE.W D6, -(SP)
-0000181A  4EB8 1252                950      JSR PRINT_REGISTER 
-0000181E  588F                     951      ADDQ.L #$04, SP 
-00001820  4EB8 10D2                952      JSR PRINT_COMMA
-00001824  3238 7006                953      MOVE.W (OPCODE_ADDRESS), D1  ; get back the opcode just in case
-00001828  3401                     954      MOVE.W D1, D2
-0000182A  C47C 0E00                955      AND.W #ADDA_AN_MASKING, D2
-0000182E  E04A                     956      LSR.W #8, D2 
-00001830  E24A                     957      LSR.W #1, D2 
-00001832  843C 0008                958      OR.B #%00001000, D2 ; TO APPEND MODE FOR PRINT REGISTER 
-00001836  3F02                     959      MOVE.W D2, -(SP)
-00001838  3F3C 0000                960      MOVE.W #$0, -(SP)
-0000183C  4EB8 1252                961      JSR PRINT_REGISTER 
-00001840  588F                     962      ADDQ.L #$4, SP 
-00001842  6000 F804                963      BRA FINISH_OPCODE
-00001846                           964  ADDA_END:
-00001846  4E75                     965      RTS
-00001848                           966  
-00001848                           967  ADD: 
-00001848  =0000D000                968  C_ADD EQU           %1101000000000000 ; PATTERN
-00001848  =0000F000                969  C_ADD_MASKING EQU   %1111000000000000 ; MASKING TO CHECK PATTERN
-00001848  =0000003F                970  C_ADD_EA EQU        %00111111 ; EFFECTIVE ADDRESS MASKING
-00001848  =00000E00                971  C_ADD_REGISTER EQU  %0000111000000000 ; WHICH REGISTER
-00001848  =000000C0                972  C_ADD_SIZE EQU      %0000000011000000  ; SIZE 
-00001848  =00000100                973  C_ADD_DIRECTION EQU %0000000100000000
-00001848  =00000000                974  C_ADD_TO_D EQU      %0000000000000000
-00001848  =00000100                975  C_ADD_FROM_D EQU    %0000000100000000
-00001848  3401                     976      MOVE.W D1, D2 
-0000184A                           977      ; CHECK PATTERN 
-0000184A  C47C F000                978      AND.W #C_ADD_MASKING, D2 
-0000184E  0C42 D000                979      CMPI.W #C_ADD, D2 
-00001852  6600 00C4                980      BNE ADD_END 
-00001856                           981      ; CHECK SUPPORT REGISTER 
-00001856  3401                     982      MOVE.W D1, D2 
-00001858  C43C 003F                983      AND.B #%00111111, D2 
-0000185C  3F02                     984      MOVE.W D2, -(SP)
-0000185E  4EB8 11AC                985      JSR CHECK_SUPPORT_REGISTER
-00001862  544F                     986      ADDQ #2, SP 
-00001864                           987      ; check return value
-00001864                           988      *  from print_register to see if it is unsupported register 
-00001864  3439 00009000            989      MOVE.W (RETURN_ADDRESS), D2 
-0000186A  0C42 0002                990      CMPI.W #C_UNSUPPORT_REGISTER, D2 ; IF EQUAL RETURN TO FETCH NEXT OPCODE 
-0000186E  6700 F7D8                991      BEQ FINISH_OPCODE
-00001872                           992      
-00001872  4EB9 00001E62            993      JSR PRINT_ADD 
-00001878  3238 7006                994      MOVE.W (OPCODE_ADDRESS), D1 
-0000187C  3401                     995      MOVE.W D1, D2 
-0000187E  C47C 00C0                996      AND.W #C_ADD_SIZE, D2 
-00001882  EC4A                     997      LSR.W #6, D2
-00001884  1C02                     998      MOVE.B D2, D6 ; SAVE FOR IMMEDIATE VALUE AND SIZE OF AN OPCODE  
-00001886                           999  
-00001886  1F02                    1000      MOVE.B D2, -(SP)
-00001888  4EB8 113A               1001      JSR PRINT_DATA
-0000188C  548F                    1002      ADDQ.L #$02, SP 
-0000188E  4EB8 10B4               1003      JSR PRINT_TAB 
-00001892                          1004      ; CHECK DIRECTION
-00001892  3238 7006               1005      MOVE.W (OPCODE_ADDRESS), D1 
-00001896  3401                    1006      MOVE.W D1, D2  
-00001898  C47C 0100               1007      AND.W #C_ADD_DIRECTION, D2 
-0000189C  0C42 0000               1008      CMPI.W #C_ADD_TO_D, D2 
-000018A0  6700 003C               1009      BEQ ADD_TO_D ; DN <EA> -> DN
-000018A4                          1010      ; otherwise from d 
-000018A4                          1011  ADD_FROM_D:
-000018A4  3238 7006               1012      MOVE.W (OPCODE_ADDRESS), D1 
-000018A8  3401                    1013      MOVE.W D1, D2 
-000018AA  C47C 0E00               1014      AND.W #C_ADD_REGISTER, D2 
-000018AE  E08A                    1015      LSR.L #8, D2 
-000018B0  E28A                    1016      LSR.L #1, D2 
-000018B2  843C 0000               1017      OR.B #%00000000, D2
-000018B6  3F02                    1018      MOVE.W D2, -(SP)
-000018B8  3F3C 0000               1019      MOVE.W #$0, -(SP)
-000018BC  4EB8 1252               1020      JSR PRINT_REGISTER 
-000018C0  5882                    1021      ADDQ.L #4, D2 
-000018C2  4EB8 10D2               1022      JSR PRINT_COMMA 
-000018C6                          1023      
-000018C6  3238 7006               1024      MOVE.W (OPCODE_ADDRESS), D1 
-000018CA  3401                    1025      MOVE.W D1, D2 
-000018CC  C43C 003F               1026      AND.B #C_ADD_EA, D2 
-000018D0  3F02                    1027      MOVE.W D2, -(SP)
-000018D2  3F06                    1028      MOVE.W D6, -(SP)
-000018D4  4EB8 1252               1029      JSR PRINT_REGISTER
-000018D8  588F                    1030      ADDQ.L #4, SP 
-000018DA  6000 F76C               1031      BRA FINISH_OPCODE
-000018DE                          1032      
-000018DE                          1033  ADD_TO_D:
-000018DE  3238 7006               1034      MOVE.W (OPCODE_ADDRESS), D1 
-000018E2  3401                    1035      MOVE.W D1, D2 
-000018E4                          1036      ; GET SOURCE REGISTER 
-000018E4  C43C 003F               1037      AND.B #C_ADD_EA, D2 
-000018E8  3F02                    1038      MOVE.W D2, -(SP)
-000018EA  3F06                    1039      MOVE.W D6, -(SP)
-000018EC  4EB8 1252               1040      JSR PRINT_REGISTER
-000018F0  588F                    1041      ADDQ.L #4, SP 
-000018F2  4EB8 10D2               1042      JSR PRINT_COMMA 
-000018F6                          1043      ; PRINT DATA REGISTER 
-000018F6  3238 7006               1044      MOVE.W (OPCODE_ADDRESS), D1 
-000018FA  3401                    1045      MOVE.W D1, D2 
-000018FC  C47C 0E00               1046      AND.W #C_ADD_REGISTER, D2 
-00001900  E04A                    1047      LSR.W #8, D2 
-00001902  E24A                    1048      LSR.W #1, D2 
-00001904                          1049      ; APPEND MODE TO D2 FOR PRINT_REGISTER
-00001904  843C 0000               1050      OR.B #%00000000, D2 
-00001908  3F02                    1051      MOVE.W D2, -(SP)
-0000190A  3F3C 0000               1052      MOVE.W #$0, -(SP)
-0000190E  4EB8 1252               1053      JSR PRINT_REGISTER
-00001912  588F                    1054      ADDQ.L #4, SP 
-00001914  6000 F732               1055      BRA FINISH_OPCODE
-00001918                          1056  ADD_END:
-00001918  4E75                    1057      RTS
-0000191A                          1058  
-0000191A                          1059  MOVEA: 
-0000191A  =00001040               1060  C_MOVEA_PATTERN1 EQU  %0001000001000000
-0000191A  =00003040               1061  C_MOVEA_PATTERN2 EQU  %0011000001000000
-0000191A  =00002040               1062  C_MOVEA_PATTERN3 EQU  %0010000001000000
-0000191A  =0000F1C0               1063  C_MOVEA_P_MASKING EQU %1111000111000000
-0000191A  =00003000               1064  C_MOVEA_SIZE      EQU %0011000000000000
-0000191A  =00000E00               1065  C_MOVEA_AN        EQU %0000111000000000
-0000191A  =0000003F               1066  C_MOVEA_REGISTER  EQU %00111111
-0000191A  3401                    1067      MOVE.W D1, D2 
-0000191C  0242 F1C0               1068      ANDI.W #C_MOVEA_P_MASKING, D2 
-00001920  0C42 1040               1069      CMPI.W #C_MOVEA_PATTERN1, D2 
-00001924  6700 0014               1070      BEQ MOVEA_REGISTER_OK
-00001928  0C42 3040               1071      CMPI.W #C_MOVEA_PATTERN2, D2 
-0000192C  6700 000C               1072      BEQ MOVEA_REGISTER_OK
-00001930  0C42 2040               1073      CMPI.W #C_MOVEA_PATTERN3, D2 
-00001934  6700 0004               1074      BEQ MOVEA_REGISTER_OK
-00001938  4E75                    1075      RTS
-0000193A                          1076  MOVEA_REGISTER_OK:
-0000193A                          1077      ; CHECK SUPPORT THE REGISTER 
-0000193A  3401                    1078      MOVE.W D1, D2 
-0000193C  C43C 003F               1079      AND.B #C_MOVEA_REGISTER, D2 
-00001940  3F02                    1080      MOVE.W D2, -(SP) 
-00001942  4EB8 11AC               1081      JSR CHECK_SUPPORT_REGISTER
-00001946  548F                    1082      ADDQ.L #2, SP 
-00001948  3439 00009000           1083      MOVE.W (RETURN_ADDRESS), D2 
-0000194E  0C42 0002               1084      CMPI.W #C_UNSUPPORT_REGISTER, D2 
-00001952  6700 F6F4               1085      BEQ FINISH_OPCODE
-00001956                          1086      ; DONE CHECKING, NOW DECODE 
-00001956  4EB9 00001E7E           1087      JSR PRINT_MOVEA 
-0000195C                          1088      ; GET SIZE 
-0000195C  3401                    1089      MOVE.W D1, D2 
-0000195E  C47C 3000               1090      AND.W #C_MOVEA_SIZE, D2 
-00001962                          1091      ; SHIFT TO LSB 
-00001962  E04A                    1092      LSR.W #8, D2 
-00001964  E84A                    1093      LSR.W #4, D2 
-00001966  0C02 0001               1094      CMPI.B #%00000001, D2
-0000196A  6700 000E               1095      BEQ CONVERT_OPMODE_SIZE_B
-0000196E  0C02 0003               1096      CMPI.B #%00000011, D2 
-00001972  6700 000C               1097      BEQ CONVERT_OPMODE_SIZE_W
-00001976  6000 000E               1098      BRA MOVEA_DONE_CONVERT
-0000197A                          1099  CONVERT_OPMODE_SIZE_B:
-0000197A  5302                    1100      SUBQ.B #1, D2 
-0000197C  6000 0008               1101      BRA MOVEA_DONE_CONVERT
-00001980                          1102  CONVERT_OPMODE_SIZE_W: 
-00001980  5502                    1103      SUBQ.B #2, D2 
-00001982  6000 0002               1104      BRA MOVEA_DONE_CONVERT
-00001986                          1105  
-00001986                          1106  MOVEA_DONE_CONVERT:
-00001986  3C02                    1107      MOVE.W D2, D6 ; COPY THE SIZE FOR LATTER USE 
-00001988  1F06                    1108      MOVE.B D6, -(SP)
-0000198A  4EB8 113A               1109      JSR PRINT_DATA 
-0000198E  548F                    1110      ADDQ.L #2, SP 
-00001990  4EB8 10B4               1111      JSR PRINT_TAB
-00001994                          1112      ; GET SOURCE REGISTER 
-00001994  3238 7006               1113      MOVE.W (OPCODE_ADDRESS), D1 
-00001998  3401                    1114      MOVE.W D1, D2 
-0000199A  C43C 003F               1115      AND.B #C_MOVEA_REGISTER,D2 
-0000199E  3F02                    1116      MOVE.W D2, -(SP)
-000019A0  3F06                    1117      MOVE.W D6, -(SP)
-000019A2  4EB8 1252               1118      JSR PRINT_REGISTER
-000019A6  588F                    1119      ADDQ.L #4, SP 
-000019A8  4EB8 10D2               1120      JSR PRINT_COMMA
-000019AC                          1121  
-000019AC  3238 7006               1122      MOVE.W (OPCODE_ADDRESS), D1 ; GET BACK THE OPCODE  
-000019B0  3401                    1123      MOVE.W D1, D2 ; MOVE TO D2 FOR LATER USE, NO NEED TO GET FROM MEMORY ANYMORE
-000019B2  C47C 0E00               1124      AND.W #C_MOVEA_AN, D2 
-000019B6  E04A                    1125      LSR.W #8, D2 
-000019B8  E24A                    1126      LSR.W #1, D2 
-000019BA                          1127      ; ADD MODE FOR PRINT_REGISTER 
-000019BA  0002 0008               1128      ORI.B #%00001000, D2 
-000019BE  3F02                    1129      MOVE.W D2, -(SP)
-000019C0  3F3C 0000               1130      MOVE.W #0, -(SP)
-000019C4  4EB8 1252               1131      JSR PRINT_REGISTER ; PRINT AN 
-000019C8  588F                    1132      ADDQ.L #4, SP 
-000019CA  6000 F67C               1133      BRA FINISH_OPCODE   
-000019CE                          1134  
-000019CE                          1135  MOVEA_END: 
-000019CE  4E75                    1136      RTS 
-000019D0                          1137  
-000019D0                          1138  MOVE: 
-000019D0  =00001000               1139  C_MOVE_PATTERN EQU   %0001000000000000
-000019D0  =00003000               1140  C_MOVE_PATTERN1 EQU  %0011000000000000
-000019D0  =00002000               1141  C_MOVE_PATTERN2 EQU  %0010000000000000
-000019D0  =0000F000               1142  C_MOVE_MASKING EQU   %1111000000000000
-000019D0  =00003000               1143  C_MOVE_SIZE EQU      %0011000000000000
-000019D0  =00000E00               1144  C_MOVE_DES_XN EQU    %0000111000000000
-000019D0  =000001C0               1145  C_MOVE_DES_MOD EQU   %0000000111000000
-000019D0  =0000003F               1146  C_MOVE_SRC_RE EQU    %00111111 
-000019D0  3401                    1147      MOVE.W D1, D2 
-000019D2  C47C F000               1148      AND.W #C_MOVE_MASKING, D2 
-000019D6  0C42 1000               1149      CMPI.W #C_MOVE_PATTERN, D2 
-000019DA  6700 0014               1150      BEQ MOVE_MATCH_PATTERN 
-000019DE  0C42 3000               1151      CMPI.W #C_MOVE_PATTERN1, D2 
-000019E2  6700 000C               1152      BEQ MOVE_MATCH_PATTERN 
-000019E6  0C42 2000               1153      CMPI.W #C_MOVE_PATTERN2, D2 
-000019EA  6700 0004               1154      BEQ MOVE_MATCH_PATTERN
-000019EE                          1155  MOVE_END:
-000019EE  4E75                    1156      RTS
-000019F0                          1157  MOVE_MATCH_PATTERN: 
-000019F0  3401                    1158      MOVE.W D1, D2 
-000019F2                          1159      ; CHECK IF WE SUPPORT THE REGISTER 
-000019F2                          1160      ; SOURCE REGISTER 
-000019F2  C43C 003F               1161      AND.B #C_MOVE_SRC_RE, D2
-000019F6  3A42                    1162      MOVE.W D2, A5 ; COPY FOR LATER USE
-000019F8  3F02                    1163      MOVE.W D2, -(SP)
-000019FA  4EB8 11AC               1164      JSR CHECK_SUPPORT_REGISTER 
-000019FE  548F                    1165      ADDQ.L #2, SP 
-00001A00  0C79 0002 00009000      1166      CMPI.W #C_UNSUPPORT_REGISTER, (RETURN_ADDRESS)
-00001A08  6700 F63E               1167      BEQ FINISH_OPCODE
-00001A0C                          1168      ; DES REGISTER 
-00001A0C                          1169      ;GET XN 
-00001A0C  3238 7006               1170      MOVE.W (OPCODE_ADDRESS), D1 
-00001A10  3401                    1171      MOVE.W D1,D2 
-00001A12  C47C 0E00               1172      AND.W #C_MOVE_DES_XN, D2 
-00001A16  EC4A                    1173      LSR.W #6, D2 
-00001A18  C27C 01C0               1174      AND.W #C_MOVE_DES_MOD, D1 
-00001A1C  8441                    1175      OR.W D1, D2 
-00001A1E  E64A                    1176      LSR.W #3, D2 
-00001A20  3842                    1177      MOVE.W D2, A4 ; COPY FOR LATER USE 
-00001A22  3F02                    1178      MOVE.W D2, -(SP)
-00001A24  4EB8 11AC               1179      JSR CHECK_SUPPORT_REGISTER
-00001A28  548F                    1180      ADDQ.L #2, SP 
-00001A2A  0C79 11AC 00009000      1181      CMPI.W #CHECK_SUPPORT_REGISTER, (RETURN_ADDRESS)
-00001A32  6700 F614               1182      BEQ FINISH_OPCODE
-00001A36                          1183      ; EVERYTHING IS OK 
-00001A36                          1184      
-00001A36  4EB9 00001E8C           1185      JSR PRINT_MOVE
-00001A3C  3238 7006               1186      MOVE.W (OPCODE_ADDRESS), D1 
-00001A40  3401                    1187      MOVE.W D1, D2 
-00001A42  C47C 3000               1188      AND.W #C_MOVE_SIZE, D2 
-00001A46  E04A                    1189      LSR.W #8, D2 
-00001A48  E80A                    1190      LSR.B #4, D2 
-00001A4A  0C02 0001               1191      CMPI.B #1, D2 
-00001A4E  6700 000E               1192      BEQ MOVE_OPMODE_BYTE
-00001A52  0C02 0003               1193      CMPI.B #3, D2 
-00001A56  6700 000C               1194      BEQ MOVE_OPMODE_WORD
-00001A5A  6000 000E               1195      BRA MOVE_DONE_CONVERT
-00001A5E                          1196  MOVE_OPMODE_BYTE:
-00001A5E  5302                    1197      SUBQ.B #1, D2
-00001A60  6000 0008               1198      BRA MOVE_DONE_CONVERT
-00001A64                          1199  MOVE_OPMODE_WORD:
-00001A64  5502                    1200      SUBQ.B #2, D2 
-00001A66  6000 0002               1201      BRA MOVE_DONE_CONVERT
-00001A6A                          1202  MOVE_DONE_CONVERT:
-00001A6A  3C02                    1203      MOVE.W D2, D6 ; COPY THE SIZE FOR LATER USE
-00001A6C  1F06                    1204      MOVE.B D6, -(SP) 
-00001A6E  4EB8 113A               1205      JSR PRINT_DATA 
-00001A72  548F                    1206      ADDQ.L #2, SP
-00001A74  4EB8 10B4               1207      JSR PRINT_TAB 
-00001A78                          1208      ; PRINT SOURCE
-00001A78  3F0D                    1209      MOVE.W A5, -(SP) ; MODE-REGISTER FOR SOURCE
-00001A7A  3F06                    1210      MOVE.W D6, -(SP) ; SIZE 
-00001A7C  4EB8 1252               1211      JSR PRINT_REGISTER
-00001A80  588F                    1212      ADDQ.L #4, SP 
-00001A82                          1213      ; PRINT DES 
-00001A82  4EB8 10D2               1214      JSR PRINT_COMMA 
-00001A86  3F0C                    1215      MOVE.W A4, -(SP) ; MODE-REGISTER FOR DES 
-00001A88  3F06                    1216      MOVE.W D6, -(SP) ; SIZE 
-00001A8A  4EB8 1252               1217      JSR PRINT_REGISTER 
-00001A8E  588F                    1218      ADDQ.L #4, SP 
-00001A90  6000 F5B6               1219      BRA FINISH_OPCODE 
-00001A94                          1220  
-00001A94                          1221  MOVEM: 
-00001A94  =00004880               1222  C_MOVEM_PATTERN EQU %0100100010000000
-00001A94  =0000FB80               1223  C_MOVEM_MASKING EQU %1111101110000000
-00001A94  =00000400               1224  C_MOVEM_DIR EQU     %0000010000000000
-00001A94  =00000040               1225  C_MOVEM_SIZE EQU    %0000000001000000
-00001A94                          1226  * C_MOVEM_REGISTER EQU
-00001A94                          1227  
-00001A94                          1228  
-00001A94                          1229  * ------------ LEO ------------ *          * ------------ LEO ------------ *          * ------------ LEO ------------ *
-00001A94                          1230  NEG:
-00001A94                          1231  * CONSTANT FOR NEG OPCODE
-00001A94  =00004400               1232  NEG_OPCODE EQU %0100010000000000
-00001A94  =0000FF00               1233  NEG_M      EQU %1111111100000000
-00001A94  =0000003F               1234  NEG_REG_M  EQU %0000000000111111
-00001A94  =000000C0               1235  NEG_SIZE_M EQU %0000000011000000
-00001A94  3401                    1236      MOVE.W D1, D2
-00001A96                          1237  * MASKING WITH NEG UNIQUE CODE
-00001A96  C47C FF00               1238      AND.W #NEG_M, D2
-00001A9A  B47C 4400               1239      CMP.W #NEG_OPCODE, D2
-00001A9E  6600 0056               1240      BNE NEG_END
-00001AA2                          1241  
-00001AA2                          1242  * CHECK TO MAKE SURE WE SUPPORT THE EA
-00001AA2  3401                    1243      MOVE.W D1, D2 
-00001AA4  C43C 003F               1244      AND.B #NEG_REG_M, D2 
-00001AA8  3F02                    1245      MOVE.W D2, -(SP)
-00001AAA  4EB8 11AC               1246      JSR CHECK_SUPPORT_REGISTER
-00001AAE  544F                    1247      ADDQ #2, SP 
-00001AB0                          1248  * from print_register to see if it is unsupported register 
-00001AB0  3439 00009000           1249      MOVE.W (RETURN_ADDRESS), D2 
-00001AB6  0C42 0002               1250      CMPI.W #C_UNSUPPORT_REGISTER, D2 ; IF EQUAL RETURN TO FETCH NEXT OPCODE 
-00001ABA  6700 F58C               1251      BEQ FINISH_OPCODE
-00001ABE                          1252  
-00001ABE  4EB9 00001DBE           1253      JSR PRINT_NEG
-00001AC4  3238 7006               1254      MOVE.W (OPCODE_ADDRESS), D1 
-00001AC8  3401                    1255      MOVE.W D1, D2
-00001ACA                          1256  * MASKING TO GET NEG SIZE
-00001ACA  C47C 00C0               1257      AND.W #NEG_SIZE_M, D2
-00001ACE  EC42                    1258      ASR.W #6, D2
-00001AD0  1C02                    1259      MOVE.B D2 , D6 * COPY SHIFTED SIZE FOR PRINT REGISTER 
-00001AD2  1F06                    1260      MOVE.B D6, -(SP)
-00001AD4  4EB8 113A               1261      JSR PRINT_DATA
-00001AD8  548F                    1262      ADDQ.L #2, SP
-00001ADA  4EB8 10B4               1263      JSR PRINT_TAB
-00001ADE                          1264  
-00001ADE  3238 7006               1265      MOVE.W (OPCODE_ADDRESS), D1     
-00001AE2  3401                    1266      MOVE.W D1, D2
-00001AE4                          1267  * MASKING TO GET MODE AND REGISTER
-00001AE4  C47C 003F               1268      AND.W #NEG_REG_M, D2
-00001AE8  3F02                    1269      MOVE.W D2, -(SP)
-00001AEA  3F06                    1270      MOVE.W D6, -(SP)
-00001AEC  4EB8 1252               1271      JSR PRINT_REGISTER
-00001AF0  588F                    1272      ADDQ.L #$04, SP
-00001AF2  6000 F554               1273      BRA FINISH_OPCODE
-00001AF6                          1274  NEG_END: 
-00001AF6  4E75                    1275      RTS
-00001AF8                          1276  
-00001AF8                          1277  BRA:
-00001AF8                          1278  * CONSTANT FOR BRA OPCODE
-00001AF8  =00006000               1279  BRA_OPCODE EQU %0110000000000000
-00001AF8  =0000FF00               1280  BRA_M      EQU %1111111100000000
-00001AF8  =000000FF               1281  BRA_DISP_M EQU %0000000011111111
-00001AF8  3401                    1282      MOVE.W D1, D2
-00001AFA                          1283  * MASKING WITH BRA UNIQUE CODE
-00001AFA  C47C FF00               1284      AND.W #BRA_M, D2
-00001AFE  B47C 6000               1285      CMP.W #BRA_OPCODE, D2
-00001B02  6600 0030               1286      BNE BRA_END
-00001B06                          1287  
-00001B06                          1288  * CHECK TO MAKE SURE WE SUPPORT THE EA
-00001B06  3401                    1289      MOVE.W D1, D2 
-00001B08  C43C 00FF               1290      AND.B #BRA_DISP_M, D2 
-00001B0C  3F02                    1291      MOVE.W D2, -(SP)
-00001B0E  4EB8 11AC               1292      JSR CHECK_SUPPORT_REGISTER
-00001B12  544F                    1293      ADDQ #2, SP 
-00001B14                          1294  * from print_register to see if it is unsupported register 
-00001B14  3439 00009000           1295      MOVE.W (RETURN_ADDRESS), D2 
-00001B1A  0C42 0002               1296      CMPI.W #C_UNSUPPORT_REGISTER, D2 ; IF EQUAL RETURN TO FETCH NEXT OPCODE 
-00001B1E                          1297  
-00001B1E  4EB9 00001DCC           1298      JSR PRINT_BRA
-00001B24  3238 7006               1299      MOVE.W (OPCODE_ADDRESS), D1 
-00001B28  3401                    1300      MOVE.W D1, D2
-00001B2A                          1301  * MASKING TO GET DISPLACEMENT OF BRA
-00001B2A  C47C 00FF               1302      AND.W #BRA_DISP_M, D2
-00001B2E  3F02                    1303      MOVE.W D2, -(SP)       *-------------in progress-----------------*
-00001B30  6000 F516               1304      BRA FINISH_OPCODE
-00001B34                          1305  BRA_END:
-00001B34  4E75                    1306      RTS
-00001B36                          1307  
-00001B36                          1308  OR:
-00001B36                          1309  * CONSTANT FOR OR OPCODE
-00001B36  =00008000               1310  OR_OPCODE EQU %1000000000000000
-00001B36  =0000F000               1311  OR_M      EQU %1111000000000000
-00001B36  =00000E00               1312  OR_DREG_M EQU %0000111000000000
-00001B36  =000000C0               1313  OR_SIZE_M EQU %0000000011000000
-00001B36  =0000003F               1314  OR_REG_M  EQU %0000000000111111
-00001B36  =00000100               1315  OR_DIREC  EQU %0000000100000000
-00001B36                          1316  
-00001B36  3401                    1317      MOVE.W D1, D2
-00001B38                          1318  * MASKING WITH OR UNIQUE CODE
-00001B38  C47C F000               1319      AND.W #OR_M, D2
-00001B3C  0C42 8000               1320      CMPI.W #OR_OPCODE, D2
-00001B40  6600 00C0               1321      BNE OR_END
-00001B44                          1322  
-00001B44                          1323  * CHECK TO MAKE SURE WE SUPPORT THE EA
-00001B44  3401                    1324      MOVE.W D1, D2 
-00001B46  C43C 003F               1325      AND.B #OR_REG_M, D2 
-00001B4A  3F02                    1326      MOVE.W D2, -(SP)
-00001B4C  4EB8 11AC               1327      JSR CHECK_SUPPORT_REGISTER
-00001B50  544F                    1328      ADDQ #2, SP 
-00001B52                          1329  * from print_register to see if it is unsupported register 
-00001B52  3439 00009000           1330      MOVE.W (RETURN_ADDRESS), D2 
-00001B58  0C42 0002               1331      CMPI.W #C_UNSUPPORT_REGISTER, D2 ; IF EQUAL RETURN TO FETCH NEXT OPCODE 
-00001B5C                          1332  
-00001B5C  4EB9 00001DEA           1333      JSR PRINT_OR
-00001B62  3238 7006               1334      MOVE.W (OPCODE_ADDRESS), D1
-00001B66  3401                    1335      MOVE.W D1, D2
-00001B68                          1336  * MASKING TO GET SIZE OF OR
-00001B68  C47C 00C0               1337      AND.W #OR_SIZE_M, D2
-00001B6C  EC42                    1338      ASR.W #6, D2
-00001B6E  1C02                    1339      MOVE.B D2, D6
-00001B70  1F02                    1340      MOVE.B D2, -(SP)
-00001B72  4EB8 113A               1341      JSR PRINT_DATA
-00001B76  548F                    1342      ADDQ.L #$02, SP 
-00001B78  4EB8 10B4               1343      JSR PRINT_TAB
-00001B7C                          1344  * MASKING TO GET DIRECTION OF THIS OR
-00001B7C  3238 7006               1345      MOVE.W (OPCODE_ADDRESS), D1 
-00001B80  3401                    1346      MOVE.W D1, D2  
-00001B82  C47C 0100               1347      AND.W #OR_DIREC, D2 
-00001B86  0C42 0100               1348      CMPI.W #OR_DIREC, D2 
-00001B8A  6600 003C               1349      BNE OR_TO_D  * DN V <EA> -> DN
-00001B8E                          1350  
-00001B8E                          1351  OR_TO_EA:  * DN V <EA> -> <EA>
-00001B8E  3238 7006               1352      MOVE.W (OPCODE_ADDRESS), D1 
-00001B92  3401                    1353      MOVE.W D1, D2 
-00001B94  C47C 0E00               1354      AND.W #OR_DREG_M, D2 
-00001B98  E08A                    1355      LSR.L #8, D2 
-00001B9A  E28A                    1356      LSR.L #1, D2 
-00001B9C  843C 0000               1357      OR.B #%00000000, D2
-00001BA0  3F02                    1358      MOVE.W D2, -(SP)
-00001BA2  3F3C 0000               1359      MOVE.W #$0, -(SP)
-00001BA6  4EB8 1252               1360      JSR PRINT_REGISTER 
-00001BAA  5882                    1361      ADDQ.L #4, D2 
-00001BAC  4EB8 10D2               1362      JSR PRINT_COMMA 
-00001BB0                          1363      
-00001BB0  3238 7006               1364      MOVE.W (OPCODE_ADDRESS), D1 
-00001BB4  3401                    1365      MOVE.W D1, D2 
-00001BB6  C43C 003F               1366      AND.B #OR_REG_M, D2 
-00001BBA  3F02                    1367      MOVE.W D2, -(SP)
-00001BBC  3F06                    1368      MOVE.W D6, -(SP)
-00001BBE  4EB8 1252               1369      JSR PRINT_REGISTER
-00001BC2  588F                    1370      ADDQ.L #4, SP 
-00001BC4  6000 F482               1371      BRA FINISH_OPCODE
-00001BC8                          1372  
-00001BC8                          1373  OR_TO_D:   * <EA> V DN -> DN
-00001BC8  3238 7006               1374      MOVE.W (OPCODE_ADDRESS), D1 
-00001BCC  3401                    1375      MOVE.W D1, D2 
-00001BCE                          1376  * MASKING TO GET THE EFFECTIVE ADDRESS
-00001BCE  C43C 003F               1377      AND.B #OR_REG_M, D2 
-00001BD2  3F02                    1378      MOVE.W D2, -(SP)
-00001BD4  3F06                    1379      MOVE.W D6, -(SP)
-00001BD6  4EB8 1252               1380      JSR PRINT_REGISTER
-00001BDA  588F                    1381      ADDQ.L #4, SP 
-00001BDC  4EB8 10D2               1382      JSR PRINT_COMMA 
-00001BE0                          1383  * MASKING TO GET THE DATA REGISTER 
-00001BE0  3238 7006               1384      MOVE.W (OPCODE_ADDRESS), D1 
-00001BE4  3401                    1385      MOVE.W D1, D2 
-00001BE6  C47C 0E00               1386      AND.W #OR_DREG_M, D2 
-00001BEA  E04A                    1387      LSR.W #8, D2 
-00001BEC  E24A                    1388      LSR.W #1, D2 
-00001BEE                          1389      ; APPEND MODE TO D2 FOR PRINT_REGISTER
-00001BEE  843C 0000               1390      OR.B #%00000000, D2 
-00001BF2  3F02                    1391      MOVE.W D2, -(SP)
-00001BF4  3F3C 0000               1392      MOVE.W #$0, -(SP)
-00001BF8  4EB8 1252               1393      JSR PRINT_REGISTER
-00001BFC  588F                    1394      ADDQ.L #4, SP 
-00001BFE  6000 F448               1395      BRA FINISH_OPCODE
-00001C02                          1396  OR_END:
-00001C02  4E75                    1397      RTS
-00001C04                          1398  
-00001C04                          1399  ORI:
-00001C04                          1400  * CONSTANT FOR ORI OPCODE
-00001C04  =00000000               1401  ORI_OPCODE EQU %0000000000000000
-00001C04  =0000FF00               1402  ORI_M      EQU %1111111100000000
-00001C04  =0000003F               1403  ORI_REG_M  EQU %0000000000111111
-00001C04  =000000C0               1404  ORI_SIZE_M EQU %0000000011000000
-00001C04  3401                    1405      MOVE.W D1, D2
-00001C06                          1406  * MASKING WITH ORI UNIQUE CODE
-00001C06  C47C FF00               1407      AND.W #ORI_M, D2
-00001C0A  B47C 0000               1408      CMP.W #ORI_OPCODE, D2
-00001C0E  6600 0048               1409      BNE ORI_END
-00001C12                          1410  
-00001C12                          1411  * CHECK TO MAKE SURE WE SUPPORT THE EA
-00001C12  3401                    1412      MOVE.W D1, D2 
-00001C14  C43C 003F               1413      AND.B #ORI_REG_M, D2 
-00001C18  3F02                    1414      MOVE.W D2, -(SP)
-00001C1A  4EB8 11AC               1415      JSR CHECK_SUPPORT_REGISTER
-00001C1E  544F                    1416      ADDQ #2, SP 
-00001C20                          1417  * from print_register to see if it is unsupported register 
-00001C20  3439 00009000           1418      MOVE.W (RETURN_ADDRESS), D2 
-00001C26  0C42 0002               1419      CMPI.W #C_UNSUPPORT_REGISTER, D2 ; IF EQUAL RETURN TO FETCH NEXT OPCODE 
-00001C2A  6700 F41C               1420      BEQ FINISH_OPCODE
-00001C2E                          1421  
-00001C2E  4EB9 00001DF8           1422      JSR PRINT_ORI
-00001C34  3238 7006               1423      MOVE.W (OPCODE_ADDRESS), D1
-00001C38  3401                    1424      MOVE.W D1, D2
-00001C3A                          1425  * MASKING TO GET SIZE OF ORI
-00001C3A  C47C 00C0               1426      AND.W #ORI_SIZE_M, D2 
-00001C3E  EC42                    1427      ASR.W #6, D2
-00001C40  1C02                    1428      MOVE.B D2 , D6 * COPY SHIFTED SIZE FOR PRINT REGISTER 
-00001C42  1F06                    1429      MOVE.B D6, -(SP)
-00001C44  4EB8 113A               1430      JSR PRINT_DATA
-00001C48  548F                    1431      ADDQ.L #$02, SP
-00001C4A  4EB8 10B4               1432      JSR PRINT_TAB
-00001C4E                          1433   
-00001C4E  3238 7006               1434      MOVE.W (OPCODE_ADDRESS), D1     
-00001C52  3401                    1435      MOVE.W D1, D2
-00001C54                          1436      *------------------------------------
-00001C54                          1437      * AND.W #ORI_REG_M, D2 
-00001C54                          1438      * LSR.L #8, D2 
-00001C54                          1439      * LSR.L #1, D2 
-00001C54                          1440      * OR.B #%00000000, D2
-00001C54                          1441      * MOVE.W D2, -(SP)
-00001C54                          1442      * MOVE.W #$0, -(SP)
-00001C54                          1443      * JSR PRINT_REGISTER 
-00001C54                          1444      * ADDQ.L #4, D2 
-00001C54                          1445      * JSR PRINT_COMMA 
-00001C54                          1446      
-00001C54                          1447      * AND.B #ORI_REG_M, D2 
-00001C54                          1448      * MOVE.W D2, -(SP)
-00001C54                          1449      * MOVE.W D6, -(SP)
-00001C54                          1450      * JSR PRINT_REGISTER
-00001C54                          1451      * ADDQ.L #4, SP 
-00001C54                          1452      *------------------------------------
-00001C54  6000 F3F2               1453      BRA FINISH_OPCODE
-00001C58                          1454  ORI_END:
-00001C58  4E75                    1455      RTS
-00001C5A                          1456  
-00001C5A                          1457  EOR:
-00001C5A                          1458  * CONSTANT FEOR EOR OPCODE
-00001C5A  =0000B000               1459  EOR_OPCODE EQU %1011000000000000
-00001C5A  =0000F000               1460  EOR_M      EQU %1111000000000000
-00001C5A  =00000E00               1461  EOR_DREG_M EQU %0000111000000000
-00001C5A  =000000C0               1462  EOR_SIZE_M EQU %0000000011000000
-00001C5A  =0000003F               1463  EOR_REG_M  EQU %0000000000111111
-00001C5A  =00000100               1464  EOR_DIREC  EQU %0000000100000000
-00001C5A                          1465  
-00001C5A  3401                    1466      MOVE.W D1, D2
-00001C5C                          1467  * MASKING WITH EOR UNIQUE CODE
-00001C5C  C47C F000               1468      AND.W #EOR_M, D2
-00001C60  B47C B000               1469      CMP.W #EOR_OPCODE, D2
-00001C64  6600 0074               1470      BNE EOR_END
-00001C68                          1471  
-00001C68                          1472  * CHECK TO MAKE SURE WE SUPPEORT THE EA
-00001C68  3401                    1473      MOVE.W D1, D2 
-00001C6A  C43C 003F               1474      AND.B #EOR_REG_M, D2 
-00001C6E  3F02                    1475      MOVE.W D2, -(SP)
-00001C70  4EB8 11AC               1476      JSR CHECK_SUPPORT_REGISTER
-00001C74  544F                    1477      ADDQ #2, SP 
-00001C76                          1478  * from print_register to see if it is unsuppEorted register 
-00001C76  3439 00009000           1479      MOVE.W (RETURN_ADDRESS), D2 
-00001C7C  0C42 0002               1480      CMPI.W #C_UNSUPPORT_REGISTER, D2 ; IF EQUAL RETURN TO FETCH NEXT OPCODE 
-00001C80                          1481  
-00001C80  4EB9 00001E06           1482      JSR PRINT_EOR
-00001C86  3238 7006               1483      MOVE.W (OPCODE_ADDRESS), D1
-00001C8A  3401                    1484      MOVE.W D1, D2
-00001C8C                          1485  * MASKING TO GET SIZE OF EOR
-00001C8C  C47C 00C0               1486      AND.W #EOR_SIZE_M, D2
-00001C90  EC42                    1487      ASR.W #6, D2
-00001C92  1C02                    1488      MOVE.B D2, D6
-00001C94  1F02                    1489      MOVE.B D2, -(SP)
-00001C96  4EB8 113A               1490      JSR PRINT_DATA
-00001C9A  548F                    1491      ADDQ.L #$02, SP 
-00001C9C  4EB8 10B4               1492      JSR PRINT_TAB
-00001CA0                          1493  
-00001CA0                          1494  EOR_TO_EA:  * <EA> EOR DN -> <EA>
-00001CA0  3238 7006               1495      MOVE.W (OPCODE_ADDRESS), D1 
-00001CA4  3401                    1496      MOVE.W D1, D2 
-00001CA6  C47C 0E00               1497      AND.W #EOR_DREG_M, D2 
-00001CAA  E08A                    1498      LSR.L #8, D2 
-00001CAC  E28A                    1499      LSR.L #1, D2 
-00001CAE  0A02 0000               1500      EOR.B #%00000000, D2
-00001CB2  3F02                    1501      MOVE.W D2, -(SP)
-00001CB4  3F3C 0000               1502      MOVE.W #$0, -(SP)
-00001CB8  4EB8 1252               1503      JSR PRINT_REGISTER 
-00001CBC  5882                    1504      ADDQ.L #4, D2 
-00001CBE  4EB8 10D2               1505      JSR PRINT_COMMA 
-00001CC2                          1506      
-00001CC2  3238 7006               1507      MOVE.W (OPCODE_ADDRESS), D1 
-00001CC6  3401                    1508      MOVE.W D1, D2 
-00001CC8  C43C 003F               1509      AND.B #EOR_REG_M, D2 
-00001CCC  3F02                    1510      MOVE.W D2, -(SP)
-00001CCE  3F06                    1511      MOVE.W D6, -(SP)
-00001CD0  4EB8 1252               1512      JSR PRINT_REGISTER
-00001CD4  588F                    1513      ADDQ.L #4, SP 
-00001CD6  6000 F370               1514      BRA FINISH_OPCODE
-00001CDA                          1515  
-00001CDA                          1516  EOR_END:
-00001CDA  4E75                    1517      RTS
-00001CDC                          1518  
-00001CDC                          1519  SUB:
-00001CDC                          1520  * CONSTANT FSUB SUB OPCODE
-00001CDC  =00009000               1521  SUB_OPCODE EQU %1001000000000000
-00001CDC  =0000F000               1522  SUB_M      EQU %1111000000000000
-00001CDC  =00000E00               1523  SUB_DREG_M EQU %0000111000000000
-00001CDC  =000000C0               1524  SUB_SIZE_M EQU %0000000011000000
-00001CDC  =0000003F               1525  SUB_REG_M  EQU %0000000000111111
-00001CDC  =00000100               1526  SUB_DIREC  EQU %0000000100000000
-00001CDC                          1527  
-00001CDC  3401                    1528      MOVE.W D1, D2
-00001CDE                          1529  * MASKING WITH SUB UNIQUE CODE
-00001CDE  C47C F000               1530      AND.W #SUB_M, D2
-00001CE2  0C42 9000               1531      CMPI.W #SUB_OPCODE, D2
-00001CE6  6600 00C0               1532      BNE SUB_END
-00001CEA                          1533  
-00001CEA                          1534  * CHECK TO MAKE SURE WE SUPPORT THE EA
-00001CEA  3401                    1535      MOVE.W D1, D2 
-00001CEC  C43C 003F               1536      AND.B #SUB_REG_M, D2 
-00001CF0  3F02                    1537      MOVE.W D2, -(SP)
-00001CF2  4EB8 11AC               1538      JSR CHECK_SUPPORT_REGISTER
-00001CF6  544F                    1539      ADDQ #2, SP 
-00001CF8                          1540  * from print_register to see if it is unsupported register 
-00001CF8  3439 00009000           1541      MOVE.W (RETURN_ADDRESS), D2 
-00001CFE  0C42 0002               1542      CMPI.W #C_UNSUPPORT_REGISTER, D2 ; IF EQUAL RETURN TO FETCH NEXT OPCODE 
-00001D02                          1543  
-00001D02  4EB9 00001E70           1544      JSR PRINT_SUB
-00001D08  3238 7006               1545      MOVE.W (OPCODE_ADDRESS), D1
-00001D0C  3401                    1546      MOVE.W D1, D2
-00001D0E                          1547  * MASKING TO GET SIZE OF SUB
-00001D0E  C47C 00C0               1548      AND.W #SUB_SIZE_M, D2
-00001D12  EC42                    1549      ASR.W #6, D2
-00001D14  1C02                    1550      MOVE.B D2, D6
-00001D16  1F02                    1551      MOVE.B D2, -(SP)
-00001D18  4EB8 113A               1552      JSR PRINT_DATA
-00001D1C  548F                    1553      ADDQ.L #$02, SP 
-00001D1E  4EB8 10B4               1554      JSR PRINT_TAB
-00001D22                          1555  * MASKING TO GET DIRECTION OF THIS SUB
-00001D22  3238 7006               1556      MOVE.W (OPCODE_ADDRESS), D1 
-00001D26  3401                    1557      MOVE.W D1, D2  
-00001D28  C47C 0100               1558      AND.W #SUB_DIREC, D2 
-00001D2C  0C42 0100               1559      CMPI.W #SUB_DIREC, D2 
-00001D30  6600 003C               1560      BNE SUB_TO_D  * DN - <EA> -> DN
-00001D34                          1561  
-00001D34                          1562  SUB_TO_EA:  * <EA> - DN -> <EA>
-00001D34  3238 7006               1563      MOVE.W (OPCODE_ADDRESS), D1 
-00001D38  3401                    1564      MOVE.W D1, D2 
-00001D3A  C47C 0E00               1565      AND.W #SUB_DREG_M, D2 
-00001D3E  E08A                    1566      LSR.L #8, D2 
-00001D40  E28A                    1567      LSR.L #1, D2 
-00001D42  0402 0000               1568      SUB.B #%00000000, D2
-00001D46  3F02                    1569      MOVE.W D2, -(SP)
-00001D48  3F3C 0000               1570      MOVE.W #$0, -(SP)
-00001D4C  4EB8 1252               1571      JSR PRINT_REGISTER 
-00001D50  5882                    1572      ADDQ.L #4, D2 
-00001D52  4EB8 10D2               1573      JSR PRINT_COMMA 
-00001D56                          1574      
-00001D56  3238 7006               1575      MOVE.W (OPCODE_ADDRESS), D1 
-00001D5A  3401                    1576      MOVE.W D1, D2 
-00001D5C  C43C 003F               1577      AND.B #SUB_REG_M, D2 
-00001D60  3F02                    1578      MOVE.W D2, -(SP)
-00001D62  3F06                    1579      MOVE.W D6, -(SP)
-00001D64  4EB8 1252               1580      JSR PRINT_REGISTER
-00001D68  588F                    1581      ADDQ.L #4, SP 
-00001D6A  6000 F2DC               1582      BRA FINISH_OPCODE
-00001D6E                          1583  
-00001D6E                          1584  SUB_TO_D:   * DN - <EA> -> DN
-00001D6E  3238 7006               1585      MOVE.W (OPCODE_ADDRESS), D1 
-00001D72  3401                    1586      MOVE.W D1, D2 
-00001D74                          1587  * MASKING TO GET THE EFFECTIVE ADDRESS
-00001D74  C43C 003F               1588      AND.B #SUB_REG_M, D2 
-00001D78  3F02                    1589      MOVE.W D2, -(SP)
-00001D7A  3F06                    1590      MOVE.W D6, -(SP)
-00001D7C  4EB8 1252               1591      JSR PRINT_REGISTER
-00001D80  588F                    1592      ADDQ.L #4, SP 
-00001D82  4EB8 10D2               1593      JSR PRINT_COMMA 
-00001D86                          1594  * MASKING TO GET THE DATA REGISTER 
-00001D86  3238 7006               1595      MOVE.W (OPCODE_ADDRESS), D1 
-00001D8A  3401                    1596      MOVE.W D1, D2 
-00001D8C  C47C 0E00               1597      AND.W #SUB_DREG_M, D2 
-00001D90  E04A                    1598      LSR.W #8, D2 
-00001D92  E24A                    1599      LSR.W #1, D2 
-00001D94                          1600  * APPEND MODE TO D2 FOR PRINT_REGISTER
-00001D94  0402 0000               1601      SUB.B #%00000000, D2 
-00001D98  3F02                    1602      MOVE.W D2, -(SP)
-00001D9A  3F3C 0000               1603      MOVE.W #$0, -(SP)
-00001D9E  4EB8 1252               1604      JSR PRINT_REGISTER
-00001DA2  588F                    1605      ADDQ.L #4, SP 
-00001DA4  6000 F2A2               1606      BRA FINISH_OPCODE
-00001DA8                          1607  SUB_END:
-00001DA8  4E75                    1608      RTS
-00001DAA                          1609  
-00001DAA                          1610  * ROR:
-00001DAA                          1611  * * CONSTANT FOR ROR OPCODE
-00001DAA                          1612  * ROR_OPCODE EQU %
-00001DAA                          1613  * ROR_M      EQU %
-00001DAA                          1614  * ROR_SIZE_M EQU %
-00001DAA                          1615  *     CLR.W D2
-00001DAA                          1616  *     MOVE.W D1, D2
-00001DAA                          1617  * * MASKING WITH ROR UNIQUE CODE
-00001DAA                          1618  *     AND.W #ROR_M, D2
-00001DAA                          1619  *     CMP.W #ROR_OPCODE, D2
-00001DAA                          1620  *     BNE ROR_END
-00001DAA                          1621  *     JSR PRINT_ROR
-00001DAA                          1622  *     MOVE.W D1, D2
-00001DAA                          1623  *     MOVE.W D1, D3
-00001DAA                          1624  * * MASKING TO GET SIZE OF ROR
-00001DAA                          1625  *     CMP.W #ROR_SIZE_M, D2 
-00001DAA                          1626  * ROR_END:
-00001DAA                          1627  *     RTS
-00001DAA                          1628  
-00001DAA                          1629  * ROL:
-00001DAA                          1630  * * CONSTANT FROR ROL OPCODE
-00001DAA                          1631  * ROL_OPCODE EQU %
-00001DAA                          1632  * ROL_M      EQU %
-00001DAA                          1633  * ROL_SIZE_M EQU %
-00001DAA                          1634  *     CLR.W D2
-00001DAA                          1635  *     MOVE.W D1, D2
-00001DAA                          1636  * * MASKING WITH ROL UNIQUE CODE
-00001DAA                          1637  *     AND.W #ROL_M, D2
-00001DAA                          1638  *     CMP.W #ROL_OPCODE, D2
-00001DAA                          1639  *     BNE ROL_END
-00001DAA                          1640  *     JSR PRINT_ROL
-00001DAA                          1641  *     MOVE.W D1, D2
-00001DAA                          1642  *     MOVE.W D1, D3
-00001DAA                          1643  * * MASKING TO GET SIZE OF ROL
-00001DAA                          1644  *     CMP.W #ROL_SIZE_M, D2 
-00001DAA                          1645  * ROL_END:
-00001DAA                          1646  *     RTS
-00001DAA                          1647  * ------------ LEO ------------ *          * ------------ LEO ------------ *          * ------------ LEO ------------ *
-00001DAA                          1648  
-00001DAA                          1649  
-00001DAA                          1650  PRINT_RTS:
-00001DAA  43F9 00001EA8           1651      LEA P_RTS, A1
-00001DB0  103C 000E               1652      MOVE.B #14, D0
-00001DB4  4E4F                    1653      TRAP #15
-00001DB6  4EB8 10B4               1654      JSR PRINT_TAB
-00001DBA  6000 F28C               1655      BRA FINISH_OPCODE
-00001DBE                          1656  PRINT_NEG:
-00001DBE  43F9 00001EE8           1657      LEA P_NEG, A1
-00001DC4  103C 000E               1658      MOVE.B #14, D0
-00001DC8  4E4F                    1659      TRAP #15
-00001DCA  4E75                    1660      RTS 
-00001DCC                          1661  PRINT_BRA:
-00001DCC  43F9 00001F26           1662      LEA P_BRA, A1
-00001DD2  103C 000E               1663      MOVE.B #14, D0
-00001DD6  4E4F                    1664      TRAP #15
-00001DD8  4E75                    1665      RTS 
-00001DDA                          1666  PRINT_NOP:
-00001DDA  43F9 00001EAC           1667      LEA P_NOP, A1
-00001DE0  103C 000E               1668      MOVE.B #14, D0
-00001DE4  4E4F                    1669      TRAP #15
-00001DE6  6000 F260               1670      BRA FINISH_OPCODE
-00001DEA                          1671  PRINT_OR:
-00001DEA  43F9 00001EE1           1672      LEA P_OR, A1
-00001DF0  103C 000E               1673      MOVE.B #14, D0
-00001DF4  4E4F                    1674      TRAP #15
-00001DF6  4E75                    1675      RTS 
-00001DF8                          1676  PRINT_ORI:
-00001DF8  43F9 00001EE4           1677      LEA P_ORI, A1
-00001DFE  103C 000E               1678      MOVE.B #14, D0
-00001E02  4E4F                    1679      TRAP #15
-00001E04  4E75                    1680      RTS
-00001E06                          1681  PRINT_EOR:
-00001E06  43F9 00001EEC           1682      LEA P_EOR, A1
-00001E0C  103C 000E               1683      MOVE.B #14, D0
-00001E10  4E4F                    1684      TRAP #15
-00001E12  4E75                    1685      RTS 
-00001E14                          1686  PRINT_ROL:
-00001E14  43F9 00001F00           1687      LEA P_ROL, A1
-00001E1A  103C 000E               1688      MOVE.B #14, D0
-00001E1E  4E4F                    1689      TRAP #15
-00001E20  4E75                    1690      RTS 
-00001E22                          1691  PRINT_ROR:
-00001E22  43F9 00001F04           1692      LEA P_ROR, A1
-00001E28  103C 000E               1693      MOVE.B #14, D0
-00001E2C  4E4F                    1694      TRAP #15
-00001E2E  4E75                    1695      RTS 
-00001E30                          1696  PRINT_JSR:
-00001E30  43F9 00001F2A           1697      LEA P_JSR, A1
-00001E36  103C 000E               1698      MOVE.B #14, D0
-00001E3A  4E4F                    1699      TRAP #15
-00001E3C  4EB8 10B4               1700      JSR PRINT_TAB
-00001E40  4E75                    1701      RTS 
-00001E42                          1702  PRINT_LEA:
-00001E42  43F9 00001EDD           1703      LEA P_LEA, A1
-00001E48  103C 000E               1704      MOVE.B #14, D0
-00001E4C  4E4F                    1705      TRAP #15
-00001E4E  4EB8 10B4               1706      JSR PRINT_TAB
-00001E52  4E75                    1707      RTS 
-00001E54                          1708  PRINT_ADDA: 
-00001E54  43F9 00001EC5           1709      LEA P_ADDA, A1 
-00001E5A  103C 000E               1710      MOVE.B #14, D0
-00001E5E  4E4F                    1711      TRAP #15 
-00001E60  4E75                    1712      RTS
-00001E62                          1713  PRINT_ADD:
-00001E62  43F9 00001EC1           1714      LEA P_ADD, A1 
-00001E68  103C 000E               1715      MOVE.B #14, D0 
-00001E6C  4E4F                    1716      TRAP #15
-00001E6E  4E75                    1717      RTS
-00001E70                          1718  PRINT_SUB:
-00001E70  43F9 00001ECA           1719      LEA P_SUB, A1 
-00001E76  103C 000E               1720      MOVE.B #14, D0 
-00001E7A  4E4F                    1721      TRAP #15
-00001E7C  4E75                    1722      RTS
-00001E7E                          1723  PRINT_MOVEA: 
-00001E7E  43F9 00001EB5           1724      LEA P_MOVEA, A1 
-00001E84  103C 000E               1725      MOVE.B #14, D0 
-00001E88  4E4F                    1726      TRAP #15 
-00001E8A  4E75                    1727      RTS 
-00001E8C                          1728  PRINT_MOVE: 
-00001E8C  43F9 00001EB0           1729      LEA P_MOVE, A1 
-00001E92  103C 000E               1730      MOVE.B #14, D0 
-00001E96  4E4F                    1731      TRAP #15 
-00001E98  4E75                    1732      RTS 
-00001E9A                          1733  PRINT_UNSUPPORTED: 
-00001E9A  43F9 00001F2E           1734      LEA P_DATA, A1 
-00001EA0  103C 000E               1735      MOVE.B #14, D0 
-00001EA4  4E4F                    1736      TRAP #15 
-00001EA6  4E75                    1737      RTS 
-00001EA8                          1738  
-00001EA8                          1739  
-00001EA8                          1740  
-00001EA8                          1741  
-00001EA8                          1742  
-00001EA8                          1743  
-00001EA8                          1744  
-00001EA8                          1745  
-00001EA8                          1746  
-00001EA8= 52 54 53 00             1747  P_RTS DC.B 'RTS',0          *-----------------DONE-----------------*
-00001EAC= 4E 4F 50 00             1748  P_NOP DC.B 'NOP',0          *-----------------DONE-----------------*
-00001EB0= 4D 4F 56 45 00          1749  P_MOVE DC.B 'MOVE',0        *-----------------DONE-----------------*
-00001EB5= 4D 4F 56 45 41 00       1750  P_MOVEA DC.B 'MOVEA', 0     *-----------------DONE-----------------*
-00001EBB= 4D 4F 56 45 4D 00       1751  P_MOVEM DC.B 'MOVEM', 0
-00001EC1= 41 44 44 00             1752  P_ADD DC.B 'ADD', 0         *-----------------DONE-----------------*
-00001EC5= 41 44 44 41 00          1753  P_ADDA DC.B 'ADDA',0        *-----------------DONE-----------------*
-00001ECA= 53 55 42 00             1754  P_SUB DC.B 'SUB', 0
-00001ECE= 53 55 42 51 00          1755  P_SUBQ DC.B 'SUBQ',0
-00001ED3= 4D 55 4C 53 00          1756  P_MULS DC.B 'MULS',0
-00001ED8= 44 49 56 53 00          1757  P_DIVS DC.B 'DIVS',0
-00001EDD= 4C 45 41 00             1758  P_LEA DC.B 'LEA',0          *-----------------DONE-----------------*
-00001EE1= 4F 52 00                1759  P_OR DC.B 'OR',0            *-----------------DONE-----------------*
-00001EE4= 4F 52 49 00             1760  P_ORI DC.B 'ORI', 0         *------------IN PROGRESS---------------*
-00001EE8= 4E 45 47 00             1761  P_NEG DC.B 'NEG', 0         *-----------------DONE-----------------*
-00001EEC= 45 4F 52 00             1762  P_EOR DC.B 'EOR', 0         *-----------------DONE-----------------*
-00001EF0= 4C 53 52 00             1763  P_LSR DC.B 'LSR',0
-00001EF4= 4C 53 4C 00             1764  P_LSL DC.B 'LSL', 0
-00001EF8= 41 53 52 00             1765  P_ASR DC.B 'ASR', 0
-00001EFC= 41 53 4C 00             1766  P_ASL DC.B 'ASL',0 
-00001F00= 52 4F 4C 00             1767  P_ROL DC.B 'ROL', 0
-00001F04= 52 4F 52 00             1768  P_ROR DC.B 'ROR', 0
-00001F08= 42 43 4C 52 00          1769  P_BCLR DC.B 'BCLR',0
-00001F0D= 43 4D 50 00             1770  P_CMP DC.B 'CMP', 0
-00001F11= 43 4D 50 49 00          1771  P_CMPI DC.B 'CMPI', 0
-00001F16= 42 43 53 00             1772  P_BCS DC.B 'BCS', 0
-00001F1A= 42 47 45 00             1773  P_BGE DC.B 'BGE', 0
-00001F1E= 42 4C 54 00             1774  P_BLT DC.B 'BLT',0
-00001F22= 42 56 43 00             1775  P_BVC DC.B 'BVC', 0
-00001F26= 42 52 41 00             1776  P_BRA DC.B 'BRA',0          *------------IN PROGRESS---------------*
-00001F2A= 4A 53 52 00             1777  P_JSR DC.B 'JSR',0          *-----------------DONE-----------------*
-00001F2E= 44 41 54 41 00          1778  P_DATA DC.B 'DATA',0        *-----------------DONE-----------------*
-00001F33                          1779  
-00001F33                          1780  
-00001F33  =00000004               1781  WORD_LENGTH EQU $04
-00001F33  =00000008               1782  LONG_LENGTH EQU $08
-00001F33= 31 30 30 32 30 30 ...   1783  TEST_VAL DC.B '10020009'
-00001F3B  =0000000A               1784  LF EQU $0A
-00001F3B  =0000000D               1785  CR EQU $0D
-00001F3B  =00000009               1786  HT  EQU  $09 
-00001F3B= 20 0D 0A 00             1787  NEW_LINE DC.B ' ',CR,LF,0
-00001F3F                          1788  SIMHALT             ; halt simulator
-00001F3F                          1789  * Put variables and constants here
-00001F3F                          1790  
-00001F3F                          1791  
-00001F3F                          1792  
-00001F3F                          1793  
-00001F3F                          1794  
-00001F3F                          1795  
-00001F3F= 50 6C 65 61 73 65 ...   1796  PROMT_INPUT_START DC.B 'Please enter starting address(capitalized):  $',0 
-00001F6E= 50 6C 65 61 73 65 ...   1797  PROMT_INPUT_END DC.B 'Please enter ending address(cappitalized): $',0
-00001F9B= 50 72 65 73 73 20 ...   1798  PROMT_INPUT_CONTINUE DC.B 'Press enter to continue',CR,LF,0
-00001FB5                          1799      END    START        ; last line of source
+00001692  4EB9 00001C0A            805      JSR ORI
+00001698  4EB9 00001920            806      JSR MOVEA 
+0000169E  4EB9 000019D6            807      JSR MOVE
+000016A4  4EB9 00001A9A            808      JSR NEG
+000016AA  4EB9 000016FC            809      JSR NOP
+000016B0  4EB9 00001706            810      JSR RTS
+000016B6  4EB9 00001710            811      JSR JSR
+000016BC  4EB9 00001A9A            812      JSR MOVEM 
+000016C2  4EB9 0000175C            813      JSR LEA
+000016C8  4EB9 00001DB0            814      JSR DIVS
+000016CE  4EB9 00001B3C            815      JSR OR
+000016D4  4EB9 00001CE2            816      JSR SUB
+000016DA  4EB9 00001C60            817      JSR EOR
+000016E0  4EB9 00001710            818      JSR JSR
+000016E6  4EB9 0000184E            819      JSR ADD 
+000016EC  4EB9 000017CA            820      JSR ADDA
+000016F2  4EB9 00001AFE            821      JSR BRA
+000016F8                           822  ; IF THE OPCODES DONT MATCH THE OPCODE ABOVE THAN PRINT DATA OPCODE
+000016F8                           823  END_JUMP_TABLE:
+000016F8  4EB8 11E6                824      JSR UNSUPPORT_OPCODE
+000016FC                           825  
+000016FC                           826  NOP:
+000016FC                           827  * constant for NOP 
+000016FC  =00004E71                828  C_NOP EQU $4E71
+000016FC  B27C 4E71                829      CMP.W #C_NOP, D1
+00001700  6700 075A                830      BEQ PRINT_NOP
+00001704  4E75                     831      RTS
+00001706                           832  
+00001706                           833  RTS:
+00001706                           834  * constant for RTS 
+00001706  =00004E75                835  C_RTS EQU $4E75
+00001706  B27C 4E75                836      CMP.W #C_RTS, D1
+0000170A  6700 0720                837      BEQ PRINT_RTS
+0000170E  4E75                     838      RTS
+00001710                           839  
+00001710                           840  JSR:
+00001710  =00004E80                841  JSR_OPCODE EQU %0100111010000000
+00001710  3401                     842      MOVE.W D1,D2 
+00001712                           843  * MASKING WITH UNIQUE OPCODE
+00001712  C47C FFC0                844      AND.W #%1111111111000000, D2
+00001716  B47C 4E80                845      CMP.W #JSR_OPCODE, D2
+0000171A  6600 003E                846      BNE JSR_END 
+0000171E                           847      ; check to make sure we support this register 
+0000171E  3401                     848      MOVE.W D1, D2 
+00001720  C43C 003F                849      AND.B #%00111111, D2 
+00001724  3F02                     850      MOVE.W D2, -(SP)
+00001726  4EB8 11AC                851      JSR CHECK_SUPPORT_REGISTER 
+0000172A  544F                     852      ADDQ #2, SP 
+0000172C                           853      ; check return value
+0000172C                           854      *  from print_register to see if it is unsupported register 
+0000172C  3439 00009000            855      MOVE.W (RETURN_ADDRESS), D2 
+00001732  0C42 0002                856      CMPI.W #C_UNSUPPORT_REGISTER, D2 ; IF EQUAL RETURN TO FETCH NEXT OPCODE 
+00001736  6700 0022                857      BEQ JSR_END
+0000173A                           858      ; done checking 
+0000173A  4EB9 00001EB2            859      JSR PRINT_JSR
+00001740                           860  * MASKING TO GET MODE AND REGISTER
+00001740  1401                     861      MOVE.B D1,D2
+00001742  C43C 003F                862      AND.B #%00111111, D2
+00001746  48A7 4000                863      MOVEM.W D1, -(SP)
+0000174A  3F02                     864      MOVE.W D2, -(SP)
+0000174C  3F3C 0000                865      MOVE.W #$0, -(SP)
+00001750  4EB8 1252                866      JSR PRINT_REGISTER
+00001754  5882                     867      ADDQ.L #4, D2
+00001756  4C9F 0002                868      MOVEM.W (SP)+, D1
+0000175A                           869  JSR_END:
+0000175A  4E75                     870      RTS
+0000175C                           871  
+0000175C                           872  LEA:
+0000175C  3401                     873      MOVE.W D1,D2 
+0000175E  C47C F1C0                874      AND.W  #%1111000111000000, D2
+00001762  0C42 41C0                875      CMPI.W #%0100000111000000, D2
+00001766  6600 0060                876      BNE LEA_END
+0000176A                           877  
+0000176A                           878      ; CHECK TO MAKE SURE WE SUPPORT THE EA
+0000176A  3401                     879      MOVE.W D1, D2 
+0000176C  C43C 003F                880      AND.B #%00111111, D2 
+00001770  3F02                     881      MOVE.W D2, -(SP)
+00001772  4EB8 11AC                882      JSR CHECK_SUPPORT_REGISTER
+00001776  544F                     883      ADDQ #2, SP 
+00001778                           884      ; check return value
+00001778                           885      *  from print_register to see if it is unsupported register 
+00001778  3439 00009000            886      MOVE.W (RETURN_ADDRESS), D2 
+0000177E  0C42 0002                887      CMPI.W #C_UNSUPPORT_REGISTER, D2 ; IF EQUAL RETURN TO FETCH NEXT OPCODE 
+00001782  6700 F8C4                888      BEQ FINISH_OPCODE
+00001786                           889      * END CHECKING
+00001786  4EB9 00001EC4            890      JSR PRINT_LEA
+0000178C  1401                     891      MOVE.B D1,D2 
+0000178E                           892      ; MASK TO GET MODE AND REGISTER
+0000178E  C43C 003F                893      AND.B #%0000000000111111, D2
+00001792  48A7 4000                894      MOVEM.W D1, -(SP)
+00001796  3F02                     895      MOVE.W D2, -(SP)
+00001798  3F3C 0000                896      MOVE.W #$0, -(SP)
+0000179C  4EB8 1252                897      JSR PRINT_REGISTER
+000017A0  588F                     898      ADDQ.L #$4, SP
+000017A2  4C9F 0002                899      MOVEM.W (SP)+, D1
+000017A6  4EB8 10D2                900      JSR PRINT_COMMA
+000017AA                           901      ; MASK TO GET DESTINATION REGISTER
+000017AA  3401                     902      MOVE.W D1,D2
+000017AC  C47C 0E00                903      AND.W #%0000111000000000, D2
+000017B0  E04A                     904      LSR.W #$08, D2
+000017B2  E24A                     905      LSR.W #$01, D2
+000017B4  843C 0008                906      OR.B #%00001000, D2 ; OR TO PASS TO PRINT_REGISTER
+000017B8  3F02                     907      MOVE.W D2, -(SP)
+000017BA  3F3C 0000                908      MOVE.W #$0, -(SP) 
+000017BE  4EB8 1252                909      JSR PRINT_REGISTER
+000017C2  588F                     910      ADDQ.L #$04, SP
+000017C4  6000 F882                911      BRA FINISH_OPCODE
+000017C8                           912  LEA_END:
+000017C8  4E75                     913      RTS
+000017CA                           914  
+000017CA                           915  ADDA:
+000017CA  =0000D0C0                916  C_ADDA EQU       %1101000011000000
+000017CA  =0000F0C0                917  ADDA_MASKING EQU %1111000011000000
+000017CA  =00000100                918  ADDA_SIZE_MASKING EQU %0000000100000000
+000017CA  =00000E00                919  ADDA_AN_MASKING EQU %0000111000000000
+000017CA  3401                     920      MOVE.W D1, D2
+000017CC  C47C F0C0                921      AND.W #ADDA_MASKING, D2 ; GET PATTERN
+000017D0  0C42 D0C0                922      CMPI.W #C_ADDA, D2 ; COMPARE WITH THE PATTERN
+000017D4  6600 0076                923      BNE ADDA_END 
+000017D8                           924      ; CHECK TO MAKE SURE WE SUPPORT THE EA
+000017D8  3401                     925      MOVE.W D1, D2 
+000017DA  C43C 003F                926      AND.B #%00111111, D2 
+000017DE  3F02                     927      MOVE.W D2, -(SP)
+000017E0  4EB8 11AC                928      JSR CHECK_SUPPORT_REGISTER
+000017E4  544F                     929      ADDQ #2, SP 
+000017E6                           930      ; check return value
+000017E6                           931      *  from print_register to see if it is unsupported register 
+000017E6  3439 00009000            932      MOVE.W (RETURN_ADDRESS), D2 
+000017EC  0C42 0002                933      CMPI.W #C_UNSUPPORT_REGISTER, D2 ; IF EQUAL RETURN TO FETCH NEXT OPCODE 
+000017F0  6700 F856                934      BEQ FINISH_OPCODE
+000017F4  4EB9 00001ED6            935      JSR PRINT_ADDA
+000017FA  3401                     936      MOVE.W D1, D2  ; START TO MASK SIZE 
+000017FC  C47C 0100                937      AND.W #ADDA_SIZE_MASKING,D2 
+00001800  E04A                     938      LSR.W #8, D2 
+00001802  3C02                     939      MOVE.W D2 , D6 ; FOR SIZE TO PRINT REGISTER 
+00001804  5246                     940      ADDQ #$1, D6
+00001806  1F06                     941      MOVE.B D6 , -(SP)
+00001808  4EB8 113A                942      JSR PRINT_DATA
+0000180C  548F                     943      ADDQ.L #$2, SP 
+0000180E  4EB8 10B4                944      JSR PRINT_TAB
+00001812                           945      ; GET MODE AND REGISTER
+00001812  3238 7006                946      MOVE.W (OPCODE_ADDRESS), D1 
+00001816  1401                     947      MOVE.B D1, D2 
+00001818  C43C 003F                948      AND.B #%00111111, D2 
+0000181C  3F02                     949      MOVE.W D2, -(SP)
+0000181E  3F06                     950      MOVE.W D6, -(SP)
+00001820  4EB8 1252                951      JSR PRINT_REGISTER 
+00001824  588F                     952      ADDQ.L #$04, SP 
+00001826  4EB8 10D2                953      JSR PRINT_COMMA
+0000182A  3238 7006                954      MOVE.W (OPCODE_ADDRESS), D1  ; get back the opcode just in case
+0000182E  3401                     955      MOVE.W D1, D2
+00001830  C47C 0E00                956      AND.W #ADDA_AN_MASKING, D2
+00001834  E04A                     957      LSR.W #8, D2 
+00001836  E24A                     958      LSR.W #1, D2 
+00001838  843C 0008                959      OR.B #%00001000, D2 ; TO APPEND MODE FOR PRINT REGISTER 
+0000183C  3F02                     960      MOVE.W D2, -(SP)
+0000183E  3F3C 0000                961      MOVE.W #$0, -(SP)
+00001842  4EB8 1252                962      JSR PRINT_REGISTER 
+00001846  588F                     963      ADDQ.L #$4, SP 
+00001848  6000 F7FE                964      BRA FINISH_OPCODE
+0000184C                           965  ADDA_END:
+0000184C  4E75                     966      RTS
+0000184E                           967  
+0000184E                           968  ADD: 
+0000184E  =0000D000                969  C_ADD EQU           %1101000000000000 ; PATTERN
+0000184E  =0000F000                970  C_ADD_MASKING EQU   %1111000000000000 ; MASKING TO CHECK PATTERN
+0000184E  =0000003F                971  C_ADD_EA EQU        %00111111 ; EFFECTIVE ADDRESS MASKING
+0000184E  =00000E00                972  C_ADD_REGISTER EQU  %0000111000000000 ; WHICH REGISTER
+0000184E  =000000C0                973  C_ADD_SIZE EQU      %0000000011000000  ; SIZE 
+0000184E  =00000100                974  C_ADD_DIRECTION EQU %0000000100000000
+0000184E  =00000000                975  C_ADD_TO_D EQU      %0000000000000000
+0000184E  =00000100                976  C_ADD_FROM_D EQU    %0000000100000000
+0000184E  3401                     977      MOVE.W D1, D2 
+00001850                           978      ; CHECK PATTERN 
+00001850  C47C F000                979      AND.W #C_ADD_MASKING, D2 
+00001854  0C42 D000                980      CMPI.W #C_ADD, D2 
+00001858  6600 00C4                981      BNE ADD_END 
+0000185C                           982      ; CHECK SUPPORT REGISTER 
+0000185C  3401                     983      MOVE.W D1, D2 
+0000185E  C43C 003F                984      AND.B #%00111111, D2 
+00001862  3F02                     985      MOVE.W D2, -(SP)
+00001864  4EB8 11AC                986      JSR CHECK_SUPPORT_REGISTER
+00001868  544F                     987      ADDQ #2, SP 
+0000186A                           988      ; check return value
+0000186A                           989      *  from print_register to see if it is unsupported register 
+0000186A  3439 00009000            990      MOVE.W (RETURN_ADDRESS), D2 
+00001870  0C42 0002                991      CMPI.W #C_UNSUPPORT_REGISTER, D2 ; IF EQUAL RETURN TO FETCH NEXT OPCODE 
+00001874  6700 F7D2                992      BEQ FINISH_OPCODE
+00001878                           993      
+00001878  4EB9 00001EE4            994      JSR PRINT_ADD 
+0000187E  3238 7006                995      MOVE.W (OPCODE_ADDRESS), D1 
+00001882  3401                     996      MOVE.W D1, D2 
+00001884  C47C 00C0                997      AND.W #C_ADD_SIZE, D2 
+00001888  EC4A                     998      LSR.W #6, D2
+0000188A  1C02                     999      MOVE.B D2, D6 ; SAVE FOR IMMEDIATE VALUE AND SIZE OF AN OPCODE  
+0000188C                          1000  
+0000188C  1F02                    1001      MOVE.B D2, -(SP)
+0000188E  4EB8 113A               1002      JSR PRINT_DATA
+00001892  548F                    1003      ADDQ.L #$02, SP 
+00001894  4EB8 10B4               1004      JSR PRINT_TAB 
+00001898                          1005      ; CHECK DIRECTION
+00001898  3238 7006               1006      MOVE.W (OPCODE_ADDRESS), D1 
+0000189C  3401                    1007      MOVE.W D1, D2  
+0000189E  C47C 0100               1008      AND.W #C_ADD_DIRECTION, D2 
+000018A2  0C42 0000               1009      CMPI.W #C_ADD_TO_D, D2 
+000018A6  6700 003C               1010      BEQ ADD_TO_D ; DN <EA> -> DN
+000018AA                          1011      ; otherwise from d 
+000018AA                          1012  ADD_FROM_D:
+000018AA  3238 7006               1013      MOVE.W (OPCODE_ADDRESS), D1 
+000018AE  3401                    1014      MOVE.W D1, D2 
+000018B0  C47C 0E00               1015      AND.W #C_ADD_REGISTER, D2 
+000018B4  E08A                    1016      LSR.L #8, D2 
+000018B6  E28A                    1017      LSR.L #1, D2 
+000018B8  843C 0000               1018      OR.B #%00000000, D2
+000018BC  3F02                    1019      MOVE.W D2, -(SP)
+000018BE  3F3C 0000               1020      MOVE.W #$0, -(SP)
+000018C2  4EB8 1252               1021      JSR PRINT_REGISTER 
+000018C6  5882                    1022      ADDQ.L #4, D2 
+000018C8  4EB8 10D2               1023      JSR PRINT_COMMA 
+000018CC                          1024      
+000018CC  3238 7006               1025      MOVE.W (OPCODE_ADDRESS), D1 
+000018D0  3401                    1026      MOVE.W D1, D2 
+000018D2  C43C 003F               1027      AND.B #C_ADD_EA, D2 
+000018D6  3F02                    1028      MOVE.W D2, -(SP)
+000018D8  3F06                    1029      MOVE.W D6, -(SP)
+000018DA  4EB8 1252               1030      JSR PRINT_REGISTER
+000018DE  588F                    1031      ADDQ.L #4, SP 
+000018E0  6000 F766               1032      BRA FINISH_OPCODE
+000018E4                          1033      
+000018E4                          1034  ADD_TO_D:
+000018E4  3238 7006               1035      MOVE.W (OPCODE_ADDRESS), D1 
+000018E8  3401                    1036      MOVE.W D1, D2 
+000018EA                          1037      ; GET SOURCE REGISTER 
+000018EA  C43C 003F               1038      AND.B #C_ADD_EA, D2 
+000018EE  3F02                    1039      MOVE.W D2, -(SP)
+000018F0  3F06                    1040      MOVE.W D6, -(SP)
+000018F2  4EB8 1252               1041      JSR PRINT_REGISTER
+000018F6  588F                    1042      ADDQ.L #4, SP 
+000018F8  4EB8 10D2               1043      JSR PRINT_COMMA 
+000018FC                          1044      ; PRINT DATA REGISTER 
+000018FC  3238 7006               1045      MOVE.W (OPCODE_ADDRESS), D1 
+00001900  3401                    1046      MOVE.W D1, D2 
+00001902  C47C 0E00               1047      AND.W #C_ADD_REGISTER, D2 
+00001906  E04A                    1048      LSR.W #8, D2 
+00001908  E24A                    1049      LSR.W #1, D2 
+0000190A                          1050      ; APPEND MODE TO D2 FOR PRINT_REGISTER
+0000190A  843C 0000               1051      OR.B #%00000000, D2 
+0000190E  3F02                    1052      MOVE.W D2, -(SP)
+00001910  3F3C 0000               1053      MOVE.W #$0, -(SP)
+00001914  4EB8 1252               1054      JSR PRINT_REGISTER
+00001918  588F                    1055      ADDQ.L #4, SP 
+0000191A  6000 F72C               1056      BRA FINISH_OPCODE
+0000191E                          1057  ADD_END:
+0000191E  4E75                    1058      RTS
+00001920                          1059  
+00001920                          1060  MOVEA: 
+00001920  =00001040               1061  C_MOVEA_PATTERN1 EQU  %0001000001000000
+00001920  =00003040               1062  C_MOVEA_PATTERN2 EQU  %0011000001000000
+00001920  =00002040               1063  C_MOVEA_PATTERN3 EQU  %0010000001000000
+00001920  =0000F1C0               1064  C_MOVEA_P_MASKING EQU %1111000111000000
+00001920  =00003000               1065  C_MOVEA_SIZE      EQU %0011000000000000
+00001920  =00000E00               1066  C_MOVEA_AN        EQU %0000111000000000
+00001920  =0000003F               1067  C_MOVEA_REGISTER  EQU %00111111
+00001920  3401                    1068      MOVE.W D1, D2 
+00001922  0242 F1C0               1069      ANDI.W #C_MOVEA_P_MASKING, D2 
+00001926  0C42 1040               1070      CMPI.W #C_MOVEA_PATTERN1, D2 
+0000192A  6700 0014               1071      BEQ MOVEA_REGISTER_OK
+0000192E  0C42 3040               1072      CMPI.W #C_MOVEA_PATTERN2, D2 
+00001932  6700 000C               1073      BEQ MOVEA_REGISTER_OK
+00001936  0C42 2040               1074      CMPI.W #C_MOVEA_PATTERN3, D2 
+0000193A  6700 0004               1075      BEQ MOVEA_REGISTER_OK
+0000193E  4E75                    1076      RTS
+00001940                          1077  MOVEA_REGISTER_OK:
+00001940                          1078      ; CHECK SUPPORT THE REGISTER 
+00001940  3401                    1079      MOVE.W D1, D2 
+00001942  C43C 003F               1080      AND.B #C_MOVEA_REGISTER, D2 
+00001946  3F02                    1081      MOVE.W D2, -(SP) 
+00001948  4EB8 11AC               1082      JSR CHECK_SUPPORT_REGISTER
+0000194C  548F                    1083      ADDQ.L #2, SP 
+0000194E  3439 00009000           1084      MOVE.W (RETURN_ADDRESS), D2 
+00001954  0C42 0002               1085      CMPI.W #C_UNSUPPORT_REGISTER, D2 
+00001958  6700 F6EE               1086      BEQ FINISH_OPCODE
+0000195C                          1087      ; DONE CHECKING, NOW DECODE 
+0000195C  4EB9 00001F0E           1088      JSR PRINT_MOVEA 
+00001962                          1089      ; GET SIZE 
+00001962  3401                    1090      MOVE.W D1, D2 
+00001964  C47C 3000               1091      AND.W #C_MOVEA_SIZE, D2 
+00001968                          1092      ; SHIFT TO LSB 
+00001968  E04A                    1093      LSR.W #8, D2 
+0000196A  E84A                    1094      LSR.W #4, D2 
+0000196C  0C02 0001               1095      CMPI.B #%00000001, D2
+00001970  6700 000E               1096      BEQ CONVERT_OPMODE_SIZE_B
+00001974  0C02 0003               1097      CMPI.B #%00000011, D2 
+00001978  6700 000C               1098      BEQ CONVERT_OPMODE_SIZE_W
+0000197C  6000 000E               1099      BRA MOVEA_DONE_CONVERT
+00001980                          1100  CONVERT_OPMODE_SIZE_B:
+00001980  5302                    1101      SUBQ.B #1, D2 
+00001982  6000 0008               1102      BRA MOVEA_DONE_CONVERT
+00001986                          1103  CONVERT_OPMODE_SIZE_W: 
+00001986  5502                    1104      SUBQ.B #2, D2 
+00001988  6000 0002               1105      BRA MOVEA_DONE_CONVERT
+0000198C                          1106  
+0000198C                          1107  MOVEA_DONE_CONVERT:
+0000198C  3C02                    1108      MOVE.W D2, D6 ; COPY THE SIZE FOR LATTER USE 
+0000198E  1F06                    1109      MOVE.B D6, -(SP)
+00001990  4EB8 113A               1110      JSR PRINT_DATA 
+00001994  548F                    1111      ADDQ.L #2, SP 
+00001996  4EB8 10B4               1112      JSR PRINT_TAB
+0000199A                          1113      ; GET SOURCE REGISTER 
+0000199A  3238 7006               1114      MOVE.W (OPCODE_ADDRESS), D1 
+0000199E  3401                    1115      MOVE.W D1, D2 
+000019A0  C43C 003F               1116      AND.B #C_MOVEA_REGISTER,D2 
+000019A4  3F02                    1117      MOVE.W D2, -(SP)
+000019A6  3F06                    1118      MOVE.W D6, -(SP)
+000019A8  4EB8 1252               1119      JSR PRINT_REGISTER
+000019AC  588F                    1120      ADDQ.L #4, SP 
+000019AE  4EB8 10D2               1121      JSR PRINT_COMMA
+000019B2                          1122  
+000019B2  3238 7006               1123      MOVE.W (OPCODE_ADDRESS), D1 ; GET BACK THE OPCODE  
+000019B6  3401                    1124      MOVE.W D1, D2 ; MOVE TO D2 FOR LATER USE, NO NEED TO GET FROM MEMORY ANYMORE
+000019B8  C47C 0E00               1125      AND.W #C_MOVEA_AN, D2 
+000019BC  E04A                    1126      LSR.W #8, D2 
+000019BE  E24A                    1127      LSR.W #1, D2 
+000019C0                          1128      ; ADD MODE FOR PRINT_REGISTER 
+000019C0  0002 0008               1129      ORI.B #%00001000, D2 
+000019C4  3F02                    1130      MOVE.W D2, -(SP)
+000019C6  3F3C 0000               1131      MOVE.W #0, -(SP)
+000019CA  4EB8 1252               1132      JSR PRINT_REGISTER ; PRINT AN 
+000019CE  588F                    1133      ADDQ.L #4, SP 
+000019D0  6000 F676               1134      BRA FINISH_OPCODE   
+000019D4                          1135  
+000019D4                          1136  MOVEA_END: 
+000019D4  4E75                    1137      RTS 
+000019D6                          1138  
+000019D6                          1139  MOVE: 
+000019D6  =00001000               1140  C_MOVE_PATTERN EQU   %0001000000000000
+000019D6  =00003000               1141  C_MOVE_PATTERN1 EQU  %0011000000000000
+000019D6  =00002000               1142  C_MOVE_PATTERN2 EQU  %0010000000000000
+000019D6  =0000F000               1143  C_MOVE_MASKING EQU   %1111000000000000
+000019D6  =00003000               1144  C_MOVE_SIZE EQU      %0011000000000000
+000019D6  =00000E00               1145  C_MOVE_DES_XN EQU    %0000111000000000
+000019D6  =000001C0               1146  C_MOVE_DES_MOD EQU   %0000000111000000
+000019D6  =0000003F               1147  C_MOVE_SRC_RE EQU    %00111111 
+000019D6  3401                    1148      MOVE.W D1, D2 
+000019D8  C47C F000               1149      AND.W #C_MOVE_MASKING, D2 
+000019DC  0C42 1000               1150      CMPI.W #C_MOVE_PATTERN, D2 
+000019E0  6700 0014               1151      BEQ MOVE_MATCH_PATTERN 
+000019E4  0C42 3000               1152      CMPI.W #C_MOVE_PATTERN1, D2 
+000019E8  6700 000C               1153      BEQ MOVE_MATCH_PATTERN 
+000019EC  0C42 2000               1154      CMPI.W #C_MOVE_PATTERN2, D2 
+000019F0  6700 0004               1155      BEQ MOVE_MATCH_PATTERN
+000019F4                          1156  MOVE_END:
+000019F4  4E75                    1157      RTS
+000019F6                          1158  MOVE_MATCH_PATTERN: 
+000019F6  3401                    1159      MOVE.W D1, D2 
+000019F8                          1160      ; CHECK IF WE SUPPORT THE REGISTER 
+000019F8                          1161      ; SOURCE REGISTER 
+000019F8  C43C 003F               1162      AND.B #C_MOVE_SRC_RE, D2
+000019FC  3A42                    1163      MOVE.W D2, A5 ; COPY FOR LATER USE
+000019FE  3F02                    1164      MOVE.W D2, -(SP)
+00001A00  4EB8 11AC               1165      JSR CHECK_SUPPORT_REGISTER 
+00001A04  548F                    1166      ADDQ.L #2, SP 
+00001A06  0C79 0002 00009000      1167      CMPI.W #C_UNSUPPORT_REGISTER, (RETURN_ADDRESS)
+00001A0E  6700 F638               1168      BEQ FINISH_OPCODE
+00001A12                          1169      ; DES REGISTER 
+00001A12                          1170      ;GET XN 
+00001A12  3238 7006               1171      MOVE.W (OPCODE_ADDRESS), D1 
+00001A16  3401                    1172      MOVE.W D1,D2 
+00001A18  C47C 0E00               1173      AND.W #C_MOVE_DES_XN, D2 
+00001A1C  EC4A                    1174      LSR.W #6, D2 
+00001A1E  C27C 01C0               1175      AND.W #C_MOVE_DES_MOD, D1 
+00001A22  8441                    1176      OR.W D1, D2 
+00001A24  E64A                    1177      LSR.W #3, D2 
+00001A26  3842                    1178      MOVE.W D2, A4 ; COPY FOR LATER USE 
+00001A28  3F02                    1179      MOVE.W D2, -(SP)
+00001A2A  4EB8 11AC               1180      JSR CHECK_SUPPORT_REGISTER
+00001A2E  548F                    1181      ADDQ.L #2, SP 
+00001A30  0C79 11AC 00009000      1182      CMPI.W #CHECK_SUPPORT_REGISTER, (RETURN_ADDRESS)
+00001A38  6700 F60E               1183      BEQ FINISH_OPCODE
+00001A3C                          1184      ; EVERYTHING IS OK 
+00001A3C                          1185      
+00001A3C  4EB9 00001F1C           1186      JSR PRINT_MOVE
+00001A42  3238 7006               1187      MOVE.W (OPCODE_ADDRESS), D1 
+00001A46  3401                    1188      MOVE.W D1, D2 
+00001A48  C47C 3000               1189      AND.W #C_MOVE_SIZE, D2 
+00001A4C  E04A                    1190      LSR.W #8, D2 
+00001A4E  E80A                    1191      LSR.B #4, D2 
+00001A50  0C02 0001               1192      CMPI.B #1, D2 
+00001A54  6700 000E               1193      BEQ MOVE_OPMODE_BYTE
+00001A58  0C02 0003               1194      CMPI.B #3, D2 
+00001A5C  6700 000C               1195      BEQ MOVE_OPMODE_WORD
+00001A60  6000 000E               1196      BRA MOVE_DONE_CONVERT
+00001A64                          1197  MOVE_OPMODE_BYTE:
+00001A64  5302                    1198      SUBQ.B #1, D2
+00001A66  6000 0008               1199      BRA MOVE_DONE_CONVERT
+00001A6A                          1200  MOVE_OPMODE_WORD:
+00001A6A  5502                    1201      SUBQ.B #2, D2 
+00001A6C  6000 0002               1202      BRA MOVE_DONE_CONVERT
+00001A70                          1203  MOVE_DONE_CONVERT:
+00001A70  3C02                    1204      MOVE.W D2, D6 ; COPY THE SIZE FOR LATER USE
+00001A72  1F06                    1205      MOVE.B D6, -(SP) 
+00001A74  4EB8 113A               1206      JSR PRINT_DATA 
+00001A78  548F                    1207      ADDQ.L #2, SP
+00001A7A  4EB8 10B4               1208      JSR PRINT_TAB 
+00001A7E                          1209      ; PRINT SOURCE
+00001A7E  3F0D                    1210      MOVE.W A5, -(SP) ; MODE-REGISTER FOR SOURCE
+00001A80  3F06                    1211      MOVE.W D6, -(SP) ; SIZE 
+00001A82  4EB8 1252               1212      JSR PRINT_REGISTER
+00001A86  588F                    1213      ADDQ.L #4, SP 
+00001A88                          1214      ; PRINT DES 
+00001A88  4EB8 10D2               1215      JSR PRINT_COMMA 
+00001A8C  3F0C                    1216      MOVE.W A4, -(SP) ; MODE-REGISTER FOR DES 
+00001A8E  3F06                    1217      MOVE.W D6, -(SP) ; SIZE 
+00001A90  4EB8 1252               1218      JSR PRINT_REGISTER 
+00001A94  588F                    1219      ADDQ.L #4, SP 
+00001A96  6000 F5B0               1220      BRA FINISH_OPCODE 
+00001A9A                          1221  
+00001A9A                          1222  MOVEM: 
+00001A9A  =00004880               1223  C_MOVEM_PATTERN EQU %0100100010000000
+00001A9A  =0000FB80               1224  C_MOVEM_MASKING EQU %1111101110000000
+00001A9A  =00000400               1225  C_MOVEM_DIR EQU     %0000010000000000
+00001A9A  =00000040               1226  C_MOVEM_SIZE EQU    %0000000001000000
+00001A9A                          1227  * C_MOVEM_REGISTER EQU
+00001A9A                          1228  
+00001A9A                          1229  
+00001A9A                          1230  * ------------ LEO ------------ *          * ------------ LEO ------------ *          * ------------ LEO ------------ *
+00001A9A                          1231  NEG:
+00001A9A                          1232  * CONSTANT FOR NEG OPCODE
+00001A9A  =00004400               1233  NEG_OPCODE EQU %0100010000000000
+00001A9A  =0000FF00               1234  NEG_M      EQU %1111111100000000
+00001A9A  =0000003F               1235  NEG_REG_M  EQU %0000000000111111
+00001A9A  =000000C0               1236  NEG_SIZE_M EQU %0000000011000000
+00001A9A  3401                    1237      MOVE.W D1, D2
+00001A9C                          1238  * MASKING WITH NEG UNIQUE CODE
+00001A9C  C47C FF00               1239      AND.W #NEG_M, D2
+00001AA0  B47C 4400               1240      CMP.W #NEG_OPCODE, D2
+00001AA4  6600 0056               1241      BNE NEG_END
+00001AA8                          1242  
+00001AA8                          1243  * CHECK TO MAKE SURE WE SUPPORT THE EA
+00001AA8  3401                    1244      MOVE.W D1, D2 
+00001AAA  C43C 003F               1245      AND.B #NEG_REG_M, D2 
+00001AAE  3F02                    1246      MOVE.W D2, -(SP)
+00001AB0  4EB8 11AC               1247      JSR CHECK_SUPPORT_REGISTER
+00001AB4  544F                    1248      ADDQ #2, SP 
+00001AB6                          1249  * from print_register to see if it is unsupported register 
+00001AB6  3439 00009000           1250      MOVE.W (RETURN_ADDRESS), D2 
+00001ABC  0C42 0002               1251      CMPI.W #C_UNSUPPORT_REGISTER, D2 ; IF EQUAL RETURN TO FETCH NEXT OPCODE 
+00001AC0  6700 F586               1252      BEQ FINISH_OPCODE
+00001AC4                          1253  
+00001AC4  4EB9 00001E40           1254      JSR PRINT_NEG
+00001ACA  3238 7006               1255      MOVE.W (OPCODE_ADDRESS), D1 
+00001ACE  3401                    1256      MOVE.W D1, D2
+00001AD0                          1257  * MASKING TO GET NEG SIZE
+00001AD0  C47C 00C0               1258      AND.W #NEG_SIZE_M, D2
+00001AD4  EC42                    1259      ASR.W #6, D2
+00001AD6  1C02                    1260      MOVE.B D2 , D6 * COPY SHIFTED SIZE FOR PRINT REGISTER 
+00001AD8  1F06                    1261      MOVE.B D6, -(SP)
+00001ADA  4EB8 113A               1262      JSR PRINT_DATA
+00001ADE  548F                    1263      ADDQ.L #2, SP
+00001AE0  4EB8 10B4               1264      JSR PRINT_TAB
+00001AE4                          1265  
+00001AE4  3238 7006               1266      MOVE.W (OPCODE_ADDRESS), D1     
+00001AE8  3401                    1267      MOVE.W D1, D2
+00001AEA                          1268  * MASKING TO GET MODE AND REGISTER
+00001AEA  C47C 003F               1269      AND.W #NEG_REG_M, D2
+00001AEE  3F02                    1270      MOVE.W D2, -(SP)
+00001AF0  3F06                    1271      MOVE.W D6, -(SP)
+00001AF2  4EB8 1252               1272      JSR PRINT_REGISTER
+00001AF6  588F                    1273      ADDQ.L #$04, SP
+00001AF8  6000 F54E               1274      BRA FINISH_OPCODE
+00001AFC                          1275  NEG_END: 
+00001AFC  4E75                    1276      RTS
+00001AFE                          1277  
+00001AFE                          1278  BRA:
+00001AFE                          1279  * CONSTANT FOR BRA OPCODE
+00001AFE  =00006000               1280  BRA_OPCODE EQU %0110000000000000
+00001AFE  =0000FF00               1281  BRA_M      EQU %1111111100000000
+00001AFE  =000000FF               1282  BRA_DISP_M EQU %0000000011111111
+00001AFE  3401                    1283      MOVE.W D1, D2
+00001B00                          1284  * MASKING WITH BRA UNIQUE CODE
+00001B00  C47C FF00               1285      AND.W #BRA_M, D2
+00001B04  B47C 6000               1286      CMP.W #BRA_OPCODE, D2
+00001B08  6600 0030               1287      BNE BRA_END
+00001B0C                          1288  
+00001B0C                          1289  * CHECK TO MAKE SURE WE SUPPORT THE EA
+00001B0C  3401                    1290      MOVE.W D1, D2 
+00001B0E  C43C 00FF               1291      AND.B #BRA_DISP_M, D2 
+00001B12  3F02                    1292      MOVE.W D2, -(SP)
+00001B14  4EB8 11AC               1293      JSR CHECK_SUPPORT_REGISTER
+00001B18  544F                    1294      ADDQ #2, SP 
+00001B1A                          1295  * from print_register to see if it is unsupported register 
+00001B1A  3439 00009000           1296      MOVE.W (RETURN_ADDRESS), D2 
+00001B20  0C42 0002               1297      CMPI.W #C_UNSUPPORT_REGISTER, D2 ; IF EQUAL RETURN TO FETCH NEXT OPCODE 
+00001B24                          1298  
+00001B24  4EB9 00001E4E           1299      JSR PRINT_BRA
+00001B2A  3238 7006               1300      MOVE.W (OPCODE_ADDRESS), D1 
+00001B2E  3401                    1301      MOVE.W D1, D2
+00001B30                          1302  * MASKING TO GET DISPLACEMENT OF BRA
+00001B30  C47C 00FF               1303      AND.W #BRA_DISP_M, D2
+00001B34  3F02                    1304      MOVE.W D2, -(SP)       *-------------in progress-----------------*
+00001B36  6000 F510               1305      BRA FINISH_OPCODE
+00001B3A                          1306  BRA_END:
+00001B3A  4E75                    1307      RTS
+00001B3C                          1308  
+00001B3C                          1309  OR:
+00001B3C                          1310  * CONSTANT FOR OR OPCODE
+00001B3C  =00008000               1311  OR_OPCODE EQU %1000000000000000
+00001B3C  =0000F000               1312  OR_M      EQU %1111000000000000
+00001B3C  =00000E00               1313  OR_DREG_M EQU %0000111000000000
+00001B3C  =000000C0               1314  OR_SIZE_M EQU %0000000011000000
+00001B3C  =0000003F               1315  OR_REG_M  EQU %0000000000111111
+00001B3C  =00000100               1316  OR_DIREC  EQU %0000000100000000
+00001B3C                          1317  
+00001B3C  3401                    1318      MOVE.W D1, D2
+00001B3E                          1319  * MASKING WITH OR UNIQUE CODE
+00001B3E  C47C F000               1320      AND.W #OR_M, D2
+00001B42  0C42 8000               1321      CMPI.W #OR_OPCODE, D2
+00001B46  6600 00C0               1322      BNE OR_END
+00001B4A                          1323  
+00001B4A                          1324  * CHECK TO MAKE SURE WE SUPPORT THE EA
+00001B4A  3401                    1325      MOVE.W D1, D2 
+00001B4C  C43C 003F               1326      AND.B #OR_REG_M, D2 
+00001B50  3F02                    1327      MOVE.W D2, -(SP)
+00001B52  4EB8 11AC               1328      JSR CHECK_SUPPORT_REGISTER
+00001B56  544F                    1329      ADDQ #2, SP 
+00001B58                          1330  * from print_register to see if it is unsupported register 
+00001B58  3439 00009000           1331      MOVE.W (RETURN_ADDRESS), D2 
+00001B5E  0C42 0002               1332      CMPI.W #C_UNSUPPORT_REGISTER, D2 ; IF EQUAL RETURN TO FETCH NEXT OPCODE 
+00001B62                          1333  
+00001B62  4EB9 00001E6C           1334      JSR PRINT_OR
+00001B68  3238 7006               1335      MOVE.W (OPCODE_ADDRESS), D1
+00001B6C  3401                    1336      MOVE.W D1, D2
+00001B6E                          1337  * MASKING TO GET SIZE OF OR
+00001B6E  C47C 00C0               1338      AND.W #OR_SIZE_M, D2
+00001B72  EC42                    1339      ASR.W #6, D2
+00001B74  1C02                    1340      MOVE.B D2, D6
+00001B76  1F02                    1341      MOVE.B D2, -(SP)
+00001B78  4EB8 113A               1342      JSR PRINT_DATA
+00001B7C  548F                    1343      ADDQ.L #$02, SP 
+00001B7E  4EB8 10B4               1344      JSR PRINT_TAB
+00001B82                          1345  * MASKING TO GET DIRECTION OF THIS OR
+00001B82  3238 7006               1346      MOVE.W (OPCODE_ADDRESS), D1 
+00001B86  3401                    1347      MOVE.W D1, D2  
+00001B88  C47C 0100               1348      AND.W #OR_DIREC, D2 
+00001B8C  0C42 0100               1349      CMPI.W #OR_DIREC, D2 
+00001B90  6600 003C               1350      BNE OR_TO_D  * DN V <EA> -> DN
+00001B94                          1351  
+00001B94                          1352  OR_TO_EA:  * DN V <EA> -> <EA>
+00001B94  3238 7006               1353      MOVE.W (OPCODE_ADDRESS), D1 
+00001B98  3401                    1354      MOVE.W D1, D2 
+00001B9A  C47C 0E00               1355      AND.W #OR_DREG_M, D2 
+00001B9E  E08A                    1356      LSR.L #8, D2 
+00001BA0  E28A                    1357      LSR.L #1, D2 
+00001BA2  843C 0000               1358      OR.B #%00000000, D2
+00001BA6  3F02                    1359      MOVE.W D2, -(SP)
+00001BA8  3F3C 0000               1360      MOVE.W #$0, -(SP)
+00001BAC  4EB8 1252               1361      JSR PRINT_REGISTER 
+00001BB0  5882                    1362      ADDQ.L #4, D2 
+00001BB2  4EB8 10D2               1363      JSR PRINT_COMMA 
+00001BB6                          1364      
+00001BB6  3238 7006               1365      MOVE.W (OPCODE_ADDRESS), D1 
+00001BBA  3401                    1366      MOVE.W D1, D2 
+00001BBC  C43C 003F               1367      AND.B #OR_REG_M, D2 
+00001BC0  3F02                    1368      MOVE.W D2, -(SP)
+00001BC2  3F06                    1369      MOVE.W D6, -(SP)
+00001BC4  4EB8 1252               1370      JSR PRINT_REGISTER
+00001BC8  588F                    1371      ADDQ.L #4, SP 
+00001BCA  6000 F47C               1372      BRA FINISH_OPCODE
+00001BCE                          1373  
+00001BCE                          1374  OR_TO_D:   * <EA> V DN -> DN
+00001BCE  3238 7006               1375      MOVE.W (OPCODE_ADDRESS), D1 
+00001BD2  3401                    1376      MOVE.W D1, D2 
+00001BD4                          1377  * MASKING TO GET THE EFFECTIVE ADDRESS
+00001BD4  C43C 003F               1378      AND.B #OR_REG_M, D2 
+00001BD8  3F02                    1379      MOVE.W D2, -(SP)
+00001BDA  3F06                    1380      MOVE.W D6, -(SP)
+00001BDC  4EB8 1252               1381      JSR PRINT_REGISTER
+00001BE0  588F                    1382      ADDQ.L #4, SP 
+00001BE2  4EB8 10D2               1383      JSR PRINT_COMMA 
+00001BE6                          1384  * MASKING TO GET THE DATA REGISTER 
+00001BE6  3238 7006               1385      MOVE.W (OPCODE_ADDRESS), D1 
+00001BEA  3401                    1386      MOVE.W D1, D2 
+00001BEC  C47C 0E00               1387      AND.W #OR_DREG_M, D2 
+00001BF0  E04A                    1388      LSR.W #8, D2 
+00001BF2  E24A                    1389      LSR.W #1, D2 
+00001BF4                          1390      ; APPEND MODE TO D2 FOR PRINT_REGISTER
+00001BF4  843C 0000               1391      OR.B #%00000000, D2 
+00001BF8  3F02                    1392      MOVE.W D2, -(SP)
+00001BFA  3F3C 0000               1393      MOVE.W #$0, -(SP)
+00001BFE  4EB8 1252               1394      JSR PRINT_REGISTER
+00001C02  588F                    1395      ADDQ.L #4, SP 
+00001C04  6000 F442               1396      BRA FINISH_OPCODE
+00001C08                          1397  OR_END:
+00001C08  4E75                    1398      RTS
+00001C0A                          1399  
+00001C0A                          1400  ORI:
+00001C0A                          1401  * CONSTANT FOR ORI OPCODE
+00001C0A  =00000000               1402  ORI_OPCODE EQU %0000000000000000
+00001C0A  =0000FF00               1403  ORI_M      EQU %1111111100000000
+00001C0A  =0000003F               1404  ORI_REG_M  EQU %0000000000111111
+00001C0A  =000000C0               1405  ORI_SIZE_M EQU %0000000011000000
+00001C0A  3401                    1406      MOVE.W D1, D2
+00001C0C                          1407  * MASKING WITH ORI UNIQUE CODE
+00001C0C  C47C FF00               1408      AND.W #ORI_M, D2
+00001C10  B47C 0000               1409      CMP.W #ORI_OPCODE, D2
+00001C14  6600 0048               1410      BNE ORI_END
+00001C18                          1411  
+00001C18                          1412  * CHECK TO MAKE SURE WE SUPPORT THE EA
+00001C18  3401                    1413      MOVE.W D1, D2 
+00001C1A  C43C 003F               1414      AND.B #ORI_REG_M, D2 
+00001C1E  3F02                    1415      MOVE.W D2, -(SP)
+00001C20  4EB8 11AC               1416      JSR CHECK_SUPPORT_REGISTER
+00001C24  544F                    1417      ADDQ #2, SP 
+00001C26                          1418  * from print_register to see if it is unsupported register 
+00001C26  3439 00009000           1419      MOVE.W (RETURN_ADDRESS), D2 
+00001C2C  0C42 0002               1420      CMPI.W #C_UNSUPPORT_REGISTER, D2 ; IF EQUAL RETURN TO FETCH NEXT OPCODE 
+00001C30  6700 F416               1421      BEQ FINISH_OPCODE
+00001C34                          1422  
+00001C34  4EB9 00001E7A           1423      JSR PRINT_ORI
+00001C3A  3238 7006               1424      MOVE.W (OPCODE_ADDRESS), D1
+00001C3E  3401                    1425      MOVE.W D1, D2
+00001C40                          1426  * MASKING TO GET SIZE OF ORI
+00001C40  C47C 00C0               1427      AND.W #ORI_SIZE_M, D2 
+00001C44  EC42                    1428      ASR.W #6, D2
+00001C46  1C02                    1429      MOVE.B D2 , D6 * COPY SHIFTED SIZE FOR PRINT REGISTER 
+00001C48  1F06                    1430      MOVE.B D6, -(SP)
+00001C4A  4EB8 113A               1431      JSR PRINT_DATA
+00001C4E  548F                    1432      ADDQ.L #$02, SP
+00001C50  4EB8 10B4               1433      JSR PRINT_TAB
+00001C54                          1434   
+00001C54  3238 7006               1435      MOVE.W (OPCODE_ADDRESS), D1     
+00001C58  3401                    1436      MOVE.W D1, D2
+00001C5A                          1437      *------------------------------------
+00001C5A                          1438      * AND.W #ORI_REG_M, D2 
+00001C5A                          1439      * LSR.L #8, D2 
+00001C5A                          1440      * LSR.L #1, D2 
+00001C5A                          1441      * OR.B #%00000000, D2
+00001C5A                          1442      * MOVE.W D2, -(SP)
+00001C5A                          1443      * MOVE.W #$0, -(SP)
+00001C5A                          1444      * JSR PRINT_REGISTER 
+00001C5A                          1445      * ADDQ.L #4, D2 
+00001C5A                          1446      * JSR PRINT_COMMA 
+00001C5A                          1447      
+00001C5A                          1448      * AND.B #ORI_REG_M, D2 
+00001C5A                          1449      * MOVE.W D2, -(SP)
+00001C5A                          1450      * MOVE.W D6, -(SP)
+00001C5A                          1451      * JSR PRINT_REGISTER
+00001C5A                          1452      * ADDQ.L #4, SP 
+00001C5A                          1453      *------------------------------------
+00001C5A  6000 F3EC               1454      BRA FINISH_OPCODE
+00001C5E                          1455  ORI_END:
+00001C5E  4E75                    1456      RTS
+00001C60                          1457  
+00001C60                          1458  EOR:
+00001C60                          1459  * CONSTANT FEOR EOR OPCODE
+00001C60  =0000B000               1460  EOR_OPCODE EQU %1011000000000000
+00001C60  =0000F000               1461  EOR_M      EQU %1111000000000000
+00001C60  =00000E00               1462  EOR_DREG_M EQU %0000111000000000
+00001C60  =000000C0               1463  EOR_SIZE_M EQU %0000000011000000
+00001C60  =0000003F               1464  EOR_REG_M  EQU %0000000000111111
+00001C60  =00000100               1465  EOR_DIREC  EQU %0000000100000000
+00001C60                          1466  
+00001C60  3401                    1467      MOVE.W D1, D2
+00001C62                          1468  * MASKING WITH EOR UNIQUE CODE
+00001C62  C47C F000               1469      AND.W #EOR_M, D2
+00001C66  B47C B000               1470      CMP.W #EOR_OPCODE, D2
+00001C6A  6600 0074               1471      BNE EOR_END
+00001C6E                          1472  
+00001C6E                          1473  * CHECK TO MAKE SURE WE SUPPEORT THE EA
+00001C6E  3401                    1474      MOVE.W D1, D2 
+00001C70  C43C 003F               1475      AND.B #EOR_REG_M, D2 
+00001C74  3F02                    1476      MOVE.W D2, -(SP)
+00001C76  4EB8 11AC               1477      JSR CHECK_SUPPORT_REGISTER
+00001C7A  544F                    1478      ADDQ #2, SP 
+00001C7C                          1479  * from print_register to see if it is unsuppEorted register 
+00001C7C  3439 00009000           1480      MOVE.W (RETURN_ADDRESS), D2 
+00001C82  0C42 0002               1481      CMPI.W #C_UNSUPPORT_REGISTER, D2 ; IF EQUAL RETURN TO FETCH NEXT OPCODE 
+00001C86                          1482  
+00001C86  4EB9 00001E88           1483      JSR PRINT_EOR
+00001C8C  3238 7006               1484      MOVE.W (OPCODE_ADDRESS), D1
+00001C90  3401                    1485      MOVE.W D1, D2
+00001C92                          1486  * MASKING TO GET SIZE OF EOR
+00001C92  C47C 00C0               1487      AND.W #EOR_SIZE_M, D2
+00001C96  EC42                    1488      ASR.W #6, D2
+00001C98  1C02                    1489      MOVE.B D2, D6
+00001C9A  1F02                    1490      MOVE.B D2, -(SP)
+00001C9C  4EB8 113A               1491      JSR PRINT_DATA
+00001CA0  548F                    1492      ADDQ.L #$02, SP 
+00001CA2  4EB8 10B4               1493      JSR PRINT_TAB
+00001CA6                          1494  
+00001CA6                          1495  * <EA> EOR DN -> <EA>
+00001CA6  3238 7006               1496      MOVE.W (OPCODE_ADDRESS), D1 
+00001CAA  3401                    1497      MOVE.W D1, D2 
+00001CAC  C47C 0E00               1498      AND.W #EOR_DREG_M, D2 
+00001CB0  E08A                    1499      LSR.L #8, D2 
+00001CB2  E28A                    1500      LSR.L #1, D2 
+00001CB4  843C 0000               1501      OR.B #%00000000, D2
+00001CB8  3F02                    1502      MOVE.W D2, -(SP)
+00001CBA  3F3C 0000               1503      MOVE.W #$0, -(SP)
+00001CBE  4EB8 1252               1504      JSR PRINT_REGISTER 
+00001CC2  5882                    1505      ADDQ.L #4, D2 
+00001CC4  4EB8 10D2               1506      JSR PRINT_COMMA 
+00001CC8                          1507      
+00001CC8  3238 7006               1508      MOVE.W (OPCODE_ADDRESS), D1 
+00001CCC  3401                    1509      MOVE.W D1, D2 
+00001CCE  C43C 003F               1510      AND.B #EOR_REG_M, D2 
+00001CD2  3F02                    1511      MOVE.W D2, -(SP)
+00001CD4  3F06                    1512      MOVE.W D6, -(SP)
+00001CD6  4EB8 1252               1513      JSR PRINT_REGISTER
+00001CDA  588F                    1514      ADDQ.L #4, SP 
+00001CDC  6000 F36A               1515      BRA FINISH_OPCODE
+00001CE0                          1516  
+00001CE0                          1517  EOR_END:
+00001CE0  4E75                    1518      RTS
+00001CE2                          1519  
+00001CE2                          1520  SUB:
+00001CE2                          1521  * CONSTANT FOR SUB OPCODE
+00001CE2  =00009000               1522  SUB_OPCODE EQU %1001000000000000
+00001CE2  =0000F000               1523  SUB_M      EQU %1111000000000000
+00001CE2  =00000E00               1524  SUB_DREG_M EQU %0000111000000000
+00001CE2  =000000C0               1525  SUB_SIZE_M EQU %0000000011000000
+00001CE2  =0000003F               1526  SUB_REG_M  EQU %0000000000111111
+00001CE2  =00000100               1527  SUB_DIREC  EQU %0000000100000000
+00001CE2                          1528  
+00001CE2  3401                    1529      MOVE.W D1, D2
+00001CE4                          1530  * MASKING WITH SUB UNIQUE CODE
+00001CE4  C47C F000               1531      AND.W #SUB_M, D2
+00001CE8  0C42 9000               1532      CMPI.W #SUB_OPCODE, D2
+00001CEC  6600 00C0               1533      BNE SUB_END
+00001CF0                          1534  
+00001CF0                          1535  * CHECK TO MAKE SURE WE SUPPORT THE EA
+00001CF0  3401                    1536      MOVE.W D1, D2 
+00001CF2  C43C 003F               1537      AND.B #SUB_REG_M, D2 
+00001CF6  3F02                    1538      MOVE.W D2, -(SP)
+00001CF8  4EB8 11AC               1539      JSR CHECK_SUPPORT_REGISTER
+00001CFC  544F                    1540      ADDQ #2, SP 
+00001CFE                          1541  * from print_register to see if it is unsupported register 
+00001CFE  3439 00009000           1542      MOVE.W (RETURN_ADDRESS), D2 
+00001D04  0C42 0002               1543      CMPI.W #C_UNSUPPORT_REGISTER, D2 ; IF EQUAL RETURN TO FETCH NEXT OPCODE 
+00001D08                          1544  
+00001D08  4EB9 00001EF2           1545      JSR PRINT_SUB
+00001D0E  3238 7006               1546      MOVE.W (OPCODE_ADDRESS), D1
+00001D12  3401                    1547      MOVE.W D1, D2
+00001D14                          1548  * MASKING TO GET SIZE OF SUB
+00001D14  C47C 00C0               1549      AND.W #SUB_SIZE_M, D2
+00001D18  EC42                    1550      ASR.W #6, D2
+00001D1A  1C02                    1551      MOVE.B D2, D6
+00001D1C  1F02                    1552      MOVE.B D2, -(SP)
+00001D1E  4EB8 113A               1553      JSR PRINT_DATA
+00001D22  548F                    1554      ADDQ.L #$02, SP 
+00001D24  4EB8 10B4               1555      JSR PRINT_TAB
+00001D28                          1556  * MASKING TO GET DIRECTION OF THIS SUB
+00001D28  3238 7006               1557      MOVE.W (OPCODE_ADDRESS), D1 
+00001D2C  3401                    1558      MOVE.W D1, D2  
+00001D2E  C47C 0100               1559      AND.W #SUB_DIREC, D2 
+00001D32  0C42 0100               1560      CMPI.W #SUB_DIREC, D2 
+00001D36  6600 003C               1561      BNE SUB_TO_D  * DN - <EA> -> DN
+00001D3A                          1562  
+00001D3A                          1563  SUB_TO_EA:  * <EA> - DN -> <EA>
+00001D3A  3238 7006               1564      MOVE.W (OPCODE_ADDRESS), D1 
+00001D3E  3401                    1565      MOVE.W D1, D2 
+00001D40  C47C 0E00               1566      AND.W #SUB_DREG_M, D2 
+00001D44  E08A                    1567      LSR.L #8, D2 
+00001D46  E28A                    1568      LSR.L #1, D2 
+00001D48  843C 0000               1569      OR.B #%00000000, D2
+00001D4C  3F02                    1570      MOVE.W D2, -(SP)
+00001D4E  3F3C 0000               1571      MOVE.W #$0, -(SP)
+00001D52  4EB8 1252               1572      JSR PRINT_REGISTER 
+00001D56  5882                    1573      ADDQ.L #4, D2 
+00001D58  4EB8 10D2               1574      JSR PRINT_COMMA 
+00001D5C                          1575      
+00001D5C  3238 7006               1576      MOVE.W (OPCODE_ADDRESS), D1 
+00001D60  3401                    1577      MOVE.W D1, D2 
+00001D62  C43C 003F               1578      AND.B #SUB_REG_M, D2 
+00001D66  3F02                    1579      MOVE.W D2, -(SP)
+00001D68  3F06                    1580      MOVE.W D6, -(SP)
+00001D6A  4EB8 1252               1581      JSR PRINT_REGISTER
+00001D6E  588F                    1582      ADDQ.L #4, SP 
+00001D70  6000 F2D6               1583      BRA FINISH_OPCODE
+00001D74                          1584  
+00001D74                          1585  SUB_TO_D:   * DN - <EA> -> DN
+00001D74  3238 7006               1586      MOVE.W (OPCODE_ADDRESS), D1 
+00001D78  3401                    1587      MOVE.W D1, D2 
+00001D7A                          1588  * MASKING TO GET THE EFFECTIVE ADDRESS
+00001D7A  C43C 003F               1589      AND.B #SUB_REG_M, D2 
+00001D7E  3F02                    1590      MOVE.W D2, -(SP)
+00001D80  3F06                    1591      MOVE.W D6, -(SP)
+00001D82  4EB8 1252               1592      JSR PRINT_REGISTER
+00001D86  588F                    1593      ADDQ.L #4, SP 
+00001D88  4EB8 10D2               1594      JSR PRINT_COMMA 
+00001D8C                          1595  * MASKING TO GET THE DATA REGISTER 
+00001D8C  3238 7006               1596      MOVE.W (OPCODE_ADDRESS), D1 
+00001D90  3401                    1597      MOVE.W D1, D2 
+00001D92  C47C 0E00               1598      AND.W #SUB_DREG_M, D2 
+00001D96  E04A                    1599      LSR.W #8, D2 
+00001D98  E24A                    1600      LSR.W #1, D2 
+00001D9A                          1601  * APPEND MODE TO D2 FOR PRINT_REGISTER
+00001D9A  843C 0000               1602      OR.B #%00000000, D2 
+00001D9E  3F02                    1603      MOVE.W D2, -(SP)
+00001DA0  3F3C 0000               1604      MOVE.W #$0, -(SP)
+00001DA4  4EB8 1252               1605      JSR PRINT_REGISTER
+00001DA8  588F                    1606      ADDQ.L #4, SP 
+00001DAA  6000 F29C               1607      BRA FINISH_OPCODE
+00001DAE                          1608  SUB_END:
+00001DAE  4E75                    1609      RTS
+00001DB0                          1610  
+00001DB0                          1611  DIVS:
+00001DB0                          1612  * CONSTANT FOR DIVS OPCODE
+00001DB0  =000081C0               1613  DIVS_OPCODE EQU %1000000111000000
+00001DB0  =0000F1C0               1614  DIVS_M      EQU %1111000111000000
+00001DB0  =00000E00               1615  DIVS_DREG_M EQU %0000111000000000
+00001DB0  =0000003F               1616  DIVS_REG_M  EQU %0000000000111111
+00001DB0                          1617  
+00001DB0  3401                    1618      MOVE.W D1, D2
+00001DB2                          1619  * MASKING WITH DIVS UNIQUE CODE
+00001DB2  C47C F1C0               1620      AND.W #DIVS_M, D2
+00001DB6  0C42 81C0               1621      CMPI.W #DIVS_OPCODE, D2
+00001DBA  6600 006E               1622      BNE DIVS_END
+00001DBE                          1623  
+00001DBE                          1624  * CHECK TO MAKE SURE WE SUPPORT THE EA
+00001DBE  3401                    1625      MOVE.W D1, D2 
+00001DC0  C43C 003F               1626      AND.B #DIVS_REG_M, D2 
+00001DC4  3F02                    1627      MOVE.W D2, -(SP)
+00001DC6  4EB8 11AC               1628      JSR CHECK_SUPPORT_REGISTER
+00001DCA  544F                    1629      ADDQ #2, SP 
+00001DCC                          1630  * from print_register to see if it is unsupported register 
+00001DCC  3439 00009000           1631      MOVE.W (RETURN_ADDRESS), D2 
+00001DD2  0C42 0002               1632      CMPI.W #C_UNSUPPORT_REGISTER, D2 ; IF EQUAL RETURN TO FETCH NEXT OPCODE 
+00001DD6                          1633  
+00001DD6  4EB9 00001F00           1634      JSR PRINT_DIVS
+00001DDC  3238 7006               1635      MOVE.W (OPCODE_ADDRESS), D1
+00001DE0                          1636  * GET SIZE OF DIVS
+00001DE0  1C3C 0001               1637      MOVE.B #$01, D6
+00001DE4  1F06                    1638      MOVE.B D6, -(SP)
+00001DE6  4EB8 113A               1639      JSR PRINT_DATA
+00001DEA  548F                    1640      ADDQ.L #$02, SP 
+00001DEC  4EB8 10B4               1641      JSR PRINT_TAB
+00001DF0                          1642  
+00001DF0                          1643  * DN - <EA> -> DN
+00001DF0  3238 7006               1644      MOVE.W (OPCODE_ADDRESS), D1 
+00001DF4  3401                    1645      MOVE.W D1, D2 
+00001DF6                          1646  * MASKING TO GET THE EFFECTIVE ADDRESS
+00001DF6  C43C 003F               1647      AND.B #DIVS_REG_M, D2 
+00001DFA  3F02                    1648      MOVE.W D2, -(SP)
+00001DFC  3F06                    1649      MOVE.W D6, -(SP)
+00001DFE  4EB8 1252               1650      JSR PRINT_REGISTER
+00001E02  588F                    1651      ADDQ.L #4, SP 
+00001E04  4EB8 10D2               1652      JSR PRINT_COMMA 
+00001E08                          1653  * MASKING TO GET THE DATA REGISTER 
+00001E08  3238 7006               1654      MOVE.W (OPCODE_ADDRESS), D1 
+00001E0C  3401                    1655      MOVE.W D1, D2 
+00001E0E  C47C 0E00               1656      AND.W #DIVS_DREG_M, D2 
+00001E12  E04A                    1657      LSR.W #8, D2 
+00001E14  E24A                    1658      LSR.W #1, D2 
+00001E16                          1659  * APPEND MODE TO D2 FOR PRINT_REGISTER
+00001E16  843C 0000               1660      OR.B #%00000000, D2 
+00001E1A  3F02                    1661      MOVE.W D2, -(SP)
+00001E1C  3F3C 0000               1662      MOVE.W #$0, -(SP)
+00001E20  4EB8 1252               1663      JSR PRINT_REGISTER
+00001E24  588F                    1664      ADDQ.L #4, SP 
+00001E26  6000 F220               1665      BRA FINISH_OPCODE
+00001E2A                          1666  DIVS_END:
+00001E2A  4E75                    1667      RTS    
+00001E2C                          1668  
+00001E2C                          1669  * ROR:
+00001E2C                          1670  * * CONSTANT FOR ROR OPCODE
+00001E2C                          1671  * ROR_OPCODE EQU %
+00001E2C                          1672  * ROR_M      EQU %
+00001E2C                          1673  * ROR_SIZE_M EQU %
+00001E2C                          1674  *     CLR.W D2
+00001E2C                          1675  *     MOVE.W D1, D2
+00001E2C                          1676  * * MASKING WITH ROR UNIQUE CODE
+00001E2C                          1677  *     AND.W #ROR_M, D2
+00001E2C                          1678  *     CMP.W #ROR_OPCODE, D2
+00001E2C                          1679  *     BNE ROR_END
+00001E2C                          1680  *     JSR PRINT_ROR
+00001E2C                          1681  *     MOVE.W D1, D2
+00001E2C                          1682  *     MOVE.W D1, D3
+00001E2C                          1683  * * MASKING TO GET SIZE OF ROR
+00001E2C                          1684  *     CMP.W #ROR_SIZE_M, D2 
+00001E2C                          1685  * ROR_END:
+00001E2C                          1686  *     RTS
+00001E2C                          1687  
+00001E2C                          1688  * ROL:
+00001E2C                          1689  * * CONSTANT FROR ROL OPCODE
+00001E2C                          1690  * ROL_OPCODE EQU %
+00001E2C                          1691  * ROL_M      EQU %
+00001E2C                          1692  * ROL_SIZE_M EQU %
+00001E2C                          1693  *     CLR.W D2
+00001E2C                          1694  *     MOVE.W D1, D2
+00001E2C                          1695  * * MASKING WITH ROL UNIQUE CODE
+00001E2C                          1696  *     AND.W #ROL_M, D2
+00001E2C                          1697  *     CMP.W #ROL_OPCODE, D2
+00001E2C                          1698  *     BNE ROL_END
+00001E2C                          1699  *     JSR PRINT_ROL
+00001E2C                          1700  *     MOVE.W D1, D2
+00001E2C                          1701  *     MOVE.W D1, D3
+00001E2C                          1702  * * MASKING TO GET SIZE OF ROL
+00001E2C                          1703  *     CMP.W #ROL_SIZE_M, D2 
+00001E2C                          1704  * ROL_END:
+00001E2C                          1705  *     RTS
+00001E2C                          1706  * ------------ LEO ------------ *          * ------------ LEO ------------ *          * ------------ LEO ------------ *
+00001E2C                          1707  
+00001E2C                          1708  
+00001E2C                          1709  PRINT_RTS:
+00001E2C  43F9 00001F38           1710      LEA P_RTS, A1
+00001E32  103C 000E               1711      MOVE.B #14, D0
+00001E36  4E4F                    1712      TRAP #15
+00001E38  4EB8 10B4               1713      JSR PRINT_TAB
+00001E3C  6000 F20A               1714      BRA FINISH_OPCODE
+00001E40                          1715  PRINT_NEG:
+00001E40  43F9 00001F78           1716      LEA P_NEG, A1
+00001E46  103C 000E               1717      MOVE.B #14, D0
+00001E4A  4E4F                    1718      TRAP #15
+00001E4C  4E75                    1719      RTS 
+00001E4E                          1720  PRINT_BRA:
+00001E4E  43F9 00001FB6           1721      LEA P_BRA, A1
+00001E54  103C 000E               1722      MOVE.B #14, D0
+00001E58  4E4F                    1723      TRAP #15
+00001E5A  4E75                    1724      RTS 
+00001E5C                          1725  PRINT_NOP:
+00001E5C  43F9 00001F3C           1726      LEA P_NOP, A1
+00001E62  103C 000E               1727      MOVE.B #14, D0
+00001E66  4E4F                    1728      TRAP #15
+00001E68  6000 F1DE               1729      BRA FINISH_OPCODE
+00001E6C                          1730  PRINT_OR:
+00001E6C  43F9 00001F71           1731      LEA P_OR, A1
+00001E72  103C 000E               1732      MOVE.B #14, D0
+00001E76  4E4F                    1733      TRAP #15
+00001E78  4E75                    1734      RTS 
+00001E7A                          1735  PRINT_ORI:
+00001E7A  43F9 00001F74           1736      LEA P_ORI, A1
+00001E80  103C 000E               1737      MOVE.B #14, D0
+00001E84  4E4F                    1738      TRAP #15
+00001E86  4E75                    1739      RTS
+00001E88                          1740  PRINT_EOR:
+00001E88  43F9 00001F7C           1741      LEA P_EOR, A1
+00001E8E  103C 000E               1742      MOVE.B #14, D0
+00001E92  4E4F                    1743      TRAP #15
+00001E94  4E75                    1744      RTS 
+00001E96                          1745  PRINT_ROL:
+00001E96  43F9 00001F90           1746      LEA P_ROL, A1
+00001E9C  103C 000E               1747      MOVE.B #14, D0
+00001EA0  4E4F                    1748      TRAP #15
+00001EA2  4E75                    1749      RTS 
+00001EA4                          1750  PRINT_ROR:
+00001EA4  43F9 00001F94           1751      LEA P_ROR, A1
+00001EAA  103C 000E               1752      MOVE.B #14, D0
+00001EAE  4E4F                    1753      TRAP #15
+00001EB0  4E75                    1754      RTS 
+00001EB2                          1755  PRINT_JSR:
+00001EB2  43F9 00001FBA           1756      LEA P_JSR, A1
+00001EB8  103C 000E               1757      MOVE.B #14, D0
+00001EBC  4E4F                    1758      TRAP #15
+00001EBE  4EB8 10B4               1759      JSR PRINT_TAB
+00001EC2  4E75                    1760      RTS 
+00001EC4                          1761  PRINT_LEA:
+00001EC4  43F9 00001F6D           1762      LEA P_LEA, A1
+00001ECA  103C 000E               1763      MOVE.B #14, D0
+00001ECE  4E4F                    1764      TRAP #15
+00001ED0  4EB8 10B4               1765      JSR PRINT_TAB
+00001ED4  4E75                    1766      RTS 
+00001ED6                          1767  PRINT_ADDA: 
+00001ED6  43F9 00001F55           1768      LEA P_ADDA, A1 
+00001EDC  103C 000E               1769      MOVE.B #14, D0
+00001EE0  4E4F                    1770      TRAP #15 
+00001EE2  4E75                    1771      RTS
+00001EE4                          1772  PRINT_ADD:
+00001EE4  43F9 00001F51           1773      LEA P_ADD, A1 
+00001EEA  103C 000E               1774      MOVE.B #14, D0 
+00001EEE  4E4F                    1775      TRAP #15
+00001EF0  4E75                    1776      RTS
+00001EF2                          1777  PRINT_SUB:
+00001EF2  43F9 00001F5A           1778      LEA P_SUB, A1 
+00001EF8  103C 000E               1779      MOVE.B #14, D0 
+00001EFC  4E4F                    1780      TRAP #15
+00001EFE  4E75                    1781      RTS
+00001F00                          1782  PRINT_DIVS:
+00001F00  43F9 00001F68           1783      LEA P_DIVS, A1 
+00001F06  103C 000E               1784      MOVE.B #14, D0 
+00001F0A  4E4F                    1785      TRAP #15
+00001F0C  4E75                    1786      RTS
+00001F0E                          1787  PRINT_MOVEA: 
+00001F0E  43F9 00001F45           1788      LEA P_MOVEA, A1 
+00001F14  103C 000E               1789      MOVE.B #14, D0 
+00001F18  4E4F                    1790      TRAP #15 
+00001F1A  4E75                    1791      RTS 
+00001F1C                          1792  PRINT_MOVE: 
+00001F1C  43F9 00001F40           1793      LEA P_MOVE, A1 
+00001F22  103C 000E               1794      MOVE.B #14, D0 
+00001F26  4E4F                    1795      TRAP #15 
+00001F28  4E75                    1796      RTS 
+00001F2A                          1797  PRINT_UNSUPPORTED: 
+00001F2A  43F9 00001FBE           1798      LEA P_DATA, A1 
+00001F30  103C 000E               1799      MOVE.B #14, D0 
+00001F34  4E4F                    1800      TRAP #15 
+00001F36  4E75                    1801      RTS 
+00001F38                          1802  
+00001F38                          1803  
+00001F38                          1804  
+00001F38                          1805  
+00001F38                          1806  
+00001F38                          1807  
+00001F38                          1808  
+00001F38                          1809  
+00001F38                          1810  
+00001F38= 52 54 53 00             1811  P_RTS DC.B 'RTS',0          *-----------------DONE-----------------*
+00001F3C= 4E 4F 50 00             1812  P_NOP DC.B 'NOP',0          *-----------------DONE-----------------*
+00001F40= 4D 4F 56 45 00          1813  P_MOVE DC.B 'MOVE',0        *-----------------DONE-----------------*
+00001F45= 4D 4F 56 45 41 00       1814  P_MOVEA DC.B 'MOVEA', 0     *-----------------DONE-----------------*
+00001F4B= 4D 4F 56 45 4D 00       1815  P_MOVEM DC.B 'MOVEM', 0
+00001F51= 41 44 44 00             1816  P_ADD DC.B 'ADD', 0         *-----------------DONE-----------------*
+00001F55= 41 44 44 41 00          1817  P_ADDA DC.B 'ADDA',0        *-----------------DONE-----------------*
+00001F5A= 53 55 42 00             1818  P_SUB DC.B 'SUB', 0
+00001F5E= 53 55 42 51 00          1819  P_SUBQ DC.B 'SUBQ',0
+00001F63= 4D 55 4C 53 00          1820  P_MULS DC.B 'MULS',0
+00001F68= 44 49 56 53 00          1821  P_DIVS DC.B 'DIVS',0
+00001F6D= 4C 45 41 00             1822  P_LEA DC.B 'LEA',0          *-----------------DONE-----------------*
+00001F71= 4F 52 00                1823  P_OR DC.B 'OR',0            *-----------------DONE-----------------*
+00001F74= 4F 52 49 00             1824  P_ORI DC.B 'ORI', 0         *------------IN PROGRESS---------------*
+00001F78= 4E 45 47 00             1825  P_NEG DC.B 'NEG', 0         *-----------------DONE-----------------*
+00001F7C= 45 4F 52 00             1826  P_EOR DC.B 'EOR', 0         *-----------------DONE-----------------*
+00001F80= 4C 53 52 00             1827  P_LSR DC.B 'LSR',0
+00001F84= 4C 53 4C 00             1828  P_LSL DC.B 'LSL', 0
+00001F88= 41 53 52 00             1829  P_ASR DC.B 'ASR', 0
+00001F8C= 41 53 4C 00             1830  P_ASL DC.B 'ASL',0 
+00001F90= 52 4F 4C 00             1831  P_ROL DC.B 'ROL', 0
+00001F94= 52 4F 52 00             1832  P_ROR DC.B 'ROR', 0
+00001F98= 42 43 4C 52 00          1833  P_BCLR DC.B 'BCLR',0
+00001F9D= 43 4D 50 00             1834  P_CMP DC.B 'CMP', 0
+00001FA1= 43 4D 50 49 00          1835  P_CMPI DC.B 'CMPI', 0
+00001FA6= 42 43 53 00             1836  P_BCS DC.B 'BCS', 0
+00001FAA= 42 47 45 00             1837  P_BGE DC.B 'BGE', 0
+00001FAE= 42 4C 54 00             1838  P_BLT DC.B 'BLT',0
+00001FB2= 42 56 43 00             1839  P_BVC DC.B 'BVC', 0
+00001FB6= 42 52 41 00             1840  P_BRA DC.B 'BRA',0          *------------IN PROGRESS---------------*
+00001FBA= 4A 53 52 00             1841  P_JSR DC.B 'JSR',0          *-----------------DONE-----------------*
+00001FBE= 44 41 54 41 00          1842  P_DATA DC.B 'DATA',0        *-----------------DONE-----------------*
+00001FC3                          1843  
+00001FC3                          1844  
+00001FC3  =00000004               1845  WORD_LENGTH EQU $04
+00001FC3  =00000008               1846  LONG_LENGTH EQU $08
+00001FC3= 31 30 30 32 30 30 ...   1847  TEST_VAL DC.B '10020009'
+00001FCB  =0000000A               1848  LF EQU $0A
+00001FCB  =0000000D               1849  CR EQU $0D
+00001FCB  =00000009               1850  HT  EQU  $09 
+00001FCB= 20 0D 0A 00             1851  NEW_LINE DC.B ' ',CR,LF,0
+00001FCF                          1852  SIMHALT             ; halt simulator
+00001FCF                          1853  * Put variables and constants here
+00001FCF                          1854  
+00001FCF                          1855  
+00001FCF                          1856  
+00001FCF                          1857  
+00001FCF                          1858  
+00001FCF                          1859  
+00001FCF= 50 6C 65 61 73 65 ...   1860  PROMT_INPUT_START DC.B 'Please enter starting address(capitalized):  $',0 
+00001FFE= 50 6C 65 61 73 65 ...   1861  PROMT_INPUT_END DC.B 'Please enter ending address(cappitalized): $',0
+0000202B= 50 72 65 73 73 20 ...   1862  PROMT_INPUT_CONTINUE DC.B 'Press enter to continue',CR,LF,0
+00002045                          1863      END    START        ; last line of source
 
 No errors detected
 No warnings generated
@@ -1809,16 +1873,16 @@ No warnings generated
 SYMBOL TABLE INFORMATION
 Symbol-name         Value
 -------------------------
-ADD                 1848
-ADDA                17C4
+ADD                 184E
+ADDA                17CA
 ADDA_AN_MASKING     E00
-ADDA_END            1846
+ADDA_END            184C
 ADDA_MASKING        F0C0
 ADDA_SIZE_MASKING   100
 ADDRESS_WITH_INDEX  30
-ADD_END             1918
-ADD_FROM_D          18A4
-ADD_TO_D            18DE
+ADD_END             191E
+ADD_FROM_D          18AA
+ADD_TO_D            18E4
 ASCII_TO_HEX        15D0
 ASCII_TO_HEX_CHECK_GT_0  15FC
 ASCII_TO_HEX_CHECK_GT_A  1610
@@ -1831,9 +1895,9 @@ ASCII_TO_HEX_FAILED_0  1662
 ASCII_TO_HEX_FAILED_2  1668
 ASCII_TO_HEX_LOOP   15F0
 ASCII_TO_HEX_RETURN_OK  1
-BRA                 1AF8
+BRA                 1AFE
 BRA_DISP_M          FF
-BRA_END             1B34
+BRA_END             1B3A
 BRA_M               FF00
 BRA_OPCODE          6000
 CHECK_SUPPORT_REGISTER  11AC
@@ -1842,8 +1906,8 @@ CHECK_VALUE_IS_ODD_FAILED  15CA
 CLR_SCREEN          1070
 CONTINUE_PRINT_REGISTER  129A
 CONTINUE_PRINT_RE_NUMBER  12B6
-CONVERT_OPMODE_SIZE_B  197A
-CONVERT_OPMODE_SIZE_W  1980
+CONVERT_OPMODE_SIZE_B  1980
+CONVERT_OPMODE_SIZE_W  1986
 COUNTER_DISPLACEMENT  3A
 COUNTER_INDEX       3B
 CR                  D
@@ -1879,13 +1943,19 @@ C_NOP               4E71
 C_RTS               4E75
 C_UNSUPPORT_REGISTER  2
 DISPLACEMENT_REGISTER  28
+DIVS                1DB0
+DIVS_DREG_M         E00
+DIVS_END            1E2A
+DIVS_M              F1C0
+DIVS_OPCODE         81C0
+DIVS_REG_M          3F
 DONE_PRINT_NUMBER   12D4
 END_ADDRESS         7004
 END_CHECK_VALUE_IS_ODD  15C8
 END_FETCH_OPCODES   168C
 END_GET_INPUT       10B2
 END_HEX_TO_ASCII    1594
-END_JUMP_TABLE      16F2
+END_JUMP_TABLE      16F8
 END_MAIN            108E
 END_PRINT_COMMA     10E2
 END_PRINT_DATA      115C
@@ -1895,15 +1965,14 @@ END_PRINT_HEX       153C
 END_PRINT_NEW_LINE  112C
 END_PRINT_REGISTER  12FE
 END_PRINT_TAB       10CA
-EOR                 1C5A
+EOR                 1C60
 EOR_DIREC           100
 EOR_DREG_M          E00
-EOR_END             1CDA
+EOR_END             1CE0
 EOR_M               F000
 EOR_OPCODE          B000
 EOR_REG_M           3F
 EOR_SIZE_M          C0
-EOR_TO_EA           1CA0
 FETCH_OPCODES       167A
 FINISH_OPCODE       1048
 GET_ASCII_FROM_HEX  152A
@@ -1921,149 +1990,150 @@ HEX_TO_ASCII_SWAP   159A
 HEX_TO_ASCII_WORD   4
 HT                  9
 INCRASE_POINTER_START_ADDRESS  166E
-JSR                 170A
-JSR_END             1754
+JSR                 1710
+JSR_END             175A
 JSR_OPCODE          4E80
 JUMP_TABLE          168E
-LEA                 1756
-LEA_END             17C2
+LEA                 175C
+LEA_END             17C8
 LF                  A
 LONG_LENGTH         8
 LOOP_START          1014
 MAIN                108E
-MOVE                19D0
-MOVEA               191A
-MOVEA_DONE_CONVERT  1986
-MOVEA_END           19CE
-MOVEA_REGISTER_OK   193A
-MOVEM               1A94
-MOVE_DONE_CONVERT   1A6A
-MOVE_END            19EE
-MOVE_MATCH_PATTERN  19F0
-MOVE_OPMODE_BYTE    1A5E
-MOVE_OPMODE_WORD    1A64
-NEG                 1A94
-NEG_END             1AF6
+MOVE                19D6
+MOVEA               1920
+MOVEA_DONE_CONVERT  198C
+MOVEA_END           19D4
+MOVEA_REGISTER_OK   1940
+MOVEM               1A9A
+MOVE_DONE_CONVERT   1A70
+MOVE_END            19F4
+MOVE_MATCH_PATTERN  19F6
+MOVE_OPMODE_BYTE    1A64
+MOVE_OPMODE_WORD    1A6A
+NEG                 1A9A
+NEG_END             1AFC
 NEG_M               FF00
 NEG_OPCODE          4400
 NEG_REG_M           3F
 NEG_SIZE_M          C0
-NEW_LINE            1F3B
-NOP                 16F6
+NEW_LINE            1FCB
+NOP                 16FC
 OFFSET_OPC_ADDRES   7008
 OPCODE_ADDRESS      7006
-OR                  1B36
-ORI                 1C04
-ORI_END             1C58
+OR                  1B3C
+ORI                 1C0A
+ORI_END             1C5E
 ORI_M               FF00
 ORI_OPCODE          0
 ORI_REG_M           3F
 ORI_SIZE_M          C0
 OR_DIREC            100
 OR_DREG_M           E00
-OR_END              1C02
+OR_END              1C08
 OR_M                F000
 OR_OPCODE           8000
 OR_REG_M            3F
 OR_SIZE_M           C0
-OR_TO_D             1BC8
-OR_TO_EA            1B8E
+OR_TO_D             1BCE
+OR_TO_EA            1B94
 OUTPUT_ADDRESS      7010
 PRINT_A             150C
 PRINT_AB_LONG       1428
 PRINT_AB_SHORT      13C6
-PRINT_ADD           1E62
-PRINT_ADDA          1E54
-PRINT_BRA           1DCC
+PRINT_ADD           1EE4
+PRINT_ADDA          1ED6
+PRINT_BRA           1E4E
 PRINT_BYTE          1164
 PRINT_CLOSE         14BE
 PRINT_CLOSE_PLUS    14D8
 PRINT_COMMA         10D2
 PRINT_D             14F2
 PRINT_DATA          113A
+PRINT_DIVS          1F00
 PRINT_DOLLAR_SIGN   10EA
-PRINT_EOR           1E06
+PRINT_EOR           1E88
 PRINT_HASH_SIGN     1102
 PRINT_HEX           1526
 PRINT_IMMEDIATE     1300
 PRINT_IMMEDIATE_BYTE  133C
 PRINT_IMMEDIATE_LONG  1392
 PRINT_IMMEDIATE_WORD  1366
-PRINT_JSR           1E30
-PRINT_LEA           1E42
+PRINT_JSR           1EB2
+PRINT_LEA           1EC4
 PRINT_LONG          117C
 PRINT_MINUS_OPEN    14A4
-PRINT_MOVE          1E8C
-PRINT_MOVEA         1E7E
-PRINT_NEG           1DBE
+PRINT_MOVE          1F1C
+PRINT_MOVEA         1F0E
+PRINT_NEG           1E40
 PRINT_NEW_LINE      111A
-PRINT_NOP           1DDA
+PRINT_NOP           1E5C
 PRINT_OPEN          148A
-PRINT_OR            1DEA
-PRINT_ORI           1DF8
+PRINT_OR            1E6C
+PRINT_ORI           1E7A
 PRINT_PC            1188
 PRINT_REGISTER      1252
-PRINT_ROL           1E14
-PRINT_ROR           1E22
-PRINT_RTS           1DAA
-PRINT_SUB           1E70
+PRINT_ROL           1E96
+PRINT_ROR           1EA4
+PRINT_RTS           1E2C
+PRINT_SUB           1EF2
 PRINT_TAB           10B4
-PRINT_UNSUPPORTED   1E9A
+PRINT_UNSUPPORTED   1F2A
 PRINT_WORD          1170
-PROMT_INPUT_CONTINUE  1F9B
-PROMT_INPUT_END     1F6E
-PROMT_INPUT_START   1F3F
-P_ADD               1EC1
-P_ADDA              1EC5
-P_ASL               1EFC
-P_ASR               1EF8
-P_BCLR              1F08
-P_BCS               1F16
-P_BGE               1F1A
-P_BLT               1F1E
-P_BRA               1F26
-P_BVC               1F22
-P_CMP               1F0D
-P_CMPI              1F11
-P_DATA              1F2E
-P_DIVS              1ED8
-P_EOR               1EEC
-P_JSR               1F2A
-P_LEA               1EDD
-P_LSL               1EF4
-P_LSR               1EF0
-P_MOVE              1EB0
-P_MOVEA             1EB5
-P_MOVEM             1EBB
-P_MULS              1ED3
-P_NEG               1EE8
-P_NOP               1EAC
-P_OR                1EE1
-P_ORI               1EE4
-P_ROL               1F00
-P_ROR               1F04
-P_RTS               1EA8
-P_SUB               1ECA
-P_SUBQ              1ECE
+PROMT_INPUT_CONTINUE  202B
+PROMT_INPUT_END     1FFE
+PROMT_INPUT_START   1FCF
+P_ADD               1F51
+P_ADDA              1F55
+P_ASL               1F8C
+P_ASR               1F88
+P_BCLR              1F98
+P_BCS               1FA6
+P_BGE               1FAA
+P_BLT               1FAE
+P_BRA               1FB6
+P_BVC               1FB2
+P_CMP               1F9D
+P_CMPI              1FA1
+P_DATA              1FBE
+P_DIVS              1F68
+P_EOR               1F7C
+P_JSR               1FBA
+P_LEA               1F6D
+P_LSL               1F84
+P_LSR               1F80
+P_MOVE              1F40
+P_MOVEA             1F45
+P_MOVEM             1F4B
+P_MULS              1F63
+P_NEG               1F78
+P_NOP               1F3C
+P_OR                1F71
+P_ORI               1F74
+P_ROL               1F90
+P_ROR               1F94
+P_RTS               1F38
+P_SUB               1F5A
+P_SUBQ              1F5E
 RETURN_ADDRESS      9000
-RTS                 1700
-SIMHALT             1F3F
+RTS                 1706
+SIMHALT             1FCF
 SIZE_OPCODE         700A
 STACK_ADDRESS       8000
 START               1000
 START_ADDRESS       9100
 STORE_REGISTER_ADDRESS  700C
-SUB                 1CDC
+SUB                 1CE2
 SUB_DIREC           100
 SUB_DREG_M          E00
-SUB_END             1DA8
+SUB_END             1DAE
 SUB_M               F000
 SUB_OPCODE          9000
 SUB_REG_M           3F
 SUB_SIZE_M          C0
-SUB_TO_D            1D6E
-SUB_TO_EA           1D34
-TEST_VAL            1F33
+SUB_TO_D            1D74
+SUB_TO_EA           1D3A
+TEST_VAL            1FC3
 UNSUPPORT_OPCODE    11E6
 UNSUPPORT_REGISTER  121A
 VALUE_IS_EVEN       0

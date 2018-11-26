@@ -7,12 +7,14 @@
 *-----------------------------------------------------------
     ORG    $10000
 START:                  ; first instruction of program
+    
+    divs.w    #$0002,d0
+    
+    divs.w    d1,d7
 
-    sub.l     $40,d4
+    divs.w    $00000010,d4
 
-    sub.w     d5,(a1)
-
-    sub.w     (a1),d0
+    divs.w    (a0),d3
 
     SIMHALT             ; halt simulator
 
