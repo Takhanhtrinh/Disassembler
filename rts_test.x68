@@ -8,13 +8,13 @@
     ORG    $10000
 START:                  ; first instruction of program
     
-    muls.w    #$0002,d0
+    CMP.w    #$0002,d0
     
-    muls.w    d1,d7
+    CMP.B    d1,d7
 
-    muls.w    $00000010,d4
+    CMP.L    $00000010,d4
 
-    muls.w    (a0),d3
+    CMP.w    (a0),d3
 
     SIMHALT             ; halt simulator
 

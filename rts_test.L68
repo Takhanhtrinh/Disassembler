@@ -1,6 +1,6 @@
 00010000 Starting Address
 Assembler used: EASy68K Editor/Assembler v5.16.01
-Created On: 11/25/2018 11:53:08 PM
+Created On: 11/26/2018 12:04:59 AM
 
 00000000                             1  
 00000000                             2      *-----------------------------------------------------------
@@ -12,13 +12,13 @@ Created On: 11/25/2018 11:53:08 PM
 00010000                             8      ORG    $10000
 00010000                             9  START:                  ; first instruction of program
 00010000                            10      
-00010000  C1FC 0002                 11      muls.w    #$0002,d0
+00010000  B07C 0002                 11      CMP.w    #$0002,d0
 00010004                            12      
-00010004  CFC1                      13      muls.w    d1,d7
+00010004  BE01                      13      CMP.B    d1,d7
 00010006                            14  
-00010006  C9F8 0010                 15      muls.w    $00000010,d4
+00010006  B8B8 0010                 15      CMP.L    $00000010,d4
 0001000A                            16  
-0001000A  C7D0                      17      muls.w    (a0),d3
+0001000A  B650                      17      CMP.w    (a0),d3
 0001000C                            18  
 0001000C  FFFF FFFF                 19      SIMHALT             ; halt simulator
 00010010                            20  
