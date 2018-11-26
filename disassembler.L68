@@ -1,6 +1,6 @@
 00001000 Starting Address
 Assembler used: EASy68K Editor/Assembler v5.16.01
-Created On: 11/25/2018 10:37:47 PM
+Created On: 11/25/2018 10:43:44 PM
 
 00000000                             1  *-----------------------------------------------------------
 00000000                             2  * Title      : 
@@ -1272,11 +1272,11 @@ Created On: 11/25/2018 10:37:47 PM
 00001AF8                          1268  BRA:
 00001AF8                          1269  * CONSTANT FOR BRA OPCODE
 00001AF8  =00006000               1270  BRA_OPCODE EQU %0110000000000000
-00001AF8  =00006000               1271  BRA_M      EQU %0110000000000000
+00001AF8  =0000FF00               1271  BRA_M      EQU %1111111100000000
 00001AF8  =000000FF               1272  BRA_DISP_M EQU %0000000011111111
 00001AF8  3401                    1273      MOVE.W D1, D2
 00001AFA                          1274  * MASKING WITH BRA UNIQUE CODE
-00001AFA  C47C 6000               1275      AND.W #BRA_M, D2
+00001AFA  C47C FF00               1275      AND.W #BRA_M, D2
 00001AFE  B47C 6000               1276      CMP.W #BRA_OPCODE, D2
 00001B02  6600 0030               1277      BNE BRA_END
 00001B06                          1278  
@@ -1303,7 +1303,7 @@ Created On: 11/25/2018 10:37:47 PM
 00001B36                          1299  OR:
 00001B36                          1300  * CONSTANT FOR OR OPCODE
 00001B36  =00008000               1301  OR_OPCODE EQU %1000000000000000
-00001B36  =00008000               1302  OR_M      EQU %1000000000000000
+00001B36  =0000F000               1302  OR_M      EQU %1111000000000000
 00001B36  =00000E00               1303  OR_DREG_M EQU %0000111000000000
 00001B36  =000000C0               1304  OR_SIZE_M EQU %0000000011000000
 00001B36  =0000003F               1305  OR_REG_M  EQU %0000000000111111
@@ -1311,8 +1311,8 @@ Created On: 11/25/2018 10:37:47 PM
 00001B36                          1307  
 00001B36  3401                    1308      MOVE.W D1, D2
 00001B38                          1309  * MASKING WITH OR UNIQUE CODE
-00001B38  C47C 8000               1310      AND.W #OR_M, D2
-00001B3C  B47C 8000               1311      CMP.W #OR_OPCODE, D2
+00001B38  C47C F000               1310      AND.W #OR_M, D2
+00001B3C  0C42 8000               1311      CMPI.W #OR_OPCODE, D2
 00001B40  6600 00C0               1312      BNE OR_END
 00001B44                          1313  
 00001B44                          1314  * CHECK TO MAKE SURE WE SUPPORT THE EA
@@ -1394,12 +1394,12 @@ Created On: 11/25/2018 10:37:47 PM
 00001C04                          1390  ORI:
 00001C04                          1391  * CONSTANT FOR ORI OPCODE
 00001C04  =00000000               1392  ORI_OPCODE EQU %0000000000000000
-00001C04  =00000000               1393  ORI_M      EQU %0000000000000000
+00001C04  =0000FF00               1393  ORI_M      EQU %1111111100000000
 00001C04  =0000003F               1394  ORI_REG_M  EQU %0000000000111111
 00001C04  =000000C0               1395  ORI_SIZE_M EQU %0000000011000000
 00001C04  3401                    1396      MOVE.W D1, D2
 00001C06                          1397  * MASKING WITH ORI UNIQUE CODE
-00001C06  C47C 0000               1398      AND.W #ORI_M, D2
+00001C06  C47C FF00               1398      AND.W #ORI_M, D2
 00001C0A  B47C 0000               1399      CMP.W #ORI_OPCODE, D2
 00001C0E  6600 0048               1400      BNE ORI_END
 00001C12                          1401  
@@ -1729,7 +1729,7 @@ ASCII_TO_HEX_RETURN_OK  1
 BRA                 1AF8
 BRA_DISP_M          FF
 BRA_END             1B34
-BRA_M               6000
+BRA_M               FF00
 BRA_OPCODE          6000
 CHECK_SUPPORT_REGISTER  11AC
 CHECK_VALUE_IS_ODD  15A2
@@ -1850,14 +1850,14 @@ OPCODE_ADDRESS      7006
 OR                  1B36
 ORI                 1C04
 ORI_END             1C58
-ORI_M               0
+ORI_M               FF00
 ORI_OPCODE          0
 ORI_REG_M           3F
 ORI_SIZE_M          C0
 OR_DIREC            100
 OR_DREG_M           E00
 OR_END              1C02
-OR_M                8000
+OR_M                F000
 OR_OPCODE           8000
 OR_REG_M            3F
 OR_SIZE_M           C0
