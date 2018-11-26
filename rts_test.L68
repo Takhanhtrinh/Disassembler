@@ -1,6 +1,6 @@
 00010000 Starting Address
 Assembler used: EASy68K Editor/Assembler v5.16.01
-Created On: 11/25/2018 10:04:45 PM
+Created On: 11/25/2018 10:38:06 PM
 
 00000000                             1  
 00000000                             2      *-----------------------------------------------------------
@@ -11,25 +11,19 @@ Created On: 11/25/2018 10:04:45 PM
 00000000                             7  *-----------------------------------------------------------
 00010000                             8      ORG    $10000
 00010000                             9  START:                  ; first instruction of program
-00010000                            10   
-00010000                            11      
-00010000                            12      *or.w      d0,$00004000
-00010000                            13      *or.W      #$4000,d7
-00010000                            14      *or.w      #$4000,$3000
-00010000                            15      *or.l      (a6),d7
-00010000                            16            
-00010000  0040 0039                 17      ORI.W #$39, D0
-00010004  0047 4000                 18      ORI.W #$4000,d7
-00010008                            19      *ORI.L #$07FF,$2000
-00010008  0012 00DC                 20      ORI.B #$DC,(A2)
-0001000C                            21      
-0001000C                            22  
-0001000C                            23      
-0001000C  FFFF FFFF                 24      SIMHALT             ; halt simulator
-00010010                            25  
-00010010                            26  * Put variables and constants here
-00010010= 56 4B 4C 00               27  PRINT DC.B 'VKL',0 
-00010014                            28      END    START        ; last line of source
+00010000                            10     
+00010000  B153                      11      eor.w     d0,(a3)
+00010002  BFB8 4000                 12      eor.L     d7,$00004000
+00010006  B741                      13      eor.w     d3,d1
+00010008  B513                      14      eor.B     d2,(a3)
+0001000A  B178 4000                 15      eor.w     d0,$00004000
+0001000E  B304                      16      eor.B     d1,d4
+00010010                            17  
+00010010  FFFF FFFF                 18      SIMHALT             ; halt simulator
+00010014                            19  
+00010014                            20  * Put variables and constants here
+00010014= 56 4B 4C 00               21  PRINT DC.B 'VKL',0 
+00010018                            22      END    START        ; last line of source
 
 No errors detected
 No warnings generated
@@ -38,5 +32,5 @@ No warnings generated
 SYMBOL TABLE INFORMATION
 Symbol-name         Value
 -------------------------
-PRINT               10010
+PRINT               10014
 START               10000

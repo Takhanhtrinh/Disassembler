@@ -7,20 +7,14 @@
 *-----------------------------------------------------------
     ORG    $10000
 START:                  ; first instruction of program
- 
-    
-    *or.w      d0,$00004000
-    *or.W      #$4000,d7
-    *or.w      #$4000,$3000
-    *or.l      (a6),d7
-          
-    ORI.W #$39, D0
-    ORI.W #$4000,d7
-    *ORI.L #$07FF,$2000
-    ORI.B #$DC,(A2)
-    
+   
+    eor.w     d0,(a3)
+    eor.L     d7,$00004000
+    eor.w     d3,d1
+    eor.B     d2,(a3)
+    eor.w     d0,$00004000
+    eor.B     d1,d4
 
-    
     SIMHALT             ; halt simulator
 
 * Put variables and constants here
