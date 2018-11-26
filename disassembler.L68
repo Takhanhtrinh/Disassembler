@@ -1,6 +1,6 @@
 00001000 Starting Address
 Assembler used: EASy68K Editor/Assembler v5.16.01
-Created On: 11/25/2018 10:43:44 PM
+Created On: 11/25/2018 10:50:29 PM
 
 00000000                             1  *-----------------------------------------------------------
 00000000                             2  * Title      : 
@@ -1452,7 +1452,7 @@ Created On: 11/25/2018 10:43:44 PM
 00001C5A                          1448  EOR:
 00001C5A                          1449  * CONSTANT FEOR EOR OPCODE
 00001C5A  =0000B000               1450  EOR_OPCODE EQU %1011000000000000
-00001C5A  =0000B000               1451  EOR_M      EQU %1011000000000000
+00001C5A  =0000F000               1451  EOR_M      EQU %1111000000000000
 00001C5A  =00000E00               1452  EOR_DREG_M EQU %0000111000000000
 00001C5A  =000000C0               1453  EOR_SIZE_M EQU %0000000011000000
 00001C5A  =0000003F               1454  EOR_REG_M  EQU %0000000000111111
@@ -1460,7 +1460,7 @@ Created On: 11/25/2018 10:43:44 PM
 00001C5A                          1456  
 00001C5A  3401                    1457      MOVE.W D1, D2
 00001C5C                          1458  * MASKING WITH EOR UNIQUE CODE
-00001C5C  C47C B000               1459      AND.W #EOR_M, D2
+00001C5C  C47C F000               1459      AND.W #EOR_M, D2
 00001C60  B47C B000               1460      CMP.W #EOR_OPCODE, D2
 00001C64  6600 0074               1461      BNE EOR_END
 00001C68                          1462  
@@ -1794,7 +1794,7 @@ EOR                 1C5A
 EOR_DIREC           100
 EOR_DREG_M          E00
 EOR_END             1CDA
-EOR_M               B000
+EOR_M               F000
 EOR_OPCODE          B000
 EOR_REG_M           3F
 EOR_SIZE_M          C0

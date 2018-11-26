@@ -1,8 +1,17 @@
 *-----------------------------------------------------------
-* Title      : 
-* Written by : 
-* Date       :
-* Description:
+* Title      : HEX DUMP Disassembler
+* Written by : Trinh Ta and Leo Le
+* Date       : 11/20/2018
+* Description: This is the final project of CSS 422
+*              This disassembler will take in the starting address
+*              and ending address of the user, then will start 
+*              disassemble the data within that specific section
+*              into assembly code and output back to the user.
+*              Each page will have a limit of offset in the 
+*              memory, so to move forward, press ENTER to get
+*              the next data page.
+*              The program will go on until it reaches the end
+*              of the ending address provided.
 *-----------------------------------------------------------
     ORG    $1000
 * OUTPUT_ADDRESS STORES BUFFER FOR PRINTING
@@ -1639,22 +1648,22 @@ PRINT_UNSUPPORTED:
 
 
 
-P_RTS DC.B 'RTS',0        *-----------------DONE-----------------*
-P_NOP DC.B 'NOP',0        *-----------------DONE-----------------*
-P_MOVE DC.B 'MOVE',0
-P_MOVEA DC.B 'MOVEA', 0
+P_RTS DC.B 'RTS',0          *-----------------DONE-----------------*
+P_NOP DC.B 'NOP',0          *-----------------DONE-----------------*
+P_MOVE DC.B 'MOVE',0        *-----------------DONE-----------------*
+P_MOVEA DC.B 'MOVEA', 0     *-----------------DONE-----------------*
 P_MOVEM DC.B 'MOVEM', 0
-P_ADD DC.B 'ADD', 0        *-----------------DONE-----------------*
+P_ADD DC.B 'ADD', 0         *-----------------DONE-----------------*
 P_ADDA DC.B 'ADDA',0        *-----------------DONE-----------------*
 P_SUB DC.B 'SUB', 0
 P_SUBQ DC.B 'SUBQ',0
 P_MULS DC.B 'MULS',0
 P_DIVS DC.B 'DIVS',0
-P_LEA DC.B 'LEA',0        *-----------------DONE-----------------*
-P_OR DC.B 'OR',0
-P_ORI DC.B 'ORI', 0
-P_NEG DC.B 'NEG', 0        *-----------------DONE-----------------*
-P_EOR DC.B 'EOR', 0
+P_LEA DC.B 'LEA',0          *-----------------DONE-----------------*
+P_OR DC.B 'OR',0            *-----------------DONE-----------------*
+P_ORI DC.B 'ORI', 0         *------------IN PROGRESS---------------*
+P_NEG DC.B 'NEG', 0         *-----------------DONE-----------------*
+P_EOR DC.B 'EOR', 0         *-----------------DONE-----------------*
 P_LSR DC.B 'LSR',0
 P_LSL DC.B 'LSL', 0
 P_ASR DC.B 'ASR', 0
@@ -1668,8 +1677,8 @@ P_BCS DC.B 'BCS', 0
 P_BGE DC.B 'BGE', 0
 P_BLT DC.B 'BLT',0
 P_BVC DC.B 'BVC', 0
-P_BRA DC.B 'BRA',0
-P_JSR DC.B 'JSR',0        *-----------------DONE-----------------*
+P_BRA DC.B 'BRA',0          *------------IN PROGRESS---------------*
+P_JSR DC.B 'JSR',0          *-----------------DONE-----------------*
 P_DATA DC.B 'DATA',0        *-----------------DONE-----------------*
 
 
