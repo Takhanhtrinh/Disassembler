@@ -1,6 +1,6 @@
 00010000 Starting Address
 Assembler used: EASy68K Editor/Assembler v5.16.01
-Created On: 11/25/2018 11:36:48 PM
+Created On: 11/25/2018 11:53:08 PM
 
 00000000                             1  
 00000000                             2      *-----------------------------------------------------------
@@ -11,26 +11,20 @@ Created On: 11/25/2018 11:36:48 PM
 00000000                             7  *-----------------------------------------------------------
 00010000                             8      ORG    $10000
 00010000                             9  START:                  ; first instruction of program
-00010000                            10  
-00010000  98B8 0040                 11      sub.l     $40,d4
-00010004                            12  
-00010004  9B51                      13      sub.w     d5,(a1)
+00010000                            10      
+00010000  C1FC 0002                 11      muls.w    #$0002,d0
+00010004                            12      
+00010004  CFC1                      13      muls.w    d1,d7
 00010006                            14  
-00010006  9051                      15      sub.w     (a1),d0
-00010008                            16      
-00010008  81FC 0002                 17      divs.w    #$0002,d0
-0001000C                            18      
-0001000C  8FC1                      19      divs.w    d1,d7
-0001000E                            20  
-0001000E  89F8 0010                 21      divs.w    $00000010,d4
-00010012                            22  
-00010012  87D0                      23      divs.w    (a0),d3
-00010014                            24  
-00010014  FFFF FFFF                 25      SIMHALT             ; halt simulator
-00010018                            26  
-00010018                            27  * Put variables and constants here
-00010018= 56 4B 4C 00               28  PRINT DC.B 'VKL',0 
-0001001C                            29      END    START        ; last line of source
+00010006  C9F8 0010                 15      muls.w    $00000010,d4
+0001000A                            16  
+0001000A  C7D0                      17      muls.w    (a0),d3
+0001000C                            18  
+0001000C  FFFF FFFF                 19      SIMHALT             ; halt simulator
+00010010                            20  
+00010010                            21  * Put variables and constants here
+00010010= 56 4B 4C 00               22  PRINT DC.B 'VKL',0 
+00010014                            23      END    START        ; last line of source
 
 No errors detected
 No warnings generated
@@ -39,5 +33,5 @@ No warnings generated
 SYMBOL TABLE INFORMATION
 Symbol-name         Value
 -------------------------
-PRINT               10018
+PRINT               10010
 START               10000
