@@ -1,6 +1,6 @@
 00010000 Starting Address
 Assembler used: EASy68K Editor/Assembler v5.16.01
-Created On: 11/25/2018 8:06:00 PM
+Created On: 11/25/2018 8:12:57 PM
 
 00000000                             1  
 00000000                             2      *-----------------------------------------------------------
@@ -13,18 +13,28 @@ Created On: 11/25/2018 8:06:00 PM
 00010000                             9  START:                  ; first instruction of program
 00010000                            10      
 00010000  0684 00000039             11      ADD.L #$39, d4
-00010006                            12  
-00010006  0040 0039                 13      ORI.W #$39, D0
-0001000A  0091 000007FF             14      ORI.L #$07FF,(A1)
-00010010  0012 00DC                 15      ORI.B #$DC,(A2)
-00010014                            16      
-00010014                            17  
-00010014                            18      
-00010014  FFFF FFFF                 19      SIMHALT             ; halt simulator
-00010018                            20  
-00010018                            21  * Put variables and constants here
-00010018= 56 4B 4C 00               22  PRINT DC.B 'VKL',0 
-0001001C                            23      END    START        ; last line of source
+00010006  D259                      12     ADD.W (a1)+, d1 
+00010008  D261                      13      ADD.W -(a1), d1 
+0001000A                            14      
+0001000A                            15      
+0001000A  D469 0004                 16      add.w 4(a1), d2 
+0001000E                            17  
+0001000E  D481                      18      ADD.L d1, d2 
+00010010  D2C1                      19      add.w d1, a1 
+00010012  D4A9 0004                 20      ADD.L 4(a1), d2
+00010016                            21  
+00010016  D251                      22      add.w (a1), d1 
+00010018  0040 0039                 23      ORI.W #$39, D0
+0001001C  0091 000007FF             24      ORI.L #$07FF,(A1)
+00010022  0012 00DC                 25      ORI.B #$DC,(A2)
+00010026                            26      
+00010026                            27  
+00010026                            28      
+00010026  FFFF FFFF                 29      SIMHALT             ; halt simulator
+0001002A                            30  
+0001002A                            31  * Put variables and constants here
+0001002A= 56 4B 4C 00               32  PRINT DC.B 'VKL',0 
+0001002E                            33      END    START        ; last line of source
 
 No errors detected
 No warnings generated
@@ -33,5 +43,5 @@ No warnings generated
 SYMBOL TABLE INFORMATION
 Symbol-name         Value
 -------------------------
-PRINT               10018
+PRINT               1002A
 START               10000
