@@ -1,4 +1,4 @@
-*-----------------------------------------------------------
+*-------------------------------------------------------------------------------
 * Title      : HEX DUMP Disassembler
 * Written by : Trinh Ta and Leo Le
 * Date       : 11/20/2018
@@ -12,7 +12,7 @@
 *              the next data page.
 *              The program will go on until it reaches the end
 *              of the ending address provided.
-*-----------------------------------------------------------
+*-------------------------------------------------------------------------------
     ORG    $1000
 * OUTPUT_ADDRESS STORES BUFFER FOR PRINTING
 OUTPUT_ADDRESS EQU $7010
@@ -33,9 +33,9 @@ OFFSET_OPC_ADDRES EQU $7008
 SIZE_OPCODE EQU $700A
 * LOCATION TO STORE REGISTERS FOR MOVEM
 STORE_REGISTER_ADDRESS EQU $700C
-* LOCATiON TO STORE STACK ADDRESS VALUE
+* LOCATION TO STORE STACK ADDRESS VALUE
 STACK_ADDRESS EQU $8000
-START:                  ; first instruction of program
+START:
     * MOVE.L #$10AF241B, -(SP)
     * MOVE.L #HEX_TO_ASCII_LONG, -(SP)
     * JSR PRINT_HEX
@@ -114,7 +114,6 @@ START:                  ; first instruction of program
  
     CLR.B D7 ; use d7 for counter main loop
     MOVE.L #START_ADDRESS, A0 
-    MOVE.L #OPCODE_ADDRESS, A6  * USE FOR TESTING ORI ATM
     MOVE.L #$010000, (A0)
 LOOP_START:
     MOVE.L #STACK_ADDRESS, SP
@@ -224,9 +223,6 @@ END_PRINT_NEW_LINE:
     TRAP #15 
     RTS
 
-
-
-
 *--------------------------------------------------------------------
 * PRINT DATA TYPE FOR EXAMPLE: .B .W .L
 * PARAMETERS: 
@@ -263,6 +259,7 @@ PRINT_LONG:
     MOVE.W #'.L', (A1)
     MOVE.B #0, 2(A1)
     BRA END_PRINT_DATA
+
 *--------------------------------------------------------------------
 * PRINT CURRENT PROGRAM COUNTER IN HEX 
 * WILL GET THE CURRENT PC IN START ADDRESS AND PRINT IT OUT
@@ -318,6 +315,7 @@ UNSUPPORT_OPCODE:
     ADDQ.L #8, SP 
     MOVE.W #C_UNSUPPORT_REGISTER, (A3)
     RTS 
+
 UNSUPPORT_REGISTER:
 C_UNSUPPORT_REGISTER EQU $2
     MOVE.L #RETURN_ADDRESS, A3
@@ -334,7 +332,6 @@ C_UNSUPPORT_REGISTER EQU $2
     MOVE.W #C_UNSUPPORT_REGISTER, (A3)
     ADDQ.W #2, (OFFSET_OPC_ADDRES)
     RTS 
-
 
 *--------------------------------------------------------------------
 * PRINT_REGISTER
@@ -523,7 +520,6 @@ PRINT_AB_LONG:
     MOVE.B #14, D0
     TRAP #15
     BRA END_PRINT_REGISTER
-
 PRINT_OPEN:
     MOVE.L #OUTPUT_ADDRESS, A1
     MOVE.B #'(', (A1)
@@ -538,7 +534,6 @@ PRINT_MINUS_OPEN:
     MOVE.B #14, D0
     TRAP #15
     BRA PRINT_A
-
 PRINT_CLOSE:
     MOVE.L #OUTPUT_ADDRESS, A1
     MOVE.B #')', (A1)
@@ -647,7 +642,6 @@ HEX_TO_ASCII_ROR:
     ROR.L #$08, D0
     BRA HEX2ASCII_DONE_CONVERT
 
-
 *-----------------------------------------------------------
 * CHECK IF THE VALUE IN HEX IS ODD 
 * PARAMETER;* 1(4(SP))- HEX VALUE (LONG)
@@ -675,6 +669,7 @@ END_CHECK_VALUE_IS_ODD:
 CHECK_VALUE_IS_ODD_FAILED:
     MOVE.W #VALUE_IS_EVEN, (A0)
     BRA END_CHECK_VALUE_IS_ODD
+
 *-----------------------------------------------------------
 * CONVERT ASCII TO HEX
 * PARAMETERS:
@@ -793,8 +788,10 @@ FETCH_OPCODES:
     MOVE.W #$2, (OFFSET_OPC_ADDRES)
 END_FETCH_OPCODES:
     RTS
-*------------------------------------------------------------------------------------------------------------------------------------------------------
-* LETS DECODE
+
+
+
+*------------------------------------DECODER PROCESS------------------------------------------------------------------------------------------------------------------
 * jump table uses to jump to decode subroutine
 * PARAMATERS:
 * 1-(4(Sp)) Word - opcode
@@ -1932,69 +1929,55 @@ PRINT_UNSUPPORTED:
     RTS 
 
 
-
-
-
-
-
-
-
-P_RTS DC.B 'RTS',0          *-----------------DONE-----------------*
-P_NOP DC.B 'NOP',0          *-----------------DONE-----------------*
-P_MOVE DC.B 'MOVE',0        *-----------------DONE-----------------*
-P_MOVEA DC.B 'MOVEA', 0     *-----------------DONE-----------------*
+P_RTS   DC.B 'RTS',0          *-----------------DONE-----------------*
+P_NOP   DC.B 'NOP',0          *-----------------DONE-----------------*
+P_MOVE  DC.B 'MOVE',0         *-----------------DONE-----------------*
+P_MOVEA DC.B 'MOVEA', 0       *-----------------DONE-----------------*
 P_MOVEM DC.B 'MOVEM', 0
-P_ADD DC.B 'ADD', 0         *-----------------DONE-----------------*
-P_ADDA DC.B 'ADDA',0        *-----------------DONE-----------------*
-P_SUB DC.B 'SUB', 0         *-----------------DONE-----------------*
-P_SUBQ DC.B 'SUBQ',0
-P_MULS DC.B 'MULS',0        *-----------------DONE-----------------*
-P_DIVS DC.B 'DIVS',0        *-----------------DONE-----------------*
-P_LEA DC.B 'LEA',0          *-----------------DONE-----------------*
-P_OR DC.B 'OR',0            *-----------------DONE-----------------*
-P_ORI DC.B 'ORI', 0         *------------IN PROGRESS---------------*
-P_NEG DC.B 'NEG', 0         *-----------------DONE-----------------*
-P_EOR DC.B 'EOR', 0         *-----------------DONE-----------------*
-P_LSR DC.B 'LSR',0
-P_LSL DC.B 'LSL', 0
-P_ASR DC.B 'ASR', 0
-P_ASL DC.B 'ASL',0 
-P_ROL DC.B 'ROL', 0
-P_ROR DC.B 'ROR', 0
-P_BCLR DC.B 'BCLR',0
-P_CMP DC.B 'CMP', 0         *-----------------DONE-----------------*
-P_CMPI DC.B 'CMPI', 0
-P_BCS DC.B 'BCS', 0
-P_BGE DC.B 'BGE', 0
-P_BLT DC.B 'BLT',0
-P_BVC DC.B 'BVC', 0
-P_BRA DC.B 'BRA',0          *------------IN PROGRESS---------------*
-P_JSR DC.B 'JSR',0          *-----------------DONE-----------------*
-P_DATA DC.B 'DATA',0        *-----------------DONE-----------------*
+P_ADD   DC.B 'ADD', 0         *-----------------DONE-----------------*
+P_ADDA  DC.B 'ADDA',0         *-----------------DONE-----------------*
+P_SUB   DC.B 'SUB', 0         *-----------------DONE-----------------*
+P_SUBQ  DC.B 'SUBQ',0
+P_MULS  DC.B 'MULS',0         *-----------------DONE-----------------*
+P_DIVS  DC.B 'DIVS',0         *-----------------DONE-----------------*
+P_LEA   DC.B 'LEA',0          *-----------------DONE-----------------*
+P_OR    DC.B 'OR',0           *-----------------DONE-----------------*
+P_ORI   DC.B 'ORI', 0         *--------------IN PROGRESS-------------*
+P_NEG   DC.B 'NEG', 0         *-----------------DONE-----------------*
+P_EOR   DC.B 'EOR', 0         *-----------------DONE-----------------*
+P_LSR   DC.B 'LSR',0
+P_LSL   DC.B 'LSL', 0
+P_ASR   DC.B 'ASR', 0
+P_ASL   DC.B 'ASL',0 
+P_ROL   DC.B 'ROL', 0
+P_ROR   DC.B 'ROR', 0
+P_BCLR  DC.B 'BCLR',0
+P_CMP   DC.B 'CMP', 0         *-----------------DONE-----------------*
+P_CMPI  DC.B 'CMPI', 0
+P_BCS   DC.B 'BCS', 0
+P_BGE   DC.B 'BGE', 0
+P_BLT   DC.B 'BLT',0
+P_BVC   DC.B 'BVC', 0
+P_BRA   DC.B 'BRA',0          *--------------IN PROGRESS-------------*
+P_JSR   DC.B 'JSR',0          *-----------------DONE-----------------*
+P_DATA  DC.B 'DATA',0         *-----------------DONE-----------------*
 
 
 WORD_LENGTH EQU $04
 LONG_LENGTH EQU $08
-TEST_VAL DC.B '10020009'
-LF EQU $0A
-CR EQU $0D
-HT  EQU  $09 
-NEW_LINE DC.B ' ',CR,LF,0
-SIMHALT             ; halt simulator
-* Put variables and constants here
+LF          EQU $0A
+CR          EQU $0D
+HT          EQU  $09 
 
+TEST_VAL                DC.B '10020009'
+NEW_LINE                DC.B ' ',CR,LF,0
+PROMT_INPUT_START       DC.B 'Please enter starting address(capitalized):  $',0 
+PROMT_INPUT_END         DC.B 'Please enter ending address(cappitalized): $',0
+PROMT_INPUT_CONTINUE    DC.B 'Press enter to continue',CR,LF,0
 
-
-
-
-
-PROMT_INPUT_START DC.B 'Please enter starting address(capitalized):  $',0 
-PROMT_INPUT_END DC.B 'Please enter ending address(cappitalized): $',0
-PROMT_INPUT_CONTINUE DC.B 'Press enter to continue',CR,LF,0
+    SIMHALT             
+    
     END    START        ; last line of source
-
-
-
 
 *~Font name~Courier New~
 *~Font size~10~
