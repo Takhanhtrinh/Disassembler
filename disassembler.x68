@@ -1024,6 +1024,12 @@ ADD_TO_D:
 ADD_END:
     RTS
 
+MOVEA: 
+C_MOVEA_PATTERN1 EQU %0001000001000000
+C_MOVEA_PATTERN2 EQU %0011000001000000
+C_MOVEA_PATTERN3 EQU %0010000001000000
+C_MOVEA_P_MASKING: 
+
 
 * ------------ LEO ------------ *          * ------------ LEO ------------ *          * ------------ LEO ------------ *
 NEG:
@@ -1272,6 +1278,11 @@ PRINT_ADD:
     MOVE.B #14, D0 
     TRAP #15
     RTS
+PRINT_MOVEA: 
+    LEA P_MOVEA, A1 
+    MOVE.B #14, D0 
+    TRAP #15 
+    RTS 
 PRINT_UNSUPPORTED: 
     LEA P_DATA, A1 
     MOVE.B #14, D0 
