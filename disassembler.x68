@@ -1962,7 +1962,7 @@ P_ASL DC.B 'ASL',0
 P_ROL DC.B 'ROL', 0
 P_ROR DC.B 'ROR', 0
 P_BCLR DC.B 'BCLR',0
-P_CMP DC.B 'CMP', 0
+P_CMP DC.B 'CMP', 0         *-----------------DONE-----------------*
 P_CMPI DC.B 'CMPI', 0
 P_BCS DC.B 'BCS', 0
 P_BGE DC.B 'BGE', 0
