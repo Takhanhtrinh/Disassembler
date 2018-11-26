@@ -1,22 +1,49 @@
 00010000 Starting Address
 Assembler used: EASy68K Editor/Assembler v5.16.01
-Created On: 11/25/2018 3:22:27 PM
+Created On: 11/25/2018 4:14:53 PM
 
-00000000                             1      *-----------------------------------------------------------
-00000000                             2  * Title      :
-00000000                             3  * Written by :
-00000000                             4  * Date       :
-00000000                             5  * Description:
-00000000                             6  *-----------------------------------------------------------
-00010000                             7      ORG    $10000
-00010000                             8  START:  
-00010000  0004 007F                  9      ORI.B    #$7F, D4
-00010004                            10  *    ORI.W   #$7F, D1
-00010004                            11  *    ORI.L   #$00004000,d7
-00010004                            12  *    ORI.L   #$4000,$2000
-00010004  FFFF FFFF                 13      SIMHALT  
-00010008                            14  
-00010008                            15      END    START    
+00000000                             1  
+00000000                             2      *-----------------------------------------------------------
+00000000                             3  * Title      :
+00000000                             4  * Written by :
+00000000                             5  * Date       :
+00000000                             6  * Description:
+00000000                             7  *-----------------------------------------------------------
+00010000                             8      ORG    $10000
+00010000                             9  START:                  ; first instruction of program
+00010000                            10  
+00010000                            11       
+00010000                            12  * Put program code here
+00010000  4E71                      13      NOP
+00010002  D481                      14      ADD.L d1, d2 
+00010004  D2C1                      15      add.w d1, a1 
+00010006                            16  
+00010006  D259                      17      ADD.W (a1)+, d1 
+00010008  D261                      18      ADD.W -(a1), d1 
+0001000A                            19      
+0001000A                            20  
+0001000A                            21  
+0001000A  D251                      22      add.w (a1), d1 
+0001000C  D2FC 0435                 23      adda.w #$435, a1
+00010010  D4E7                      24      ADDA.W -(sp), a2 
+00010012  D4D9                      25      adda.w (a1)+, a2  
+00010014  D401                      26      add.b d1, d2 
+00010016  43F9 0001002A             27      LEA PRINT, a1 
+0001001C                            28  
+0001001C                            29  VKL: 
+0001001C  4E71                      30      NOP
+0001001E  4E75                      31      RTS
+00010020                            32  
+00010020                            33  
+00010020                            34  
+00010020                            35  TEMP:
+00010020  103C 0025                 36      MOVE.B #$25, D0
+00010024  60F6                      37      BRA VKL
+00010026  FFFF FFFF                 38      SIMHALT             ; halt simulator
+0001002A                            39  
+0001002A                            40  * Put variables and constants here
+0001002A= 56 4B 4C 00               41  PRINT DC.B 'VKL',0 
+0001002E                            42      END    START        ; last line of source
 
 No errors detected
 No warnings generated
@@ -25,4 +52,7 @@ No warnings generated
 SYMBOL TABLE INFORMATION
 Symbol-name         Value
 -------------------------
+PRINT               1002A
 START               10000
+TEMP                10020
+VKL                 1001C
