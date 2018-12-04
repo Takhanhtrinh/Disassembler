@@ -1,9 +1,18 @@
-*-----------------------------------------------------------
-* Title      : 
-* Written by : 
-* Date       :
-* Description:
-*-----------------------------------------------------------
+*-------------------------------------------------------------------------------
+* Title      : HEX DUMP Disassembler
+* Written by : Trinh Ta and Leo Le
+* Date       : 11/20/2018
+* Description: This is the final project of CSS 422
+*              This disassembler will take in the starting address
+*              and ending address of the user, then will start 
+*              disassemble the data within that specific section
+*              into assembly code and output back to the user.
+*              Each page will have a limit of offset in the 
+*              memory, so to move forward, press ENTER to get
+*              the next data page.
+*              The program will go on until it reaches the end
+*              of the ending address provided.
+*-------------------------------------------------------------------------------
     ORG    $1000
 * OUTPUT_ADDRESS STORES BUFFER FOR PRINTING
 OUTPUT_ADDRESS EQU $7010
@@ -24,9 +33,9 @@ OFFSET_OPC_ADDRES EQU $7008
 SIZE_OPCODE EQU $700A
 * LOCATION TO STORE REGISTERS FOR MOVEM
 STORE_REGISTER_ADDRESS EQU $700C
-* LOCATiON TO STORE STACK ADDRESS VALUE
+* LOCATION TO STORE STACK ADDRESS VALUE
 STACK_ADDRESS EQU $8000
-START:                  ; first instruction of program
+START:
     * MOVE.L #$10AF241B, -(SP)
     * MOVE.L #HEX_TO_ASCII_LONG, -(SP)
     * JSR PRINT_HEX
@@ -110,7 +119,6 @@ LOOP_START:
     MOVE.L #STACK_ADDRESS, SP
     MOVE.L (START_ADDRESS), -(SP)
     MOVE.L #OPCODE_ADDRESS, -(SP)
-    MOVE.L #OPCODE_ADDRESS, A6
     JSR FETCH_OPCODES
     ADDQ.L #8, SP
     JSR PRINT_PC
@@ -214,9 +222,6 @@ END_PRINT_NEW_LINE:
     TRAP #15 
     RTS
 
-
-
-
 *--------------------------------------------------------------------
 * PRINT DATA TYPE FOR EXAMPLE: .B .W .L
 * PARAMETERS: 
@@ -253,6 +258,7 @@ PRINT_LONG:
     MOVE.W #'.L', (A1)
     MOVE.B #0, 2(A1)
     BRA END_PRINT_DATA
+
 *--------------------------------------------------------------------
 * PRINT CURRENT PROGRAM COUNTER IN HEX 
 * WILL GET THE CURRENT PC IN START ADDRESS AND PRINT IT OUT
@@ -307,6 +313,7 @@ UNSUPPORT_OPCODE:
     ADDQ.L #8, SP 
     MOVE.W #C_UNSUPPORT_REGISTER, (A3)
     RTS 
+
 UNSUPPORT_REGISTER:
 C_UNSUPPORT_REGISTER EQU $2
     MOVE.L #RETURN_ADDRESS, A3
@@ -323,7 +330,6 @@ C_UNSUPPORT_REGISTER EQU $2
     MOVE.W #C_UNSUPPORT_REGISTER, (A3)
     ADDQ.W #2, (OFFSET_OPC_ADDRES)
     RTS 
-
 
 *--------------------------------------------------------------------
 * PRINT_REGISTER
@@ -512,7 +518,6 @@ PRINT_AB_LONG:
     MOVE.B #14, D0
     TRAP #15
     BRA END_PRINT_REGISTER
-
 PRINT_OPEN:
     MOVE.L #OUTPUT_ADDRESS, A1
     MOVE.B #'(', (A1)
@@ -527,7 +532,6 @@ PRINT_MINUS_OPEN:
     MOVE.B #14, D0
     TRAP #15
     BRA PRINT_A
-
 PRINT_CLOSE:
     MOVE.L #OUTPUT_ADDRESS, A1
     MOVE.B #')', (A1)
@@ -726,7 +730,6 @@ HEX_TO_ASCII_ROR:
     ROR.L #$08, D0
     BRA HEX2ASCII_DONE_CONVERT
 
-
 *-----------------------------------------------------------
 * CHECK IF THE VALUE IN HEX IS ODD 
 * PARAMETER;* 1(4(SP))- HEX VALUE (LONG)
@@ -754,6 +757,7 @@ END_CHECK_VALUE_IS_ODD:
 CHECK_VALUE_IS_ODD_FAILED:
     MOVE.W #VALUE_IS_EVEN, (A0)
     BRA END_CHECK_VALUE_IS_ODD
+
 *-----------------------------------------------------------
 * CONVERT ASCII TO HEX
 * PARAMETERS:
@@ -870,8 +874,10 @@ FETCH_OPCODES:
     MOVE.W #$2, (OFFSET_OPC_ADDRES)
 END_FETCH_OPCODES:
     RTS
-*------------------------------------------------------------------------------------------------------------------------------------------------------
-* LETS DECODE
+
+
+
+*------------------------------------DECODER PROCESS------------------------------------------------------------------------------------------------------------------
 * jump table uses to jump to decode subroutine
 * PARAMATERS:
 * 1-(4(Sp)) Word - opcode
@@ -879,14 +885,21 @@ END_FETCH_OPCODES:
 *   D1 USES TO STORE OPCODE
 JUMP_TABLE:
     MOVE.W 4(SP), D1
-    JSR RTS
-    JSR NOP
-    JSR JSR
-    JSR LEA
-    * JSR ORI
+    JSR ORI
+    JSR MOVEA 
+    JSR MOVE
     JSR NEG
+    JSR NOP
+    JSR RTS
     JSR JSR
-    JSR ADDA
+    JSR MOVEM 
+    JSR LEA
+    JSR DIVS
+    JSR OR
+    JSR SUB
+    JSR EOR
+    JSR CMP
+    JSR MULS
     JSR ADD 
     JSR MOVEA 
     JSR MOVE
@@ -1555,7 +1568,7 @@ NEG_SIZE_M EQU %0000000011000000
 * MASKING TO GET NEG SIZE
     AND.W #NEG_SIZE_M, D2
     ASR.W #6, D2
-    MOVE.W D2 , D6 * COPY SHIFTED SIZE FOR PRINT REGISTER 
+    MOVE.B D2 , D6 * COPY SHIFTED SIZE FOR PRINT REGISTER 
     MOVE.B D6, -(SP)
     JSR PRINT_DATA
     ADDQ.L #2, SP
@@ -1571,15 +1584,13 @@ NEG_SIZE_M EQU %0000000011000000
     ADDQ.L #$04, SP
     BRA FINISH_OPCODE
 NEG_END: 
-    CLR.W D2
-    CLR.W D6
     RTS
 
 BRA:
 * CONSTANT FOR BRA OPCODE
 BRA_OPCODE EQU %0110000000000000
-BRA_M      EQU %0110000000000000
-BRA_SIZE_M EQU %0000000011111111
+BRA_M      EQU %1111111100000000
+BRA_DISP_M EQU %0000000011111111
     MOVE.W D1, D2
 * MASKING WITH BRA UNIQUE CODE
     AND.W #BRA_M, D2
@@ -1587,6 +1598,7 @@ BRA_SIZE_M EQU %0000000011111111
     BNE BRA_END
     ; displacement 
     JSR PRINT_BRA
+    MOVE.W (OPCODE_ADDRESS), D1 
     MOVE.W D1, D2
     MOVE.W D1, D3
 * MASKING TO GET SIZE OF BRA
@@ -1624,7 +1636,7 @@ BRA_END:
 ORI:
 * CONSTANT FOR ORI OPCODE
 ORI_OPCODE EQU %0000000000000000
-ORI_M      EQU %0000000000000000
+ORI_M      EQU %1111111100000000
 ORI_REG_M  EQU %0000000000111111
 ORI_SIZE_M EQU %0000000011000000
     MOVE.W D1, D2
@@ -1645,50 +1657,370 @@ ORI_SIZE_M EQU %0000000011000000
     BEQ FINISH_OPCODE
 
     JSR PRINT_ORI
-    
     MOVE.W (OPCODE_ADDRESS), D1
     MOVE.W D1, D2
 * MASKING TO GET SIZE OF ORI
     AND.W #ORI_SIZE_M, D2 
     ASR.W #6, D2
-    MOVE.W D2 , D6 * COPY SHIFTED SIZE FOR PRINT REGISTER 
+    MOVE.B D2 , D6 * COPY SHIFTED SIZE FOR PRINT REGISTER 
     MOVE.B D6, -(SP)
     JSR PRINT_DATA
-    ADDQ.L #2, SP
+    ADDQ.L #$02, SP
+    JSR PRINT_TAB
+ 
+    MOVE.W (OPCODE_ADDRESS), D1     
+    MOVE.W D1, D2
+    *------------------------------------
+    * AND.W #ORI_REG_M, D2 
+    * LSR.L #8, D2 
+    * LSR.L #1, D2 
+    * OR.B #%00000000, D2
+    * MOVE.W D2, -(SP)
+    * MOVE.W #$0, -(SP)
+    * JSR PRINT_REGISTER 
+    * ADDQ.L #4, D2 
+    * JSR PRINT_COMMA 
+    
+    * AND.B #ORI_REG_M, D2 
+    * MOVE.W D2, -(SP)
+    * MOVE.W D6, -(SP)
+    * JSR PRINT_REGISTER
+    * ADDQ.L #4, SP 
+    *------------------------------------
+    BRA FINISH_OPCODE
+ORI_END:
+    RTS
+
+EOR:
+* CONSTANT FEOR EOR OPCODE
+EOR_OPCODE EQU %1011000100000000
+EOR_M      EQU %1111000100000000
+EOR_DREG_M EQU %0000111000000000
+EOR_SIZE_M EQU %0000000011000000
+EOR_REG_M  EQU %0000000000111111
+EOR_DIREC  EQU %0000000100000000
+
+    MOVE.W D1, D2
+* MASKING WITH EOR UNIQUE CODE
+    AND.W #EOR_M, D2
+    CMP.W #EOR_OPCODE, D2
+    BNE EOR_END
+
+* CHECK TO MAKE SURE WE SUPPEORT THE EA
+    MOVE.W D1, D2 
+    AND.B #EOR_REG_M, D2 
+    MOVE.W D2, -(SP)
+    JSR CHECK_SUPPORT_REGISTER
+    ADDQ #2, SP 
+* from print_register to see if it is unsuppEorted register 
+    MOVE.W (RETURN_ADDRESS), D2 
+    CMPI.W #C_UNSUPPORT_REGISTER, D2 ; IF EQUAL RETURN TO FETCH NEXT OPCODE 
+
+    JSR PRINT_EOR
+    MOVE.W (OPCODE_ADDRESS), D1
+    MOVE.W D1, D2
+* MASKING TO GET SIZE OF EOR
+    AND.W #EOR_SIZE_M, D2
+    ASR.W #6, D2
+    MOVE.B D2, D6
+    MOVE.B D2, -(SP)
+    JSR PRINT_DATA
+    ADDQ.L #$02, SP 
     JSR PRINT_TAB
 
- ORI_CONT:   
-    MOVE.W (A6, D4.W), D1     
-    MOVE.W D1, D2
-    MOVE.W D1, D5
-* MASKING WITH ORI UNIQUE CODE TO CHECK IF IT IS STILL ORI INSTRUCTION
-    AND.W #ORI_M, D2
-    CMP.W #ORI_OPCODE, D2
-    BNE ORI_END
-* MASKING TO GET MODE AND REGISTER
-    MOVE.W D5, D1
-    MOVE.W D5, D2
-    AND.W #ORI_REG_M, D2
+* <EA> EOR DN -> <EA>
+    MOVE.W (OPCODE_ADDRESS), D1 
+    MOVE.W D1, D2 
+    AND.W #EOR_DREG_M, D2 
+    LSR.L #8, D2 
+    LSR.L #1, D2 
+    OR.B #%00000000, D2
+    MOVE.W D2, -(SP)
+    MOVE.W #$0, -(SP)
+    JSR PRINT_REGISTER 
+    ADDQ.L #4, D2 
+    JSR PRINT_COMMA 
+    
+    MOVE.W (OPCODE_ADDRESS), D1 
+    MOVE.W D1, D2 
+    AND.B #EOR_REG_M, D2 
     MOVE.W D2, -(SP)
     MOVE.W D6, -(SP)
     JSR PRINT_REGISTER
-    ADDQ.L #$04, SP
-    ADDQ.W #2, D4 * FOR INCREMENTING OFFSET IN THE OPCODE
-
-    ADDQ.B #1, D3 * FOR PRINTING COMMA ONCE
-    CMPI.B #1, D3
-    BLE PRINT_1_COMMA
-    BRA ORI_CONT
+    ADDQ.L #4, SP 
     BRA FINISH_OPCODE
-PRINT_1_COMMA:
-    JSR PRINT_COMMA
-ORI_END:
-    CLR.W D2
-    CLR.W D3
-    CLR.W D4
-    CLR.W D5
-    CLR.W D6
+
+EOR_END:
     RTS
+
+SUB:
+* CONSTANT FOR SUB OPCODE
+SUB_OPCODE EQU %1001000000000000
+SUB_M      EQU %1111000000000000
+SUB_DREG_M EQU %0000111000000000
+SUB_SIZE_M EQU %0000000011000000
+SUB_REG_M  EQU %0000000000111111
+SUB_DIREC  EQU %0000000100000000
+
+    MOVE.W D1, D2
+* MASKING WITH SUB UNIQUE CODE
+    AND.W #SUB_M, D2
+    CMPI.W #SUB_OPCODE, D2
+    BNE SUB_END
+
+* CHECK TO MAKE SURE WE SUPPORT THE EA
+    MOVE.W D1, D2 
+    AND.B #SUB_REG_M, D2 
+    MOVE.W D2, -(SP)
+    JSR CHECK_SUPPORT_REGISTER
+    ADDQ #2, SP 
+* from print_register to see if it is unsupported register 
+    MOVE.W (RETURN_ADDRESS), D2 
+    CMPI.W #C_UNSUPPORT_REGISTER, D2 ; IF EQUAL RETURN TO FETCH NEXT OPCODE 
+
+    JSR PRINT_SUB
+    MOVE.W (OPCODE_ADDRESS), D1
+    MOVE.W D1, D2
+* MASKING TO GET SIZE OF SUB
+    AND.W #SUB_SIZE_M, D2
+    ASR.W #6, D2
+    MOVE.B D2, D6
+    MOVE.B D2, -(SP)
+    JSR PRINT_DATA
+    ADDQ.L #$02, SP 
+    JSR PRINT_TAB
+* MASKING TO GET DIRECTION OF THIS SUB
+    MOVE.W (OPCODE_ADDRESS), D1 
+    MOVE.W D1, D2  
+    AND.W #SUB_DIREC, D2 
+    CMPI.W #SUB_DIREC, D2 
+    BNE SUB_TO_D  * DN - <EA> -> DN
+
+SUB_TO_EA:  * <EA> - DN -> <EA>
+    MOVE.W (OPCODE_ADDRESS), D1 
+    MOVE.W D1, D2 
+    AND.W #SUB_DREG_M, D2 
+    LSR.L #8, D2 
+    LSR.L #1, D2 
+    OR.B #%00000000, D2
+    MOVE.W D2, -(SP)
+    MOVE.W #$0, -(SP)
+    JSR PRINT_REGISTER 
+    ADDQ.L #4, D2 
+    JSR PRINT_COMMA 
+    
+    MOVE.W (OPCODE_ADDRESS), D1 
+    MOVE.W D1, D2 
+    AND.B #SUB_REG_M, D2 
+    MOVE.W D2, -(SP)
+    MOVE.W D6, -(SP)
+    JSR PRINT_REGISTER
+    ADDQ.L #4, SP 
+    BRA FINISH_OPCODE
+
+SUB_TO_D:   * DN - <EA> -> DN
+    MOVE.W (OPCODE_ADDRESS), D1 
+    MOVE.W D1, D2 
+* MASKING TO GET THE EFFECTIVE ADDRESS
+    AND.B #SUB_REG_M, D2 
+    MOVE.W D2, -(SP)
+    MOVE.W D6, -(SP)
+    JSR PRINT_REGISTER
+    ADDQ.L #4, SP 
+    JSR PRINT_COMMA 
+* MASKING TO GET THE DATA REGISTER 
+    MOVE.W (OPCODE_ADDRESS), D1 
+    MOVE.W D1, D2 
+    AND.W #SUB_DREG_M, D2 
+    LSR.W #8, D2 
+    LSR.W #1, D2 
+* APPEND MODE TO D2 FOR PRINT_REGISTER
+    OR.B #%00000000, D2 
+    MOVE.W D2, -(SP)
+    MOVE.W #$0, -(SP)
+    JSR PRINT_REGISTER
+    ADDQ.L #4, SP 
+    BRA FINISH_OPCODE
+SUB_END:
+    RTS
+
+DIVS:
+* CONSTANT FOR DIVS OPCODE
+DIVS_OPCODE EQU %1000000111000000
+DIVS_M      EQU %1111000111000000
+DIVS_DREG_M EQU %0000111000000000
+DIVS_REG_M  EQU %0000000000111111
+
+    MOVE.W D1, D2
+* MASKING WITH DIVS UNIQUE CODE
+    AND.W #DIVS_M, D2
+    CMPI.W #DIVS_OPCODE, D2
+    BNE DIVS_END
+
+* CHECK TO MAKE SURE WE SUPPORT THE EA
+    MOVE.W D1, D2 
+    AND.B #DIVS_REG_M, D2 
+    MOVE.W D2, -(SP)
+    JSR CHECK_SUPPORT_REGISTER
+    ADDQ #2, SP 
+* from print_register to see if it is unsupported register 
+    MOVE.W (RETURN_ADDRESS), D2 
+    CMPI.W #C_UNSUPPORT_REGISTER, D2 ; IF EQUAL RETURN TO FETCH NEXT OPCODE 
+
+    JSR PRINT_DIVS
+    MOVE.W (OPCODE_ADDRESS), D1
+* GET SIZE OF DIVS
+    MOVE.B #$01, D6
+    MOVE.B D6, -(SP)
+    JSR PRINT_DATA
+    ADDQ.L #$02, SP 
+    JSR PRINT_TAB
+
+* DN - <EA> -> DN
+    MOVE.W (OPCODE_ADDRESS), D1 
+    MOVE.W D1, D2 
+* MASKING TO GET THE EFFECTIVE ADDRESS
+    AND.B #DIVS_REG_M, D2 
+    MOVE.W D2, -(SP)
+    MOVE.W D6, -(SP)
+    JSR PRINT_REGISTER
+    ADDQ.L #4, SP 
+    JSR PRINT_COMMA 
+* MASKING TO GET THE DATA REGISTER 
+    MOVE.W (OPCODE_ADDRESS), D1 
+    MOVE.W D1, D2 
+    AND.W #DIVS_DREG_M, D2 
+    LSR.W #8, D2 
+    LSR.W #1, D2 
+* APPEND MODE TO D2 FOR PRINT_REGISTER
+    OR.B #%00000000, D2 
+    MOVE.W D2, -(SP)
+    MOVE.W #$0, -(SP)
+    JSR PRINT_REGISTER
+    ADDQ.L #4, SP 
+    BRA FINISH_OPCODE
+DIVS_END:
+    RTS    
+
+MULS:
+* CONSTANT FOR MULS OPCODE
+MULS_OPCODE EQU %1100000111000000
+MULS_M      EQU %1111000111000000
+MULS_DREG_M EQU %0000111000000000
+MULS_REG_M  EQU %0000000000111111
+
+    MOVE.W D1, D2
+* MASKING WITH MULS UNIQUE CODE
+    AND.W #MULS_M, D2
+    CMPI.W #MULS_OPCODE, D2
+    BNE MULS_END
+
+* CHECK TO MAKE SURE WE SUPPORT THE EA
+    MOVE.W D1, D2 
+    AND.B #MULS_REG_M, D2 
+    MOVE.W D2, -(SP)
+    JSR CHECK_SUPPORT_REGISTER
+    ADDQ #2, SP 
+* from print_register to see if it is unsupported register 
+    MOVE.W (RETURN_ADDRESS), D2 
+    CMPI.W #C_UNSUPPORT_REGISTER, D2 ; IF EQUAL RETURN TO FETCH NEXT OPCODE 
+
+    JSR PRINT_MULS
+    MOVE.W (OPCODE_ADDRESS), D1
+* GET SIZE OF MULS
+    MOVE.B #$01, D6
+    MOVE.B D6, -(SP)
+    JSR PRINT_DATA
+    ADDQ.L #$02, SP 
+    JSR PRINT_TAB
+
+* DN - <EA> -> DN
+    MOVE.W (OPCODE_ADDRESS), D1 
+    MOVE.W D1, D2 
+* MASKING TO GET THE EFFECTIVE ADDRESS
+    AND.B #MULS_REG_M, D2 
+    MOVE.W D2, -(SP)
+    MOVE.W D6, -(SP)
+    JSR PRINT_REGISTER
+    ADDQ.L #4, SP 
+    JSR PRINT_COMMA 
+* MASKING TO GET THE DATA REGISTER 
+    MOVE.W (OPCODE_ADDRESS), D1 
+    MOVE.W D1, D2 
+    AND.W #MULS_DREG_M, D2 
+    LSR.W #8, D2 
+    LSR.W #1, D2 
+* APPEND MODE TO D2 FOR PRINT_REGISTER
+    OR.B #%00000000, D2 
+    MOVE.W D2, -(SP)
+    MOVE.W #$0, -(SP)
+    JSR PRINT_REGISTER
+    ADDQ.L #4, SP 
+    BRA FINISH_OPCODE
+MULS_END:
+    RTS  
+
+CMP:
+* CONSTANT FOR CMP OPCODE
+CMP_OPCODE EQU %1011000000000000
+CMP_M      EQU %1111000100000000
+CMP_DREG_M EQU %0000111000000000
+CMP_SIZE_M EQU %0000000011000000
+CMP_REG_M  EQU %0000000000111111
+
+    MOVE.W D1, D2
+* MASKING WITH CMP UNIQUE CODE
+    AND.W #CMP_M, D2
+    CMPI.W #CMP_OPCODE, D2
+    BNE CMP_END
+
+* CHECK TO MAKE SURE WE SUPPORT THE EA
+    MOVE.W D1, D2 
+    AND.B #CMP_REG_M, D2 
+    MOVE.W D2, -(SP)
+    JSR CHECK_SUPPORT_REGISTER
+    ADDQ #2, SP 
+* from print_register to see if it is unsupported register 
+    MOVE.W (RETURN_ADDRESS), D2 
+    CMPI.W #C_UNSUPPORT_REGISTER, D2 ; IF EQUAL RETURN TO FETCH NEXT OPCODE 
+
+    JSR PRINT_CMP
+    MOVE.W (OPCODE_ADDRESS), D1
+    MOVE.W D1, D2
+* MASKING TO GET SIZE OF SUB
+    AND.W #SUB_SIZE_M, D2
+    ASR.W #6, D2
+    MOVE.B D2, D6
+    MOVE.B D2, -(SP)
+    JSR PRINT_DATA
+    ADDQ.L #$02, SP 
+    JSR PRINT_TAB
+
+* DN - <EA> -> DN
+    MOVE.W (OPCODE_ADDRESS), D1 
+    MOVE.W D1, D2 
+* MASKING TO GET THE EFFECTIVE ADDRESS
+    AND.B #CMP_REG_M, D2 
+    MOVE.W D2, -(SP)
+    MOVE.W D6, -(SP)
+    JSR PRINT_REGISTER
+    ADDQ.L #4, SP 
+    JSR PRINT_COMMA 
+* MASKING TO GET THE DATA REGISTER 
+    MOVE.W (OPCODE_ADDRESS), D1 
+    MOVE.W D1, D2 
+    AND.W #CMP_DREG_M, D2 
+    LSR.W #8, D2 
+    LSR.W #1, D2 
+* APPEND MODE TO D2 FOR PRINT_REGISTER
+    OR.B #%00000000, D2 
+    MOVE.W D2, -(SP)
+    MOVE.W #$0, -(SP)
+    JSR PRINT_REGISTER
+    ADDQ.L #4, SP 
+    BRA FINISH_OPCODE
+CMP_END:
+    RTS  
 
 * ROR:
 * * CONSTANT FOR ROR OPCODE
@@ -1727,7 +2059,6 @@ ORI_END:
 *     CMP.W #ROL_SIZE_M, D2 
 * ROL_END:
 *     RTS
-* ------------ LEO ------------ *          * ------------ LEO ------------ *          * ------------ LEO ------------ *
 
 
 PRINT_RTS:
@@ -1735,6 +2066,11 @@ PRINT_RTS:
     MOVE.B #14, D0
     TRAP #15
     JSR PRINT_TAB
+    BRA FINISH_OPCODE
+PRINT_NOP:
+    LEA P_NOP, A1
+    MOVE.B #14, D0
+    TRAP #15
     BRA FINISH_OPCODE
 PRINT_NEG:
     LEA P_NEG, A1
@@ -1746,11 +2082,6 @@ PRINT_BRA:
     MOVE.B #14, D0
     TRAP #15
     RTS 
-PRINT_NOP:
-    LEA P_NOP, A1
-    MOVE.B #14, D0
-    TRAP #15
-    BRA FINISH_OPCODE
 PRINT_OR:
     LEA P_OR, A1
     MOVE.B #14, D0
@@ -1761,6 +2092,11 @@ PRINT_ORI:
     MOVE.B #14, D0
     TRAP #15
     RTS
+PRINT_EOR:
+    LEA P_EOR, A1
+    MOVE.B #14, D0
+    TRAP #15
+    RTS 
 PRINT_ROL:
     LEA P_ROL, A1
     MOVE.B #14, D0
@@ -1793,6 +2129,21 @@ PRINT_ADD:
     MOVE.B #14, D0 
     TRAP #15
     RTS
+PRINT_SUB:
+    LEA P_SUB, A1 
+    MOVE.B #14, D0 
+    TRAP #15
+    RTS
+PRINT_DIVS:
+    LEA P_DIVS, A1 
+    MOVE.B #14, D0 
+    TRAP #15
+    RTS
+PRINT_MULS:
+    LEA P_MULS, A1 
+    MOVE.B #14, D0 
+    TRAP #15
+    RTS
 PRINT_MOVEA: 
     LEA P_MOVEA, A1 
     MOVE.B #14, D0 
@@ -1815,90 +2166,55 @@ PRINT_UNSUPPORTED:
     RTS 
 
 
+P_RTS   DC.B 'RTS',0          *-----------------DONE-----------------*
+P_NOP   DC.B 'NOP',0          *-----------------DONE-----------------*
+P_MOVE  DC.B 'MOVE',0         *-----------------DONE-----------------*
+P_MOVEA DC.B 'MOVEA', 0       *-----------------DONE-----------------*
+P_MOVEM DC.B 'MOVEM', 0       *-----------------DONE-----------------*
+P_ADD   DC.B 'ADD', 0         *-----------------DONE-----------------*
+P_ADDA  DC.B 'ADDA',0         *-----------------DONE-----------------*
+P_SUB   DC.B 'SUB', 0         *-----------------DONE-----------------*
+P_SUBQ  DC.B 'SUBQ',0
+P_MULS  DC.B 'MULS',0         *-----------------DONE-----------------*
+P_DIVS  DC.B 'DIVS',0         *-----------------DONE-----------------*
+P_LEA   DC.B 'LEA',0          *-----------------DONE-----------------*
+P_OR    DC.B 'OR',0           *-----------------DONE-----------------*
+P_ORI   DC.B 'ORI', 0         *--------------IN PROGRESS-------------*
+P_NEG   DC.B 'NEG', 0         *-----------------DONE-----------------*
+P_EOR   DC.B 'EOR', 0         *-----------------DONE-----------------*
+P_LSR   DC.B 'LSR',0
+P_LSL   DC.B 'LSL', 0
+P_ASR   DC.B 'ASR', 0
+P_ASL   DC.B 'ASL',0 
+P_ROL   DC.B 'ROL', 0
+P_ROR   DC.B 'ROR', 0
+P_BCLR  DC.B 'BCLR',0
+P_CMP   DC.B 'CMP', 0         *-----------------DONE-----------------*
+P_CMPI  DC.B 'CMPI', 0
+P_BCS   DC.B 'BCS', 0
+P_BGE   DC.B 'BGE', 0
+P_BLT   DC.B 'BLT',0
+P_BVC   DC.B 'BVC', 0
+P_BRA   DC.B 'BRA',0          *--------------IN PROGRESS-------------*
+P_JSR   DC.B 'JSR',0          *-----------------DONE-----------------*
+P_DATA  DC.B 'DATA',0         *-----------------DONE-----------------*
 
 
-
-
-
-
-
-P_RTS DC.B 'RTS',0
-P_NOP DC.B 'NOP',0
-P_MOVE DC.B 'MOVE',0
-P_MOVEA DC.B 'MOVEA', 0
-P_MOVEM DC.B 'MOVEM', 0
-P_ADD DC.B 'ADD', 0
-P_ADDA DC.B 'ADDA',0
-P_SUB DC.B 'SUB', 0
-P_SUBQ DC.B 'SUBQ',0
-P_MULS DC.B 'MULS',0
-P_DIVS DC.B 'DIVS',0
-P_LEA DC.B 'LEA',0
-P_OR DC.B 'OR',0
-P_ORI DC.B 'ORI', 0
-P_NEG DC.B 'NEG', 0
-P_EOR DC.B 'EOR', 0
-P_LSR DC.B 'LSR',0
-P_LSL DC.B 'LSL', 0
-P_ASR DC.B 'ASR', 0
-P_ASL DC.B 'ASL',0 
-P_ROL DC.B 'ROL', 0
-P_ROR DC.B 'ROR', 0
-P_BCLR DC.B 'BCLR',0
-P_CMP DC.B 'CMP', 0
-P_CMPI DC.B 'CMPI', 0
-P_BCS DC.B 'BCS', 0
-P_BGE DC.B 'BGE', 0
-P_BLT DC.B 'BLT',0
-P_BVC DC.B 'BVC', 0
-P_BRA DC.B 'BRA',0
-P_JSR DC.B 'JSR',0
-P_DATA DC.B 'DATA',0
-* P_RTS DC.B 'RTS',0
 WORD_LENGTH EQU $04
 LONG_LENGTH EQU $08
-TEST_VAL DC.B '10020009'
-LF EQU $0A
-CR EQU $0D
-HT  EQU  $09 
-NEW_LINE DC.B ' ',CR,LF,0
-SIMHALT             ; halt simulator
-* Put variables and constants here
+LF          EQU $0A
+CR          EQU $0D
+HT          EQU  $09 
 
+TEST_VAL                DC.B '10020009'
+NEW_LINE                DC.B ' ',CR,LF,0
+PROMT_INPUT_START       DC.B 'Please enter starting address(capitalized):  $',0 
+PROMT_INPUT_END         DC.B 'Please enter ending address(cappitalized): $',0
+PROMT_INPUT_CONTINUE    DC.B 'Press enter to continue',CR,LF,0
 
-
-
-
-
-PROMT_INPUT_START DC.B 'Please enter starting address(capitalized):  $',0 
-PROMT_INPUT_END DC.B 'Please enter ending address(cappitalized): $',0
-PROMT_INPUT_CONTINUE DC.B 'Press enter to continue',CR,LF,0
+    SIMHALT             
+    
     END    START        ; last line of source
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 *~Font name~Courier New~
 *~Font size~10~
