@@ -1,0 +1,172 @@
+00010000 Starting Address
+Assembler used: EASy68K Editor/Assembler v5.16.01
+Created On: 12/2/2018 4:15:05 PM
+
+00000000                             1  *-----------------------------------------------------------
+00000000                             2  * Title      : Final Project Test Program
+00000000                             3  * Written by : Leo Le
+00000000                             4  * Date       : 11/23/2018
+00000000                             5  * Description: This is the test program for the final project
+00000000                             6  *              of team HEX DUMP. This will be used to test
+00000000                             7  *              the DISASSEMBLER we are building. Hope it works...
+00000000                             8  *-----------------------------------------------------------
+00000000                             9  
+00000000                            10  * EQUATES SECTION
+00000000                            11              OPT     CRE
+00000000  =00010000                 12  START       EQU     $10000          * PROGRAM BEGINS
+00000000  =00002000                 13  EXIT        EQU     $2000           * PROGRAM STOP
+00000000  =0000A31B                 14  NUM1        EQU     $A31B           * TEST NUMBER 1
+00000000  =00001402                 15  NUM2        EQU     $1402           * TEST NUMBER 2
+00000000  =00000020                 16  LOOP_TIME   EQU     $20
+00000000  =00003000                 17  TEST_ADDR   EQU     $3000           * TEST ADDRESS
+00000000  =00000001                 18  DECREMENT   EQU     $1              * DECREMENT BY 1
+00000000                            19  
+00000000  =0000000D                 20  CR          EQU     $0D             * ASCII CODE FOR CARRIAGE RETURN
+00000000  =0000000A                 21  LF          EQU     $0A             * ASCII CODE FOR LINE FEED
+00000000                            22  
+00000000                            23  * DATA SECTION
+00000000= 48 45 4C 4C 4F 20 ...     24  MSG1        DC.B    'HELLO CRUEL WORLD!', CR, LF, 0
+00000015= 54 48 49 53 20 49 ...     25  MSG2        DC.B    'THIS IS THE TEST PROGRAM FOR THE DISASSEMBLY WE ARE BUILDING', CR, LF
+00000053= 57 45 20 41 52 45 ...     26              DC.B    'WE ARE GROUP HEX DUMP', 0
+00000069= 50 52 4F 47 52 41 ...     27  MSG3        DC.B    'PROGRAM TERMINATED!', CR, LF, 0   
+0000007F                            28      
+0000007F                            29  
+0000007F                            30  * ------------------------PROGRAM START HERE------------------------ *
+00010000                            31              ORG     START           * START PROGRAM
+00010000                            32  MAIN:       
+00010000  43F8 0000                 33              LEA     MSG1,           A1      * LOAD MSG1 (LEA)
+00010004  103C 000E                 34              MOVE.B  #14,            D0      
+00010008  4E4F                      35              TRAP    #15
+0001000A                            36              
+0001000A  43F8 0015                 37              LEA     MSG2,           A1      * LOAD MSG2 (LEA)
+0001000E  103C 000E                 38              MOVE.B  #14,            D0      
+00010012  4E4F                      39              TRAP    #15
+00010014                            40              
+00010014  343C A31B                 41              MOVE.W  #NUM1,          D2      * MOVE DATA TO D2 (MOVE)
+00010018  263C 00001402             42              MOVE.L  #NUM2,          D3      * MOVE DATA TO D3 (MOVE)
+0001001E                            43              
+0001001E  3478 3000                 44              MOVEA.W TEST_ADDR,      A2      * MOVE ADDRESS TO A2 (MOVEA)
+00010022  14C2                      45              MOVE.B  D2,            (A2)+    * MOVE VALUE FROM D2 TO MEMORY AT ADDRESS A2 AND INCREMENT THE OFFSET (MOVE)
+00010024  48D3 000C                 46              MOVEM.L D2-D3,         (A3)     * MOVE MULTI REGISER TO A3
+00010028                            47              
+00010028  3A3C 0020                 48              MOVE.W  #LOOP_TIME,     D5      * SET UP LOOP COUNTER (MOVE)
+0001002C  4EB9 000100BE             49              JSR     ADD_LOOP                * TEST FUNCTION: INCREMENT FROM 5 TO 10 CALLING (ADD, ADDA)
+00010032  3A3C 0020                 50              MOVE.W  #LOOP_TIME,     D5      * RESET UP LOOP COUNTER (MOVE)
+00010036  4EB9 000100DC             51              JSR     SUB_LOOP                * TEST FUNCTION: DECREMENT FROM 5 TO 0 CALLING (SUB, SUBQ)
+0001003C                            52              
+0001003C  B87C 0002                 53              CMP.W    #$0002, D4
+00010040  B602                      54              CMP.B    D2, D3
+00010042  B8B8 0010                 55              CMP.L    $00000010, D4
+00010046  B652                      56              CMP.W    (A2), D3
+00010048                            57  
+00010048  E54B                      58              LSL.W    #$02, D3
+0001004A  E7AD                      59              LSL.L    D3, D5
+0001004C  E3F9 00009F91             60              LSL.W    $9F91
+00010052                            61  
+00010052  E66A                      62              LSR.W    D3, D2
+00010054  E20A                      63              LSR.B    #$1, D2
+00010056                            64  
+00010056  E842                      65              ASR.W    #$04,D2
+00010058  E404                      66              ASR.B    #2, D4
+0001005A  E4A3                      67              ASR.L    D2, D3
+0001005C                            68  
+0001005C  E942                      69              ASL.W    #$04, D2
+0001005E  E1F8 2880                 70              ASL.W    $2880
+00010062  E5A4                      71              ASL.L    D2, D4
+00010064                            72  
+00010064  4402                      73              NEG.B    D2
+00010066  441C                      74              NEG.B    (A4)+
+00010068  4478 2900                 75              NEG.W    $2900
+0001006C                            76  
+0001006C  0003 00EC                 77              ORI.B     #$EC, D3
+00010070  0078 07FF 4000            78              ORI.W     #$07FF, $00004000
+00010076  0091 000007FF             79              ORI.L     #$07FF, (a1)
+0001007C                            80  
+0001007C  8778 4000                 81              OR.W      D3, $00004000
+00010080  8EB8 4000                 82              OR.L      $00004000, d7
+00010084  8713                      83              OR.B      D3, (a3)
+00010086  8E56                      84              OR.W      (a6), d7
+00010088                            85  
+00010088  8FC4                      86              DIVS.W    D4, D7
+0001008A  8FF8 0010                 87              DIVS.W    $0010, D7
+0001008E  8FDD                      88              DIVS.W    (A5)+, D7
+00010090  87FC 1900                 89              DIVS.W    #$1900, D3
+00010094                            90  
+00010094  CFC4                      91              MULS.W    D4, D7
+00010096  CFF8 0010                 92              MULS.W    $0010, D7
+0001009A  CFDD                      93              MULS.W    (A5)+, D7
+0001009C  C7FC 1900                 94              MULS.W    #$1900, D3
+000100A0                            95              
+000100A0  0A65 07FF                 96              EOR.W     #$07FF, -(A5)
+000100A4  0A04 00E2                 97              EOR.B     #$E2, D4
+000100A8  BB5B                      98              EOR.W     D5, (A3)+
+000100AA  0AB8 000007FF 4000        99              EOR.L     #$07FF, $00004000
+000100B2  B741                     100              EOR.W     D3, d1
+000100B4  BD38 4000                101              EOR.B     D6, $00004000
+000100B8                           102  
+000100B8  4EB9 000100FA            103              JSR     TERMINATE  * PROGRAM END
+000100BE                           104  
+000100BE                           105  ADD_LOOP:
+000100BE  BA7C 000A                106              CMP.W  #10,D5      * CHECK COUNTER (CMP)
+000100C2  6C34                     107              BGE.S  END_LOOP    * TEST (BGE)
+000100C4  5205                     108              ADD.B  #1, D5      * INCREMENT COUNTER (ADD)
+000100C6  DA9B                     109              ADD.L  (A3)+, D5
+000100C8  DB78 1012                110              ADD.W  D5, $1012
+000100CC  5478 2000                111              ADD.W  #$02, $2000
+000100D0  DA04                     112              ADD.B  D4, D5
+000100D2  524C                     113              ADDA.W #$01, A4
+000100D4  D8C4                     114              ADDA.W D4, A4
+000100D6  D9DD                     115              ADDA.L (A5)+, A4
+000100D8  6000 0002                116              BRA SUB_LOOP
+000100DC                           117              
+000100DC                           118  SUB_LOOP:
+000100DC  0C45 0001                119              CMPI.W #1, D5      * CHECK COUNTER (CMPI)
+000100E0  6D16                     120              BLT.S  END_LOOP    * TEST (BLT)
+000100E2  5305                     121              SUB.B  #1, D5      * DECREMENT COUNTER (SUB)
+000100E4  984D                     122              SUB.W  A5, D4
+000100E6  961D                     123              SUB.B  (A5)+, D3
+000100E8  9B1D                     124              SUB.B  D5, (A5)+
+000100EA  5578 2000                125              SUB.W  #$02, $2000
+000100EE  5305                     126              SUBQ.B #1, D5      * DECREMENT COUNTER (SUBQ)
+000100F0  5103                     127              SUBQ.B #$8, D3
+000100F2  5924                     128              SUBQ.B #4, -(A4)
+000100F4  5F14                     129              SUBQ.B #7, (A4)
+000100F6  60E4                     130              BRA SUB_LOOP
+000100F8                           131   
+000100F8                           132  END_LOOP:
+000100F8  4E75                     133              RTS                * HELP TO END WHATEVER LOOP CALLED IT
+000100FA                           134  
+000100FA                           135  
+000100FA                           136  * ------------------------PROGRAM END HERE-------------------------- *
+000100FA                           137  TERMINATE:
+000100FA  43F8 0069                138              LEA     MSG3,           A1      * SHOW TERMINATE MSG
+000100FE  103C 000E                139              MOVE.B  #14,            D0
+00010102  4E4F                     140              TRAP    #15
+00010104  4E72 2000                141              STOP    #EXIT
+00010108                           142              
+00010108                           143              END    START
+
+No errors detected
+No warnings generated
+
+
+SYMBOL TABLE INFORMATION
+Symbol-name         Value
+-------------------------
+ADD_LOOP            100BE
+CR                  D
+DECREMENT           1
+END_LOOP            100F8
+EXIT                2000
+LF                  A
+LOOP_TIME           20
+MAIN                10000
+MSG1                0
+MSG2                15
+MSG3                69
+NUM1                A31B
+NUM2                1402
+START               10000
+SUB_LOOP            100DC
+TERMINATE           100FA
+TEST_ADDR           3000
