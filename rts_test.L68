@@ -1,0 +1,99 @@
+00010000 Starting Address
+Assembler used: EASy68K Editor/Assembler v5.16.01
+Created On: 12/3/2018 9:51:19 PM
+
+00000000                             1      *-----------------------------------------------------------
+00000000                             2  * Title      :
+00000000                             3  * Written by :
+00000000                             4  * Date       :
+00000000                             5  * Description:
+00000000                             6  *-----------------------------------------------------------
+00010000                             7      ORG    $10000
+00010000                             8  START:                  ; first instruction of program
+00010000                             9  
+00010000                            10       
+00010000                            11  * Put program code here
+00010000                            12  HAHA: 
+00010000  3409                      13      MOVE.W A1,D2 
+00010002  6000 FFFC                 14      BRA.W HAHA
+00010006  60F8                      15      BRA.S HAHA
+00010008  6000 0002                 16      BRA.W VKL
+0001000C                            17  VKL:
+0001000C  48E1 FCE0                 18      MOVEM.L A0-A2/D0-D5, -(A1)
+00010010                            19  
+00010010  48E1 FFFF                 20      MOVEM.L a0-a7/d0-d7, -(a1)
+00010014  48D7 FFFF                 21      movem.l a0-a7/d0-d7, (a7)
+00010018  48F8 2B49 0001            22      movem.l a0/a5/a3/a1/d0/d3/d6, ($01)
+0001001E                            23  
+0001001E                            24  
+0001001E                            25  
+0001001E  48F8 073F 0011            26      MOVEM.L A0/A1/A2/D0/D1/D2/D3/D4/D5, ($00000011)
+00010024                            27  
+00010024  4CB9 03FF 01234567        28      movem.w ($01234567), a0-a1/d0-d7
+0001002C                            29  
+0001002C                            30  
+0001002C  4CD9 07FF                 31      MOVEM.L (A1)+, A0-A2/D0-D7
+00010030  0684 00000039             32      ADD.L #$39, D4
+00010036  123C 0032                 33      MOVE.B #50, D1 
+0001003A  343C 03FC                 34      MOVE.W #1020, D2 
+0001003E  343C 000A                 35      MOVE.W #10, D2 
+00010042  263C 000004CE             36      MOVE.L #1230, D3
+00010048  3811                      37      MOVE.W (A1), D4 
+0001004A  1212                      38      MOVE.B (A2), D1
+0001004C  2C13                      39      MOVE.L (A3), D6
+0001004E  1221                      40      MOVE.B -(A1), D1 
+00010050  3A22                      41      MOVE.W -(A2), D5
+00010052  2C27                      42      MOVE.L -(A7), D6
+00010054  1219                      43      MOVE.B (A1)+, D1 
+00010056  3419                      44      MOVE.W (A1)+, D2 
+00010058  3A1B                      45      MOVE.W (A3)+ , D5
+0001005A  2C1E                      46      MOVE.L (A6)+, D6 
+0001005C  1C39 00012345             47      MOVE.B ($12345), D6
+00010062  3A38 1231                 48      MOVE.W ($1231), D5 
+00010066  2E38 0232                 49      MOVE.L  ($232), D7
+0001006A  2431 2000                 50      MOVE.l (A1,D2), D2 
+0001006E  327C 0002                 51      MOVEA.W #$02, A1
+00010072  2440                      52      MOVEA.L D0, A2 
+00010074  3651                      53      MOVEA.W (A1), A3 
+00010076  3261                      54      MOVEA.W -(A1), A1 
+00010078  2459                      55      MOVEA.L (A1)+, A2  
+0001007A                            56  
+0001007A  D469 0004                 57      add.w 4(a1), d2 
+0001007E                            58  
+0001007E  D481                      59      ADD.L d1, d2 
+00010080  D2C1                      60      add.w d1, a1 
+00010082                            61      ;ADD.L 4(a1), d2
+00010082  D259                      62      ADD.W (a1)+, d1 
+00010084  D261                      63      ADD.W -(a1), d1 
+00010086                            64      
+00010086                            65      
+00010086                            66  
+00010086  D251                      67      add.w (a1), d1 
+00010088  D2FC 0435                 68      adda.w #$435, a1
+0001008C  D4E7                      69      ADDA.W -(sp), a2 
+0001008E  D4D9                      70      adda.w (a1)+, a2  
+00010090  D401                      71      add.b d1, d2 
+00010092  43F9 000100A4             72      LEA PRINT, a1 
+00010098                            73  
+00010098                            74  
+00010098                            75  TEMP:
+00010098  103C 0025                 76      MOVE.B #$25, D0
+0001009C  6000 FF6E                 77      BRA VKL
+000100A0  FFFF FFFF                 78      SIMHALT             ; halt simulator
+000100A4                            79  
+000100A4                            80  * Put variables and constants here
+000100A4= 56 4B 4C 00               81  PRINT DC.B 'VKL',0 
+000100A8                            82      END    START        ; last line of source
+
+No errors detected
+No warnings generated
+
+
+SYMBOL TABLE INFORMATION
+Symbol-name         Value
+-------------------------
+HAHA                10000
+PRINT               100A4
+START               10000
+TEMP                10098
+VKL                 1000C
