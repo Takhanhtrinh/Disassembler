@@ -1,0 +1,46 @@
+00010000 Starting Address
+Assembler used: EASy68K Editor/Assembler v5.16.01
+Created On: 12/4/2018 6:17:49 PM
+
+00000000                             1  *-----------------------------------------------------------
+00000000                             2  * Title      :
+00000000                             3  * Written by :
+00000000                             4  * Date       :
+00000000                             5  * Description:
+00000000                             6  *-----------------------------------------------------------
+00010000                             7      ORG    $10000
+00010000                             8  START:                  ; first instruction of program
+00010000  0C01 0009                  9      CMPI.B #$09, D1 
+00010004  0C11 0009                 10      CMPI.B #$09, (a1)
+00010008  0C21 0025                 11      CMPI.B #$25, -(a1)  
+0001000C  0C1E 0012                 12      CMPI.B #$12, (A6)+ 
+00010010  0C38 0023 1234            13      CMPI.B #$23, ($1234)
+00010016  0C39 0085 12345578        14      CMPI.B #$85, ($12345578)
+0001001E  0C47 2313                 15      CMPI.W #$2313, D7 
+00010022  0C53 1244                 16      CMPI.W #$1244, (A3)
+00010026  0C63 3282                 17      CMPI.W #$3282, -(A3)
+0001002A  0C5D 8731                 18      CMPI.W #$8731, (A5)+
+0001002E  0C78 1231 1234            19      CMPI.W #$1231, ($1234)
+00010034  0C79 1231 12345678        20      CMPI.W #$1231, ($12345678)
+0001003C  0C84 32147861             21      CMPI.L #$32147861, D4
+00010042  0C90 FF123131             22      CMPI.L #$FF123131, (A0)
+00010048  0C9C 12314111             23      CMPI.L #$12314111, (A4)+
+0001004E  0CA5 23123412             24      CMPI.L #$23123412, -(A5)
+00010054  0CB8 11234123 1234        25      CMPI.L #$11234123, ($1234)
+0001005C  0CB9 31233521 31348761    26      CMPI.L #$31233521, ($31348761)
+00010066                            27  * Put program code here
+00010066                            28  
+00010066  FFFF FFFF                 29      SIMHALT             ; halt simulator
+0001006A                            30  
+0001006A                            31  * Put variables and constants here
+0001006A                            32  
+0001006A                            33      END    START        ; last line of source
+
+No errors detected
+No warnings generated
+
+
+SYMBOL TABLE INFORMATION
+Symbol-name         Value
+-------------------------
+START               10000

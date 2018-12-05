@@ -1,0 +1,47 @@
+00010000 Starting Address
+Assembler used: EASy68K Editor/Assembler v5.16.01
+Created On: 12/4/2018 5:33:27 PM
+
+00000000                             1  *-----------------------------------------------------------
+00000000                             2  * Title      :
+00000000                             3  * Written by :
+00000000                             4  * Date       :
+00000000                             5  * Description:
+00000000                             6  *-----------------------------------------------------------
+00010000                             7      ORG    $10000
+00010000                             8  START:                  ; first instruction of program
+00010000  B0C1                       9      CMP.W D1,A0
+00010002  B200                      10      CMP.B D0,D1 
+00010004                            11  
+00010004  B210                      12      CMP.B (A0), D1 
+00010006  B438 1234                 13      CMP.B ($1234), D2
+0001000A  B439 12345678             14      CMP.B ($12345678),d2
+00010010  B240                      15      CMP.W D0, D1 
+00010012  B052                      16      CMP.W (A2), d0
+00010014  B051                      17      CMP.W (A1), D0 
+00010016  B278 1234                 18      CMP.W ($1234), D1
+0001001A  B478 1234                 19      CMP.W ($1234), D2
+0001001E  B279 23131111             20      CMP.W ($23131111), D1
+00010024  B288                      21      CMP.L a0, d1 
+00010026  B280                      22      cmp.l d0,d1
+00010028  B491                      23      cmp.l (a1), d2
+0001002A  B0B8 0051                 24      cmp.l ($51), d0
+0001002E  B4B9 12345678             25      cmp.l ($12345678),d2
+00010034                            26      
+00010034                            27      
+00010034                            28  * Put program code here
+00010034                            29  
+00010034  FFFF FFFF                 30      SIMHALT             ; halt simulator
+00010038                            31  
+00010038                            32  * Put variables and constants here
+00010038                            33  
+00010038                            34      END    START        ; last line of source
+
+No errors detected
+No warnings generated
+
+
+SYMBOL TABLE INFORMATION
+Symbol-name         Value
+-------------------------
+START               10000

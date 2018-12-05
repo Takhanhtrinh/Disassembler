@@ -1,0 +1,64 @@
+00001000 Starting Address
+Assembler used: EASy68K Editor/Assembler v5.16.01
+Created On: 12/4/2018 12:25:59 AM
+
+00000000                             1  *-----------------------------------------------------------
+00000000                             2  * Title      :
+00000000                             3  * Written by :
+00000000                             4  * Date       :
+00000000                             5  * Description:
+00000000                             6  *-----------------------------------------------------------
+00001000                             7      ORG    $1000
+00001000                             8  START:                  ; first instruction of program
+00001000                             9  
+00001000                            10  * Put program code here
+00001000                            11  
+00001000                            12  
+00001000                            13  
+00001000                            14  TEST1:
+00001000  303C 0014                 15      MOVE.W #$14, D0 
+00001004  48A7 FF60                 16      MOVEM.W d0-d7/a1-a2, -(sp)
+00001008  4C9F 06FF                 17      MOVEM.W (SP)+, d0-d7/a1-a2
+0000100C  65F2                      18      BCS TEST1 
+0000100E  6500 0006                 19      BCS TEST2
+00001012  6500 0038                 20      BCS TEST3
+00001016                            21  TEST2:
+00001016  D280                      22      ADD.L d0,d1 
+00001018  0680 00012312             23      ADD.L #$12312,d0 
+0000101E  D2FC 000E                 24      ADDA.W #14, a1 
+00001022  D4FC 000E                 25      adda.W #14, a2
+00001026  DBFC 0000000C             26      adda.L #12, a5
+0000102C  6CD2                      27      BGE.S TEST1 
+0000102E  6C1C                      28      BGE.S TEST3
+00001030  6C00 FFCE                 29      BGE.W TEST1
+00001034  6C00 0016                 30      BGE.W TEST3
+00001038  6CDC                      31      BGE.S TEST2
+0000103A  6DDA                      32      BLT.S TEST2
+0000103C  6D00 000E                 33      BLT.W TEST3
+00001040  6800 FFD4                 34      BVC.W TEST2
+00001044  6800 0006                 35      BVC.W TEST3
+00001048  6802                      36      BVC.S TEST3
+0000104A  68CA                      37      BVC.S TEST2
+0000104C                            38  
+0000104C                            39  
+0000104C                            40  
+0000104C                            41  TEST3:
+0000104C  D0FC 000E                 42      ADDA.W #14,a0
+00001050                            43      
+00001050  FFFF FFFF                 44      SIMHALT             ; halt simulator
+00001054                            45  
+00001054                            46  * Put variables and constants here
+00001054                            47  
+00001054                            48      END    START        ; last line of source
+
+No errors detected
+No warnings generated
+
+
+SYMBOL TABLE INFORMATION
+Symbol-name         Value
+-------------------------
+START               1000
+TEST1               1000
+TEST2               1016
+TEST3               104C

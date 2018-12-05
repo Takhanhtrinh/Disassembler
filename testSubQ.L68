@@ -1,0 +1,40 @@
+00010000 Starting Address
+Assembler used: EASy68K Editor/Assembler v5.16.01
+Created On: 12/4/2018 5:20:40 PM
+
+00000000                             1  *-----------------------------------------------------------
+00000000                             2  * Title      :
+00000000                             3  * Written by :
+00000000                             4  * Date       :
+00000000                             5  * Description:
+00000000                             6  *-----------------------------------------------------------
+00010000                             7      ORG    $10000
+00010000                             8  START:                  ; first instruction of program
+00010000                             9  
+00010000                            10  * Put program code here
+00010000  5300                      11      SUBQ.B #$1, D0 
+00010002  5546                      12      SUBQ.W #$2, d6
+00010004  5785                      13      subq.l #$3,d5
+00010006  5928 0004                 14      subq.b #$4, 4(a0)
+0001000A  5B57                      15      subq.w #$5, (a7)
+0001000C  5D96                      16      subq.l #$6, (a6)
+0001000E  5F38 2120                 17      subq.b #$7,  ($2120)
+00010012  5178 2530                 18      subq.w #$8, ($2530)
+00010016  53B8 2599                 19      subq.l #$1, ($2599)
+0001001A  5539 21592917             20      subq.b #$2, ($21592917)
+00010020  5B79 22114455             21      subq.w #$5, ($22114455)
+00010026  55B9 32716489             22      subq.l #$2, ($32716489)
+0001002C  FFFF FFFF                 23      SIMHALT             ; halt simulator
+00010030                            24  
+00010030                            25  * Put variables and constants here
+00010030                            26  
+00010030                            27      END    START        ; last line of source
+
+No errors detected
+No warnings generated
+
+
+SYMBOL TABLE INFORMATION
+Symbol-name         Value
+-------------------------
+START               10000
