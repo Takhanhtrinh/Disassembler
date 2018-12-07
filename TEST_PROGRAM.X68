@@ -30,25 +30,25 @@ MSG3        DC.B    'PROGRAM TERMINATED!', CR, LF, 0
 * ------------------------PROGRAM START HERE------------------------ *
             ORG     START           * START PROGRAM
 MAIN:       
-            LEA     MSG1,           A1      * LOAD MSG1 (LEA)
-            MOVE.B  #14,            D0      
+            LEA     MSG1, A1        * LOAD MSG1 (LEA)
+            MOVE.B  #14, D0      
             TRAP    #15
             
-            LEA     MSG2,           A1      * LOAD MSG2 (LEA)
-            MOVE.B  #14,            D0      
+            LEA     MSG2, A1        * LOAD MSG2 (LEA)
+            MOVE.B  #14, D0      
             TRAP    #15
             
-            MOVE.W  #NUM1,          D2      * MOVE DATA TO D2 (MOVE)
-            MOVE.L  #NUM2,          D3      * MOVE DATA TO D3 (MOVE)
+            MOVE.W  #NUM1, D2       * MOVE DATA TO D2 (MOVE)
+            MOVE.L  #NUM2, D3       * MOVE DATA TO D3 (MOVE)
             
-            MOVEA.W TEST_ADDR,      A2      * MOVE ADDRESS TO A2 (MOVEA)
-            MOVEA.W D3,             A2      * MOVE ADDRESS TO A2 (MOVEA)
-            MOVEA.L #$9000,         A2      * MOVE ADDRESS TO A2 (MOVEA)
-            MOVE.B  D2,            (A2)+    * MOVE VALUE FROM D2 TO MEMORY AT ADDRESS A2 AND INCREMENT THE OFFSET (MOVE)
+            MOVEA.W TEST_ADDR, A2   * MOVE ADDRESS TO A2 (MOVEA)
+            MOVEA.W D3, A2          * MOVE ADDRESS TO A2 (MOVEA)
+            MOVEA.L #$9000, A2      * MOVE ADDRESS TO A2 (MOVEA)
+            MOVE.B  D2, (A2)+       * MOVE VALUE FROM D2 TO MEMORY AT ADDRESS A2 AND INCREMENT THE OFFSET (MOVE)
 
-            MOVEM.L D2-D3,         (A3)     * MOVE MULTI REGISER TO A3
-            MOVEM.W (A3)+,         D2-D3    * MOVE MULTI REGISER TO A3
-            MOVEM.L $0030,        D2-D3    * MOVE MULTI REGISER TO A3
+            MOVEM.L D2-D3, (A3)     * MOVE MULTI REGISER TO A3
+            MOVEM.W (A3)+, D2-D3    * MOVE MULTI REGISER TO A3
+            MOVEM.L $0030, D2-D3    * MOVE MULTI REGISER TO A3
             
             NOP *------------------------------------
 
@@ -60,7 +60,7 @@ MAIN:
             NOP *------------------------------------
 
             CMPI.W    #$0002, D4
-            CMPI.B    #$8, D3
+            CMPI.B    #$8, D3›
             CMPI.L    #$2010, D4
             CMPI.W    #$00000010, D3
 
@@ -193,9 +193,9 @@ MAIN:
             BRA.L     LOWER
 
 LOWER:
-            MOVE.W  #LOOP_TIME,     D5      
+            MOVE.W  #LOOP_TIME, D5      
             JSR     ADD_LOOP                
-            MOVE.B  #LOOP_TIME,     D5   
+            MOVE.B  #LOOP_TIME, D5   
             JSR     SUB_LOOP                
             
             JSR     TERMINATE  * PROGRAM END
