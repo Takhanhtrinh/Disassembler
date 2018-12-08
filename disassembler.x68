@@ -2409,44 +2409,6 @@ ALRSD_DONE_PRINT_R:
     BRA FINISH_OPCODE
 END_ALSD_ROD_REGISTER:
     RTS
-* ROR:
-* * CONSTANT FOR ROR OPCODE
-* ROR_OPCODE EQU %
-* ROR_M      EQU %
-* ROR_SIZE_M EQU %
-*     CLR.W D2
-*     MOVE.W D1, D2
-* * MASKING WITH ROR UNIQUE CODE
-*     AND.W #ROR_M, D2
-*     CMP.W #ROR_OPCODE, D2
-*     BNE ROR_END
-*     JSR PRINT_ROR
-*     MOVE.W D1, D2
-*     MOVE.W D1, D3
-* * MASKING TO GET SIZE OF ROR
-*     CMP.W #ROR_SIZE_M, D2 
-* ROR_END:
-*     RTS
-
-* ROL:
-* * CONSTANT FROR ROL OPCODE
-* ROL_OPCODE EQU %
-* ROL_M      EQU %
-* ROL_SIZE_M EQU %
-*     CLR.W D2
-*     MOVE.W D1, D2
-* * MASKING WITH ROL UNIQUE CODE
-*     AND.W #ROL_M, D2
-*     CMP.W #ROL_OPCODE, D2
-*     BNE ROL_END
-*     JSR PRINT_ROL
-*     MOVE.W D1, D2
-*     MOVE.W D1, D3
-* * MASKING TO GET SIZE OF ROL
-*     CMP.W #ROL_SIZE_M, D2 
-* ROL_END:
-*     RTS
-
 
 PRINT_RTS:
     LEA P_RTS, A1
@@ -2632,36 +2594,35 @@ PRINT_L_END:
 
 P_R     DC.B 'R',0
 P_L     DC.B 'L', 0
-
-P_RTS   DC.B 'RTS',0          *-----------------DONE-----------------*
-P_NOP   DC.B 'NOP',0          *-----------------DONE-----------------*
-P_MOVE  DC.B 'MOVE',0         *-----------------DONE-----------------*
-P_MOVEA DC.B 'MOVEA', 0       *-----------------DONE-----------------*
-P_MOVEM DC.B 'MOVEM', 0       *-----------------DONE-----------------*
-P_ADD   DC.B 'ADD', 0         *-----------------DONE-----------------*
-P_ADDA  DC.B 'ADDA',0         *-----------------DONE-----------------*
-P_SUB   DC.B 'SUB', 0         *-----------------DONE-----------------*
-P_SUBQ  DC.B 'SUBQ',0         *-----------------DONE-----------------* 
-P_MULS  DC.B 'MULS',0         *-----------------DONE-----------------*
-P_DIVS  DC.B 'DIVS',0         *-----------------DONE-----------------*
-P_LEA   DC.B 'LEA',0          *-----------------DONE-----------------*
-P_OR    DC.B 'OR',0           *-----------------DONE-----------------*
-P_ORI   DC.B 'ORI', 0         *-----------------DONE-----------------*
-P_NEG   DC.B 'NEG', 0         *-----------------DONE-----------------*
-P_EOR   DC.B 'EOR', 0         *-----------------DONE-----------------*
-P_LSD   DC.B 'LS',0
-P_ASD   DC.B 'AS', 0
-P_ROD   DC.B 'RO', 0
-P_BCLR  DC.B 'BCLR',0          *-----------------DONE-----------------*
-P_CMP   DC.B 'CMP', 0         *-----------------DONE-----------------*
-P_CMPI  DC.B 'CMPI', 0         *-----------------DONE-----------------*
-P_BCS   DC.B 'BCS', 0         *-----------------DONE-----------------*
-P_BGE   DC.B 'BGE', 0         *-----------------DONE-----------------* 
-P_BLT   DC.B 'BLT',0          *-----------------DONE-----------------*  
-P_BVC   DC.B 'BVC', 0         *-----------------DONE-----------------* 
-P_BRA   DC.B 'BRA',0          *-----------------DONE-----------------*
-P_JSR   DC.B 'JSR',0          *-----------------DONE-----------------*
-P_DATA  DC.B 'DATA',0         *-----------------DONE-----------------*
+P_RTS   DC.B 'RTS',0          *-----------------DONE--------  ---------*
+P_NOP   DC.B 'NOP',0          *-----------------DONE-------  ----------*
+P_MOVE  DC.B 'MOVE',0         *-----------------DONE------  -----------*
+P_MOVEA DC.B 'MOVEA', 0       *-----------------DONE-------  ----------*
+P_MOVEM DC.B 'MOVEM', 0       *-----------------DONE-------  ----------*
+P_ADD   DC.B 'ADD', 0         *-----------------DONE--------  ---------*
+P_ADDA  DC.B 'ADDA',0         *-----------------DONE--------  ---------*
+P_SUB   DC.B 'SUB', 0         *-----------------DONE--------  ---------*
+P_SUBQ  DC.B 'SUBQ',0         *-----------------DONE--------  ---------* 
+P_MULS  DC.B 'MULS',0         *-----------------DONE---------  --------*
+P_DIVS  DC.B 'DIVS',0         *-----------------DONE--------  ---------*
+P_LEA   DC.B 'LEA',0          *-----------------DONE---------  --------*
+P_OR    DC.B 'OR',0           *-----------------DONE--------  ---------*
+P_ORI   DC.B 'ORI', 0         *-----------------DONE--------  ---------*
+P_NEG   DC.B 'NEG', 0         *-----------------DONE---------  --------*
+P_EOR   DC.B 'EOR', 0         *-----------------DONE-------  ----------*
+P_LSD   DC.B 'LS',0           *-----------------DONE--------  ---------*
+P_ASD   DC.B 'AS', 0          *-----------------DONE--------  ---------*
+P_ROD   DC.B 'RO', 0          *-----------------DONE--------  ---------*
+P_BCLR  DC.B 'BCLR',0         *-----------------DONE----------  -------*
+P_CMP   DC.B 'CMP', 0         *-----------------DONE---------  --------*
+P_CMPI  DC.B 'CMPI', 0        *-----------------DONE---------  --------*
+P_BCS   DC.B 'BCS', 0         *-----------------DONE--------  ---------*
+P_BGE   DC.B 'BGE', 0         *-----------------DONE--------  ---------* 
+P_BLT   DC.B 'BLT',0          *-----------------DONE---------  --------*  
+P_BVC   DC.B 'BVC', 0         *-----------------DONE---------  --------* 
+P_BRA   DC.B 'BRA',0          *-----------------DONE-----------  ------*
+P_JSR   DC.B 'JSR',0          *-----------------DONE----------  -------*
+P_DATA  DC.B 'DATA',0         *-----------------DONE----------  -------*
 
 
 WORD_LENGTH EQU $04
