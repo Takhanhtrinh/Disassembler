@@ -1,6 +1,6 @@
 00010000 Starting Address
 Assembler used: EASy68K Editor/Assembler v5.16.01
-Created On: 12/4/2018 12:28:22 AM
+Created On: 12/7/2018 3:41:05 PM
 
 00000000                             1  *-----------------------------------------------------------
 00000000                             2  * Title      :
@@ -8,7 +8,7 @@ Created On: 12/4/2018 12:28:22 AM
 00000000                             4  * Date       :
 00000000                             5  * Description:
 00000000                             6  *-----------------------------------------------------------
-00010000                             7      ORG    $10000
+00010000                             7      ORG    $010000
 00010000                             8  START:                  ; first instruction of program
 00010000                             9  
 00010000                            10  * Put program code here

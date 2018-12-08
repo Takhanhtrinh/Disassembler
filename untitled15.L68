@@ -1,0 +1,43 @@
+00010000 Starting Address
+Assembler used: EASy68K Editor/Assembler v5.16.01
+Created On: 12/7/2018 2:31:09 PM
+
+00000000                             1  *-----------------------------------------------------------
+00000000                             2  * Title      :
+00000000                             3  * Written by :
+00000000                             4  * Date       :
+00000000                             5  * Description:
+00000000                             6  *-----------------------------------------------------------
+00010000                             7     ORG    $010000
+00010000                             8      START:                  ; first instruction of program
+00010000                             9  
+00010000                            10  * Put program code here
+00010000  D4C1                      11      ADDA.W d1,a2
+00010002  DACC                      12      ADDA.W A4,A5
+00010004  DCD4                      13      ADDA.W (A4), A6
+00010006  D8E3                      14      ADDA.W -(A3), A4
+00010008  DADA                      15      ADDA.W (A2)+, A5
+0001000A  D8F8 1234                 16      ADDA.W ($1234), A4
+0001000E  DCF9 22227812             17      ADDA.W ($22227812), A6
+00010014                            18      
+00010014  D5C1                      19      ADDA.L D1,A2 
+00010016  DBCC                      20      ADDA.L A4,A5
+00010018  DBD3                      21      ADDA.L (A3), A5
+0001001A  D5E3                      22      ADDA.L -(A3), A2
+0001001C  D9DD                      23      ADDA.L (A5)+, A4 
+0001001E  DDF8 1211                 24      ADDA.L ($1211), A6
+00010022  DFF9 12314124             25      ADDA.L ($12314124), A7
+00010028  FFFF FFFF                 26      SIMHALT             ; halt simulator
+0001002C                            27  
+0001002C                            28  * Put variables and constants here
+0001002C                            29  
+0001002C                            30      END    START        ; last line of source
+
+No errors detected
+No warnings generated
+
+
+SYMBOL TABLE INFORMATION
+Symbol-name         Value
+-------------------------
+START               10000
