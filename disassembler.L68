@@ -1,6 +1,6 @@
 00001000 Starting Address
 Assembler used: EASy68K Editor/Assembler v5.16.01
-Created On: 12/7/2018 12:26:30 AM
+Created On: 12/7/2018 10:18:40 PM
 
 00000000                             1  *-------------------------------------------------------------------------------
 00000000                             2  * Title      : HEX DUMP Disassembler
@@ -1322,7 +1322,7 @@ Created On: 12/7/2018 12:26:30 AM
 00001B8E  =0000FB80               1318  C_MOVEM_MASKING EQU     %1111101110000000
 00001B8E  =00000400               1319  C_MOVEM_DIR EQU         %0000010000000000
 00001B8E  =00000000               1320  C_MOVEM_TO_MEM EQU      %0000000000000000
-00001B8E  =00000400               1321  C_MOVEM_TO_REGISTER   EQU      %0000010000000000
+00001B8E  =00000400               1321  C_MOVEM_TO_REGISTER EQU %0000010000000000
 00001B8E  =00000040               1322  C_MOVEM_SIZE EQU        %0000000001000000
 00001B8E  =0000003F               1323  C_MOVEM_REGISTER EQU    %00111111
 00001B8E  3401                    1324      MOVE.W D1, D2 

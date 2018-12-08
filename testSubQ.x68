@@ -14,7 +14,7 @@ START:                  ; first instruction of program
     subq.b #$4, 4(a0)
     subq.w #$5, (a7)
     subq.l #$6, (a6)
-    subq.b #$7,  ($2120)
+    subq.b #$7, ($2120)
     subq.w #$8, ($2530)
     subq.l #$1, ($2599)
     subq.b #$2, ($21592917)
