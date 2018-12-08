@@ -231,7 +231,28 @@ MAIN:
             OR.W      D3, $00004000
             OR.L      $00004000, D7
             OR.L      ($9000), D4
-            
+            OR.B      D1,D2
+            OR.B      D2, D1 
+            OR.B      ($2510), D3
+            OR.B      ($12312134), D4 
+            OR.B      (A1), D2 
+            OR.B      (A2)+, D5 
+            OR.B      -(A1), D4
+            OR.B      4(A1), D4 
+            OR.W      D1, D1 
+            OR.W      ($2510), D3
+            OR.W      ($12312134), D4 
+            OR.W      (A1), D2 
+            OR.W      (A2)+, D5 
+            OR.W      -(A1), D4
+            OR.W      4(A1), D4 
+            OR.L      D1, D1 
+            OR.L      ($2510), D3
+            OR.L      ($12312134), D4 
+            OR.L      (A1), D2 
+            OR.L      (A2)+, D5 
+            OR.L      -(A1), D4
+            OR.L      4(A1), D4 
 
             NOP *------------------------------------
 
@@ -257,6 +278,24 @@ MAIN:
             EOR.L     #$07FF, $00004000
             EOR.W     D3, d1
             EOR.B     D6, $00004000
+            EOR.B     D1, D2 
+            EOR.B     D1, ($1234)
+            EOR.B     D5, ($32153245)
+            EOR.B     D3, (A1)
+            EOR.B     D4, -(A3)
+            EOR.B     D5, (A4)+
+            EOR.W     D1, D2 
+            EOR.W     D1, ($1234)
+            EOR.W     D5, ($32153245)
+            EOR.W     D3, (A1)
+            EOR.W     D4, -(A3)
+            EOR.W     D5, (A4)+
+            EOR.L     D1, D2 
+            EOR.L     D1,($1234)
+            EOR.L     D5, ($32153245)
+            EOR.L     D3, (A1)
+            EOR.L     D4, -(A3)
+            EOR.L     D5, (A4)+
 
             NOP *------------------------------------
 
@@ -324,12 +363,27 @@ ADD_LOOP:
             ADD.W     D5, $1012
             ADD.W     #$02, $2000
             ADD.B     D4, D5
+
             ADDA.W    #$01, A4
             ADDA.W    D4, A4
             ADDA.L    (A5)+, A4
-            ADDA.W    #14, a1 
-            ADDA.W    #14, a2
-            ADDA.L    #12, a5
+            ADDA.W    #14, A1 
+            ADDA.W    #14, A2
+            ADDA.L    #12, A5
+            ADDA.W    D1,A2
+            ADDA.W    A4,A5
+            ADDA.W    (A4), A6
+            ADDA.W    -(A3), A4
+            ADDA.W    (A2)+, A5
+            ADDA.W    ($1234), A4
+            ADDA.W    ($22227812), A6
+            ADDA.L    D1,A2 
+            ADDA.L    A4,A5
+            ADDA.L    (A3), A5
+            ADDA.L    -(A3), A2
+            ADDA.L    (A5)+, A4 
+            ADDA.L    ($1211), A6
+            ADDA.L    ($12314124), A7
             BRA       ADD_LOOP
             
 SUB_LOOP:
@@ -369,16 +423,6 @@ TERMINATE:
             STOP       #EXIT
             
             END    START
-
-
-
-
-
-
-
-
-
-
 
 *~Font name~Courier New~
 *~Font size~10~
