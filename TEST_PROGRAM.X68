@@ -4,7 +4,10 @@
 * Date       : 11/23/2018
 * Description: This is the test program for the final project
 *              of team HEX DUMP. This will be used to test
-*              the DISASSEMBLER we are building. Hope it works...
+*              the DISASSEMBLER we are building. This version
+*              of testing is not SHUFFLED yet. We will have
+*              another test program with SHUFFLED OP codes
+*              to further evaluate the disassembler.
 *-----------------------------------------------------------
 
 * EQUATES SECTION
